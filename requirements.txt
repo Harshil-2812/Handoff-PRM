@@ -1,0 +1,11 @@
+google-genai==2.20.0
+python-dotenv>=1.0.0
+sentence-transformers>=3.0.0
+spacy>=3.7.0
+xgboost>=2.0.0
+scikit-learn>=1.4.0
+pandas>=2.2.0
+numpy>=1.26.0
+shap>=0.45.0
+tqdm>=4.66.0
+

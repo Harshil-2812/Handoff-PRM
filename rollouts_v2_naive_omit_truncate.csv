@@ -1,0 +1,1592 @@
+task_id,problem,handoff,corruption_type,label
+task_002,"Write a function that checks if a given string is a palindrome, ignoring case and spaces.","HANDOFF MESSAGE FOR AGENT B:
+
+Please implement a Python function that determines whether a given string is a palindrome, ignoring both case sensitivity and spaces.
+
+**Function Signature:**
+```python
+def is_palindrome(s: str) -> bool:
+```
+
+**Requirements & Approach:**
+1. **Normalization:** Remove all spaces from the input string and convert all characters to lowercase (or uppercase) to ensure case-insensitivity.
+2. **Comparison:** Check if the normalized string reads the same forwards and backwards.
+3. **Return Value:** Return `True` if it is a palindrome, and `False` otherwise.
+
+**Edge Cases to Handle:**
+- Empty strings `""""` (should return `True`).
+- Strings with only spaces `""   ""` (should return `True`).
+- Strings with mixed casing and punctuation/symbols (Note: the prompt specifies ignoring case and spaces; standard alphanumeric checks might be needed depending on strictness, but primarily focus on stripping spaces and normalizing case).
+- Single-character strings (should return `True`).",none,1
+task_005,Write a function that flattens a nested list of arbitrary depth into a single flat list.,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that flattens a nested list of arbitrary depth into a single, one-dimensional flat list.
+
+**Function Signature:**
+```python
+def flatten_list(nested_list: list) -> list:
+```
+
+**Key Edge Cases to Handle:**
+1. **Already flat lists:** Should return an identical copy of the list.
+2. **Deeply nested lists:** Must handle arbitrary depth without hitting recursion limits (or use a robust recursive/iterative approach).
+3. **Empty lists:** An empty list `[]` or nested empty lists `[[], [[]]]` should return `[]`.
+4. **Mixed data types:** The list may contain a mix of integers, strings, objects, and nested lists. Only nested lists should be flattened; other elements should be preserved in their relative order.
+5. **Non-list iterables (if applicable):** Ensure only `list` instances are treated as nestable (or clarify if tuples/sets need flattening—assume standard lists unless specified).
+
+**Recommended Approach:**
+- Use a recursive approach that iterates through the input list. 
+- For each element, check if it is an instance of `list`. 
+- If it is a list, recursively call `flatten_list` on it and extend the result. 
+- If it is not a list, append it directly to the result list. 
+- Alternatively, an iterative approach using a stack can be used to avoid recursion depth issues with extremely deep nestings.",none,1
+task_006,"Write a function that returns True if a given integer is prime, False otherwise.","Task: Implement a function to determine whether a given integer is a prime number.
+
+Function Signature:
+`def is_prime(n: int) -> bool:`
+
+Requirements & Edge Cases:
+- Return `True` if `n` is prime, and `False` otherwise.
+- Numbers less than or equal to 1 (`n <= 1`) are not prime and should return `False`.
+- 2 is the only even prime number; it should return `True`.
+- All other even numbers greater than 2 are not prime and should return `False`.
+
+Proposed Approach:
+1. Check if `n <= 1`. If so, return `False`.
+2. Check if `n <= 3`. If so, return `True` (covers 2 and 3).
+3. Check if `n % 2 == 0` or `n % 3 == 0`. If so, return `False`.
+4. Loop from $i = 5$ up to $\lfloor\sqrt{n}\rfloor$ with a step of 6 (checking $i$ and $i + 2$), as all primes greater than 3 are of the form $6k \pm 1$. If $n$ is divisible by any $i$, return `False`.
+5. If no divisors are found, return `True`.",none,1
+task_007,Write a function that merges two sorted lists of integers into one sorted list.,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that merges two sorted lists of integers into a single sorted list.
+
+**Function Signature:**
+```python
+def merge_sorted_lists(list1: list[int], list2: list[int]) -> list[int]:
+```
+
+**Key Edge Cases to Handle:**
+1. One or both input lists are empty.
+2. Lists of unequal lengths.
+3. Lists containing negative numbers and duplicates.
+4. Inputs that are already fully sorted relative to each other (e.g., all elements in `list1` are smaller than all elements in `list2`).
+
+**Proposed Approach:**
+- Use a two-pointer approach to iterate through both lists simultaneously, comparing elements and appending the smaller one to a new result list.
+- Once one list is exhausted, append the remaining elements of the other list to the result.
+- Ensure the time complexity is $O(n + m)$ and space complexity is $O(n + m)$ (where $n$ and $m$ are the lengths of the two lists).",none,1
+task_009,Write a function that returns the longest common prefix among a list of strings. Return empty string if none.,"Agent B, your task is to implement a Python function that finds the longest common prefix among a list of strings.
+
+Here are the requirements:
+
+1. **Function Signature:**
+   `def longest_common_prefix(strs: list[str]) -> str:`
+
+2. **Behavior:**
+   - Given a list of strings, return the longest common prefix string that is shared among all the strings in the list.
+   - If there is no common prefix, or if the input list is empty, return an empty string `""""`.
+
+3. **Key Edge Cases to Handle:**
+   - An empty input list (`[]`) should return `""""`.
+   - A list containing a single string `[""hello""]` should return `""hello""`.
+   - A list containing an empty string `["""", ""b""]` should return `""""`.
+   - Strings with no common characters `[""dog"", ""racecar"", ""car""]` should return `""""`.
+   - All identical strings `[""test"", ""test"", ""test""]` should return `""test""`.
+
+4. **Recommended Approach (Vertical Scanning):**
+   - Handle the base case where the input list is empty.
+   - Iterate through the characters of the first string in the list index by index.
+   - For each character at index `i`, check if all other strings in the list have that exact character at index `i`. Also, ensure `i` does not exceed the length of any other string.
+   - As soon as a mismatch or end-of-string is encountered, return the substring of the first string from index `0` up to `i`.
+   - If the loop completes without mismatches, return the entire first string.",none,1
+task_010,"Write a function that returns True if a binary tree (given as nested tuples (value, left, right) or None) is height-balanced.","Agent B, here is your handoff message for the task:
+
+**Objective:**
+Write a Python function that determines whether a given binary tree is height-balanced. A binary tree is height-balanced if the left and right subtrees of every node differ in height by no more than 1, and both subtrees are also height-balanced.
+
+**Input representation:**
+The binary tree is represented either as `None` (for an empty tree) or as a nested tuple of the format `(value, left, right)`, where `left` and `right` are themselves binary trees (tuples or `None`).
+
+**Function Signature:**
+```python
+def is_balanced(root) -> bool:
+```
+
+**Key Edge Cases to Handle:**
+1. An empty tree (`root` is `None`) should return `True`.
+2. A single-node tree with no children (`(val, None, None)`) should return `True`.
+3. Unbalanced trees at various depths (e.g., a linear chain of nodes) should correctly return `False`.
+
+**Plan / Approach:**
+- Write a helper function (or use recursion in the main function) that computes the height of a subtree while simultaneously checking if it is balanced.
+- For any given node, recursively calculate the height of its left and right subtrees.
+- If at any point a subtree is found to be unbalanced (e.g., height difference > 1, or a child subtree returned an imbalance signal), propagate the `False` status up.
+- A common pattern is to have the helper function return a tuple: `(is_balanced: bool, height: int)`. For `None`, return `(True, -1)` or `(True, 0)` depending on how height is defined (typically, empty tree has height 0 or -1). 
+- Compare heights: `abs(left_height - right_height) <= 1`.",none,1
+task_010,"Write a function that returns True if a binary tree (given as nested tuples (value, left, right) or None) is height-balanced.","Agent B, here is your handoff message for the task:
+
+**Objective:**
+Write a Python function that determines whether a given binary tree is height-balanced. A binary tree is height-balanced if the left and right subtrees of every node differ in height by no more than 1, and both subtrees are also height-balanced.
+
+**Input representation:**
+The binary tree is represented either as  (for an empty tree) or as a nested tuple of the format , where  and  are themselves binary trees (tuples or ).
+
+**Function Signature:**
+
+
+**Key Edge Cases to Handle:**
+
+**Plan / Approach:**",tool_result_drop,0
+task_011,"Write a function that returns the number of vowels (a, e, i, o, u, case-insensitive) in a string.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a function that counts the total number of vowels ('a', 'e', 'i', 'o', 'u') in a given string. The count must be case-insensitive (e.g., 'A' and 'a' both count as vowels).
+
+**Function Signature:**
+```python
+def count_vowels(s: str) -> int:
+    pass
+```
+
+**Key Edge Cases to Handle:**
+- Empty strings (`""""`): should return `0`.
+- Strings with no vowels (e.g., `""rhythm""`): should return `0`.
+- Mixed-case strings (e.g., `""AeIoU""`): should correctly count uppercase vowels.
+- Strings containing numbers, punctuation, or spaces (e.g., `""Hello, World!""`): should only count the vowels and ignore all other characters.
+
+**Plan / Approach:**
+1. Define a set or tuple of target vowels: `vowels = {'a', 'e', 'i', 'o', 'u'}`.
+2. Convert the input string `s` to lowercase to ensure case-insensitivity.
+3. Iterate through each character in the lowercased string, checking if it exists in the set of vowels.
+4. Keep a running count of matches and return the final integer count.",none,1
+task_015,Write a function that takes a dictionary and returns a new dictionary with keys and values swapped. Assume all values are unique and hashable.,"Handoff Message for Agent B:
+
+Please write a Python function that takes a dictionary as input and returns a new dictionary where the original keys and values are swapped (i.e., original values become keys, and original keys become values).
+
+**Function Signature:**
+`def swap_dict(d: dict) -> dict:`
+
+**Assumptions / Edge Cases to Handle:**
+- Assume all values in the input dictionary are unique and hashable (so they can safely act as keys in the new dictionary).
+- Handle an empty dictionary correctly by returning an empty dictionary.
+- Do not mutate the original dictionary; return a new one.
+
+**Approach:**
+Iterate through the key-value pairs of the input dictionary using `.items()` and construct the new dictionary by assigning each value as the key and each key as the value (e.g., using a dictionary comprehension: `{v: k for k, v in d.items()}`).",none,1
+task_017,Write a function that checks if a given integer is a perfect square.,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that determines whether a given integer is a perfect square. 
+
+**Function Signature:**
+```python
+def is_perfect_square(n: int) -> bool:
+```
+
+**Requirements & Edge Cases to Handle:**
+1. **Negative Numbers:** Integers less than 0 cannot be perfect squares (return `False`).
+2. **Zero:** `0` is a perfect square ($0 \times 0 = 0$), so return `True`.
+3. **Small Positive Numbers:** Numbers like `1` should return `True`.
+4. **Large Integers:** The solution should be efficient enough to handle large inputs without running into performance or precision issues.
+
+**Suggested Approach:**
+- First, check if `n < 0`. If so, return `False`.
+- For `n >= 0`, you can compute the integer square root. A reliable way to do this in Python is using integer binary search or computing `int(n**0.5)` and verifying if the square of that integer equals `n`. 
+- Specifically, let `root = int(isqrt(n))` (or `int(n**0.5)`), and check if `root * root == n`.",none,1
+task_018,"Write a function that groups a list of strings by their length, returning a dict mapping length -> list of strings of that length.","HANDOFF MESSAGE FOR AGENT B:
+
+Your task is to write a Python function that groups a list of strings by their length and returns a dictionary where the keys are the string lengths (integers) and the values are lists containing the strings of that length.
+
+### Function Signature:
+```python
+def group_by_length(strings: list[str]) -> dict[int, list[str]]:
+```
+
+### Key Edge Cases to Handle:
+1. **Empty list (`[]`):** Should return an empty dictionary `{}`.
+2. **Duplicate strings:** If the input list contains duplicate strings, all instances should be included in the corresponding length list (preserve duplicates based on input order).
+3. **Strings with special characters/spaces:** Spaces and punctuation count towards the length of the string and should be processed normally.
+4. **Order preservation:** While dictionaries maintain insertion order in modern Python, it is ideal if the strings appear in the output lists in the same relative order they appeared in the input list.
+
+### Plan/Approach:
+1. Initialize an empty dictionary (or use `collections.defaultdict(list)` for cleaner syntax).
+2. Iterate through each string in the input `strings` list.
+3. Calculate the length of the current string using the built-in `len()` function.
+4. Append the string to the list corresponding to its length key in the dictionary.
+5. Return the resulting dictionary.",none,1
+task_019,Write a function that returns the running/cumulative sum of a list of numbers as a new list.,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that computes the running (cumulative) sum of a list of numbers and returns it as a new list.
+
+1. Function Signature:
+   `def running_sum(nums: list[int | float]) -> list[int | float]:`
+
+2. Requirements:
+   - The input is a list of numbers (integers or floats).
+   - The output must be a *new* list where each element at index `i` is the sum of elements from the input list from index `0` up to `i`.
+   - Do not mutate the original input list.
+
+3. Edge Cases to Handle:
+   - Empty list `[]`: Should return `[]`.
+   - List with a single element `[x]`: Should return `[x]`.
+   - Negative numbers and floating-point numbers: Should handle standard arithmetic correctly.
+
+4. Implementation Approach:
+   - Initialize a variable `current_sum = 0` and an empty list `result`.
+   - Iterate through each number in the input list, add it to `current_sum`, and append `current_sum` to `result`.
+   - Alternatively, you can use `itertools.accumulate(nums)` and cast the result to a list.",none,1
+task_021,"Write a function that returns True if a list of integers is sorted in non-decreasing order, False otherwise.","HANDOFF MESSAGE FOR AGENT B:
+
+Your task is to write a Python function that determines whether a given list of integers is sorted in non-decreasing order.
+
+Function Signature:
+`def is_sorted(nums: list[int]) -> bool:`
+
+Requirements & Behavior:
+- Return `True` if the list is sorted in non-decreasing order (each element is greater than or equal to the previous one).
+- Return `False` otherwise.
+
+Key Edge Cases to Handle:
+- An empty list (`[]`): Should return `True` (vacuously sorted).
+- A list with a single element (`[5]`): Should return `True`.
+- A list with all identical elements (`[2, 2, 2]`): Should return `True` (non-decreasing allows duplicates).
+- A list with negative numbers (`[-5, -2, 0, 3]`): Should handle negative values correctly.
+
+Suggested Approach:
+- Iterate through the list from the first element up to the second-to-last element using an index loop.
+- Compare each element at index `i` with the element at `i + 1`.
+- If any element is strictly greater than the next element (`nums[i] > nums[i + 1]`), immediately return `False`.
+- If the loop completes without finding any violations, return `True`. Alternatively, you can compare the list to a sorted version of itself or use `all(nums[i] <= nums[i+1] for i in range(len(nums)-1))`.",none,1
+task_022,"Write a function that converts a Roman numeral string (using I, V, X, L, C, D, M) to an integer.","HANDOFF MESSAGE FOR AGENT B:
+
+Your task is to write a Python function that converts a Roman numeral string into its corresponding integer value.
+
+### Function Signature
+```python
+def roman_to_int(s: str) -> int:
+    """"""
+    Convert a Roman numeral string to an integer.
+    """"""
+    pass
+```
+
+### Roman Numeral Values
+- I = 1
+- V = 5
+- X = 10
+- L = 50
+- C = 100
+- D = 500
+- M = 1000
+
+### Key Logic & Approach
+1. **Mapping:** Create a dictionary mapping the Roman numeral characters to their integer values.
+2. **Iteration:** Iterate through the string from left to right.
+3. **Subtraction Rule:** Normally, you add the value of each numeral. However, if the value of the current character is *less* than the value of the next character (e.g., 'I' before 'V' or 'X'), it means subtraction is used. In this case, subtract the current value from the total instead of adding it. Otherwise, add the value.
+
+### Edge Cases to Handle
+- **Standard Subtraction cases:** Ensure combinations like IV (4), IX (9), XL (40), XC (90), CD (400), and CM (900) are handled correctly.
+- **Single characters:** Input strings of length 1 (e.g., ""I"", ""V"").
+- **Maximum length/Standard ranges:** Assume valid Roman numeral strings adhering to standard conventions (typically ranging from 1 to 3999, i.e., ""MMMCMXCIX"").",none,1
+task_024,"Write a function that returns the most frequent element in a list. If there's a tie, return the one that appears first in the list.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that finds and returns the most frequent element in a given list. If there is a tie between multiple elements having the same maximum frequency, return the element that appears first in the input list.
+
+**Function Signature:**
+```python
+def most_frequent(lst: list) -> any:
+    pass
+```
+
+**Key Edge Cases to Handle:**
+1. **Empty list:** Define the expected behavior or handle gracefully (though standard competitive programming usually assumes non-empty lists, consider returning `None` or raising a `ValueError` if the list is empty).
+2. **Single element list:** Should correctly return that single element.
+3. **All unique elements (no duplicates):** Every element appears once, so there is a tie for frequency. Per the requirements, it must return the first element in the list.
+4. **Multiple types:** The list may contain mixed data types (integers, strings, etc.); the solution should handle this smoothly.
+
+**Plan / Approach:**
+1. Maintain a tracking mechanism (such as a dictionary or `collections.Counter`) to count the frequency of each element. 
+2. Because Python dictionaries (and `Counter` in Python 3.7+) preserve insertion order, iterate through the *original list* from left to right.
+3. Keep track of the maximum frequency seen so far and the corresponding element that achieved it first. 
+4. Alternatively, iterate through the unique elements in the order they first appear in the list, and find the one with the maximum count using `max()` with a custom `key` that respects the original order.",none,1
+task_026,Write a function that computes the greatest common divisor (GCD) of two positive integers.,"**Handoff Message for Agent B:**
+
+Your task is to write a Python function that calculates the greatest common divisor (GCD) of two positive integers. 
+
+**Function Signature:**
+```python
+def gcd(a: int, b: int) -> int:
+```
+
+**Key Edge Cases to Handle:**
+- When $a == b$, the GCD is $a$.
+- When one number is a multiple of the other (e.g., $a = 10$, $b = 5$), the smaller number is the GCD.
+- Coprime numbers (e.g., GCD of 7 and 13 is 1).
+- Inputs will be positive integers ($> 0$).
+
+**Plan/Approach:**
+Use the Euclidean algorithm, which is an efficient method for computing the GCD. The algorithm is based on the principle that the GCD of two numbers also divides their difference. Repeatedly apply the modulo operator:
+1. While $b$ is not 0:
+   - Store $b$ in a temporary variable.
+   - Set $b = a \pmod b$.
+   - Set $a$ to the old value of $b$.
+2. Return $a$ when $b$ becomes 0.",none,1
+task_028,Write a function that capitalizes the first letter of each word in a sentence while leaving the rest of each word unchanged.,"AGENT B HANDOFF MESSAGE
+
+**Objective:**
+Write a Python function that capitalizes the first letter of every word in a given sentence, leaving all other characters (including the rest of the letters in each word, spaces, and punctuation) completely unchanged.
+
+**Function Signature:**
+```python
+def capitalize_words(sentence: str) -> str:
+```
+
+**Key Edge Cases to Handle:**
+1. **Empty strings:** If given `""""`, the function should return `""""`.
+2. **Multiple spaces:** Sentences with extra spaces between words (e.g., `""hello   world""`) should preserve the exact spacing.
+3. **Leading/Trailing spaces:** Spaces at the beginning or end of the sentence should be preserved.
+4. **Already capitalized words:** Words that already start with an uppercase letter should remain unchanged.
+5. **Mixed punctuation and numbers:** Words attached to punctuation or numbers (e.g., `""hello, world!""` or `""1st place""`) should have their very first alphabetical/character element capitalized according to standard string splitting, or simply use a logic that capitalizes the first character of space-delimited tokens.
+
+**Proposed Plan / Approach:**
+1. Split the input string by spaces (using `sentence.split(' ')` rather than standard `.split()` to preserve multiple/leading/trailing spaces, or iterate through words while keeping whitespace intact).
+2. Alternatively, a simpler approach is using `.title()`, but `.title()` forces all *subsequent* letters to lowercase (e.g., ""O'Brien"" becomes ""O'brien""), which violates the rule ""leaving the rest of each word unchanged"".
+3. Therefore, the robust approach is to split the sentence into words/tokens, and for each token, if it is non-empty, capitalize only the first character (`word[0].upper() + word[1:]`).
+4. Rejoin the tokens preserving the original whitespace structure.",none,1
+task_030,"Write a function that returns True if a given year is a leap year, following standard Gregorian calendar rules.","HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that determines whether a given year is a leap year according to the standard Gregorian calendar rules.
+
+Function Signature:
+`def is_leap_year(year: int) -> bool:`
+
+Gregorian Calendar Rules for Leap Years:
+1. A year is a leap year if it is evenly divisible by 4.
+2. However, if the year is also evenly divisible by 100, it is NOT a leap year...
+3. ...UNLESS the year is also evenly divisible by 400. In that case, it IS a leap year.
+
+Key Edge Cases to Handle:
+- Century years not divisible by 400 (e.g., 1700, 1800, 1900) should return `False`.
+- Century years divisible by 400 (e.g., 1600, 2000) should return `True`.
+- Regular years divisible by 4 (e.g., 2024) should return `True`.
+- Regular years not divisible by 4 (e.g., 2023) should return `False`.
+- Handle potential negative inputs or zero gracefully if passed (though standard years are positive integers).
+
+Implementation Plan:
+Check the conditions in order of exception scope (most restrictive to least restrictive) using modulo operators:
+1. If `year % 400 == 0`, return `True`.
+2. Else if `year % 100 == 0`, return `False`.
+3. Else if `year % 4 == 0`, return `True`.
+4. Otherwise, return `False`.",none,1
+task_030,"Write a function that returns True if a given year is a leap year, following standard Gregorian calendar rules.",A year is a leap year if it is evenly divisible by 4.,over_summarization,0
+task_031,"Write a function `validate_password(pw)` that returns True only if ALL of these hold: length is at least 8 AND at most 20, contains at least one uppercase letter, at least one lowercase letter, at least one digit, at least one symbol from '!@#$%^&*', and contains NO whitespace anywhere. Otherwise return False.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function named `validate_password(pw)` that validates a password string against specific complexity and length rules. It must return `True` if all conditions are met, and `False` otherwise.
+
+**Exact Function Signature:**
+```python
+def validate_password(pw: str) -> bool:
+```
+
+**Validation Requirements (ALL must hold for `True`):**
+1. **Length:** Between 8 and 20 characters inclusive ($8 \le \text{len(pw)} \le 20$).
+2. **Uppercase:** At least one uppercase English letter (`A-Z`).
+3. **Lowercase:** At least one lowercase English letter (`a-z`).
+4. **Digit:** At least one numeric digit (`0-9`).
+5. **Symbol:** At least one special character from this exact set: `!@#$%^&*`.
+6. **No Whitespace:** The password must contain NO whitespace characters anywhere (spaces, tabs, newlines, etc.).
+
+**Key Edge Cases to Handle:**
+- Passwords that are too short ($< 8$ chars) or too long ($> 20$ chars).
+- Passwords containing valid criteria but also including spaces or tabs (must return `False`).
+- Passwords with symbols *not* in the allowed set (e.g., `?`, `-`, `_`), which should fail the symbol check.
+- Non-string inputs (though assuming standard string inputs, handling or type-checking gracefully by returning `False` is good practice).
+- Empty strings `""""`.
+
+**Recommended Approach:**
+1. Check if `pw` is a string; if not, return `False`.
+2. Check the length constraint: `8 <= len(pw) <= 20`.
+3. Check for any whitespace using `any(c.isspace() for c in pw)` or regex. If whitespace exists, return `False`.
+4. Use loops, helper conditions, or regular expressions to verify the presence of:
+   - At least one uppercase letter (`any(c.isupper() for c in pw)`)
+   - At least one lowercase letter (`any(c.islower() for c in pw)`)
+   - At least one digit (`any(c.isdigit() for c in pw)`)
+   - At least one symbol from `!@#$%^&*` (`any(c in '!@#$%^&*' for c in pw)`)
+5. Return `True` only if all checks pass.",none,1
+task_031,"Write a function `validate_password(pw)` that returns True only if ALL of these hold: length is at least 8 AND at most 20, contains at least one uppercase letter, at least one lowercase letter, at least one digit, at least one symbol from '!@#$%^&*', and contains NO whitespace anywhere. Otherwise return False.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function named `validate_password(pw)` that validates a password string against specific complexity and length rules. **Exact Function Signature:**
+```python
+def validate_password(pw: str) -> bool:
+```
+
+**Validation Requirements (ALL must hold for `True`):**
+1. **Length:** 2. **Uppercase:** At least one uppercase English letter (`A-Z`).
+ At least one lowercase English letter (`a-z`).
+ 5. **Symbol:** The password must contain NO whitespace characters anywhere (spaces, tabs, newlines, etc.).
+
+ **Key Edge Cases to Handle:**
+- Passwords that are too short ($< 8$ chars) or too long ($> 20$ chars).
+ **Recommended Approach:**
+1. Check if `pw` is a string; if not, return `False`.
+ 2. Check the length constraint: `8 <= len(pw) <= 20`.
+ 3. Check for any whitespace using `any(c.isspace() for c in pw)` or regex. If whitespace exists, return `False`.
+",entity_omission,0
+task_031,"Write a function `validate_password(pw)` that returns True only if ALL of these hold: length is at least 8 AND at most 20, contains at least one uppercase letter, at least one lowercase letter, at least one digit, at least one symbol from '!@#$%^&*', and contains NO whitespace anywhere. Otherwise return False.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function named  that validates a password string against specific complexity and length rules. It must return  if all conditions are met, and  otherwise.
+
+**Exact Function Signature:**
+
+
+**Validation Requirements (ALL must hold for ):**
+
+**Key Edge Cases to Handle:**
+
+**Recommended Approach:**",tool_result_drop,0
+task_031,"Write a function `validate_password(pw)` that returns True only if ALL of these hold: length is at least 8 AND at most 20, contains at least one uppercase letter, at least one lowercase letter, at least one digit, at least one symbol from '!@#$%^&*', and contains NO whitespace anywhere. Otherwise return False.","Use loops, helper conditions, or regular expressions to verify the presence of: - At least one uppercase letter (`any(c.isupper() for c in pw)`) - At least one lowercase letter (`any(c.islower() for c in pw)`) - At least one digit (`any(c.isdigit() for c in pw)`) - At least one symbol from `!",over_summarization,0
+task_032,"Write a function `parse_log_line(line)` that parses a log line in the EXACT format '[LEVEL] timestamp - message' where LEVEL is one of INFO/WARN/ERROR, timestamp is a string like '2024-01-15', and message is the rest. Return a dict with keys 'level', 'timestamp', 'message'. If the line doesn't match this format (wrong brackets, missing ' - ' separator, or LEVEL not one of the three), return None.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Task Restatement:**
+Build a Python function that parses a single log line according to a strict format and returns a dictionary containing the parsed components, or `None` if the line violates the format.
+
+**Function Signature:**
+```python
+def parse_log_line(line: str) -> dict | None:
+```
+
+**Expected Output Format:**
+A dictionary with exactly three keys:
+- `'level'` (str): One of `""INFO""`, `""WARN""`, or `""ERROR""`
+- `'timestamp'` (str): The date/timestamp string (e.g., `""2024-01-15""`)
+- `'message'` (str): The remaining message text
+
+**Format Rules & Edge Cases:**
+The exact format is: `[LEVEL] timestamp - message`
+1. **Brackets:** The log level *must* be enclosed in square brackets `[...]`. Missing or mismatched brackets mean return `None`.
+2. **Level Validation:** The `LEVEL` inside the brackets must be strictly one of `INFO`, `WARN`, or `ERROR` (case-sensitive, unless specified otherwise, but stick to exact matches). Any other level returns `None`.
+3. **Separator:** There must be the exact separator `' - '` (space, hyphen, space) dividing the timestamp and the message. Missing or incorrect separators return `None`.
+4. **Message Content:** The message portion may contain spaces or hyphens; everything after the first `' - '` separator belongs to the message.
+5. **Input Type/Empty Lines:** Handle non-string inputs or malformed/empty lines gracefully by returning `None`.
+
+**Recommended Approach:**
+1. Check if the input `line` is a string. If not, return `None`.
+2. Use string slicing, regex, or `split()` logic carefully. A regular expression approach is recommended for precision:
+   - Pattern: `^\[(INFO|WARN|ERROR)\]\s+(.+?)\s+-\s+(.*)$`
+3. If the regex matches, extract the groups (level, timestamp, message) and return them in a dictionary.
+4. If it doesn't match, return `None`.",none,1
+task_032,"Write a function `parse_log_line(line)` that parses a log line in the EXACT format '[LEVEL] timestamp - message' where LEVEL is one of INFO/WARN/ERROR, timestamp is a string like '2024-01-15', and message is the rest. Return a dict with keys 'level', 'timestamp', 'message'. If the line doesn't match this format (wrong brackets, missing ' - ' separator, or LEVEL not one of the three), return None.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Task Restatement:**
+Build a Python function that parses a single log line according to a strict format and returns a dictionary containing the parsed components, or  if the line violates the format.
+
+**Function Signature:**
+
+
+**Expected Output Format:**
+A dictionary with exactly three keys:
+
+**Format Rules & Edge Cases:**
+The exact format is: 
+
+**Recommended Approach:**",tool_result_drop,0
+task_032,"Write a function `parse_log_line(line)` that parses a log line in the EXACT format '[LEVEL] timestamp - message' where LEVEL is one of INFO/WARN/ERROR, timestamp is a string like '2024-01-15', and message is the rest. Return a dict with keys 'level', 'timestamp', 'message'. If the line doesn't match this format (wrong brackets, missing ' - ' separator, or LEVEL not one of the three), return None.","**Task Restatement:** Build a Python function that parses a single log line according to a strict format and returns a dictionary containing the parsed components, or `None` if the line violates the format.",over_summarization,0
+task_033,"Write a function `merge_intervals(intervals)` that takes a list of [start, end] intervals (inclusive on both ends) and merges all overlapping or ADJACENT intervals (e.g. [1,3] and [3,5] are adjacent and must merge into [1,5], and so must [1,3] and [4,6] since 3 and 4 are consecutive integers). Return the merged list sorted by start.","**Handoff Message for Agent B**
+
+Your task is to write a Python function that merges a list of integer intervals. 
+
+### Function Signature
+```python
+def merge_intervals(intervals: list[list[int]]) -> list[list[int]]:
+```
+
+### Requirements & Behavior
+- Each interval is given as `[start, end]`, inclusive on both ends.
+- You must merge **overlapping** intervals (e.g., `[1, 3]` and `[2, 6]`).
+- You must **also** merge **adjacent** or **consecutive** intervals. Two intervals are adjacent if one ends at integer $x$ and the next starts at $x$ (e.g., `[1, 3]` and `[3, 5]`) or if they are consecutive integers (e.g., `[1, 3]` and `[4, 6]`, because 3 and 4 are consecutive). Both of these cases must merge into a single interval (`[1, 5]` and `[1, 6]` respectively).
+- The returned list must be sorted by the interval start times.
+
+### Key Edge Cases to Handle
+- **Empty input:** If `intervals` is empty (`[]`), return `[]`.
+- **Single interval:** If there is only one interval, return it as-is.
+- **Unsorted input:** The input intervals may not be provided in sorted order. You must handle sorting first.
+- **Fully nested intervals:** An interval completely inside another (e.g., `[1, 5]` and `[2, 4]`) should merge correctly.
+- **Multiple overlaps/chains:** A chain of multiple overlapping/adjacent intervals should all collapse into one (e.g., `[[1, 2], [3, 4], [5, 6]]` should merge into `[[1, 6]]`).
+
+### Proposed Approach
+1. Handle the empty list edge case.
+2. Sort the `intervals` list primarily by the start value, and secondarily by the end value.
+3. Initialize a result list with the first interval.
+4. Iterate through the remaining intervals. For each interval, compare it with the last interval in the result list:
+   - Check if they overlap or are adjacent/consecutive. (Hint: interval `B` starts at or before interval `A`'s end + 1).
+   - If they do, update the end of the last interval in the result to be the maximum of both ends.
+   - If they do not, append the current interval to the result list as a new separate interval.
+5. Return the result list.",none,1
+task_033,"Write a function `merge_intervals(intervals)` that takes a list of [start, end] intervals (inclusive on both ends) and merges all overlapping or ADJACENT intervals (e.g. [1,3] and [3,5] are adjacent and must merge into [1,5], and so must [1,3] and [4,6] since 3 and 4 are consecutive integers). Return the merged list sorted by start.","**Handoff Message for Agent B**
+
+Your task is to write a Python function that merges a list of integer intervals. 
+
+### Function Signature
+
+
+### Requirements & Behavior
+
+### Key Edge Cases to Handle
+
+### Proposed Approach",tool_result_drop,0
+task_033,"Write a function `merge_intervals(intervals)` that takes a list of [start, end] intervals (inclusive on both ends) and merges all overlapping or ADJACENT intervals (e.g. [1,3] and [3,5] are adjacent and must merge into [1,5], and so must [1,3] and [4,6] since 3 and 4 are consecutive integers). Return the merged list sorted by start.","- If they do, update the end of the last interval in the result to be the maximum of both ends.",over_summarization,0
+task_034,"Write a function `custom_round(x, mode)` that rounds a float x to the nearest integer, where `mode` controls tie-breaking when x is exactly halfway (e.g. 2.5): mode='up' always rounds .5 up (2.5 -> 3, -2.5 -> -2), mode='down' always rounds .5 down (2.5 -> 2, -2.5 -> -3), mode='even' rounds .5 to the nearest even integer (2.5 -> 2, 3.5 -> 4). Non-halfway values round normally regardless of mode.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function named `custom_round(x, mode)` that rounds a float `x` to the nearest integer. The `mode` parameter determines the tie-breaking behavior specifically when `x` is exactly halfway between two integers (i.e., ending in `.5` or `-.5`). Non-halfway values should follow standard mathematical rounding regardless of the mode.
+
+**Exact Function Signature:**
+```python
+def custom_round(x: float, mode: str) -> int:
+```
+
+**Tie-Breaking Modes:**
+1. `mode='up'`: Always rounds halfway values up toward positive infinity.
+   - Example: `2.5 -> 3`, `-2.5 -> -2`
+2. `mode='down'`: Always rounds halfway values down toward negative infinity.
+   - Example: `2.5 -> 2`, `-2.5 -> -3`
+3. `mode='even'`: Rounds halfway values to the nearest even integer (banker's rounding).
+   - Example: `2.5 -> 2`, `3.5 -> 4`, `-2.5 -> -2`
+
+**Key Edge Cases to Handle:**
+- Negative numbers with `.5` fractions (ensure proper directionality for `up` and `down`).
+- Non-halfway floats (e.g., `2.4` should round to `2`, `2.6` should round to `3`, regardless of mode).
+- Whole numbers (e.g., `3.0` should remain `3`).
+- Invalid modes (optional, but good practice to handle or assume standard inputs).
+
+**Implementation Plan/Approach:**
+1. Separate the number into its integer and fractional parts, or check if the fractional part is exactly `0.5` (accounting for floating-point representation quirks, e.g., using `abs(x % 1) == 0.5` or checking `math.modf`).
+2. If the number is *not* halfway (`abs(x % 1) != 0.5`), use standard rounding (`math.floor(x + 0.5)` for positive, or standard `round()` / `math.trunc`).
+3. If the number *is* halfway (ends in `.5`):
+   - For `mode='up'`: Return `math.ceil(x)` if positive/negative? Wait, for `-2.5`, `math.ceil(-2.5)` is `-2`, which is correct. For `2.5`, `math.ceil(2.5)` is `3`. So `math.ceil(x)` works for `mode='up'`.
+   - For `mode='down'`: `math.floor(2.5)` is `2`, and `math.floor(-2.5)` is `-3`. So `math.floor(x)` works for `mode='down'`.
+   - For `mode='even'`: Check `int(math.floor(x))` and `int(math.ceil(x))`, and return the one that is even.",none,1
+task_034,"Write a function `custom_round(x, mode)` that rounds a float x to the nearest integer, where `mode` controls tie-breaking when x is exactly halfway (e.g. 2.5): mode='up' always rounds .5 up (2.5 -> 3, -2.5 -> -2), mode='down' always rounds .5 down (2.5 -> 2, -2.5 -> -3), mode='even' rounds .5 to the nearest even integer (2.5 -> 2, 3.5 -> 4). Non-halfway values round normally regardless of mode.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function named  that rounds a float  to the nearest integer. The  parameter determines the tie-breaking behavior specifically when  is exactly halfway between two integers (i.e., ending in  or ). Non-halfway values should follow standard mathematical rounding regardless of the mode.
+
+**Exact Function Signature:**
+
+
+**Tie-Breaking Modes:**
+
+**Key Edge Cases to Handle:**
+
+**Implementation Plan/Approach:**",tool_result_drop,0
+task_034,"Write a function `custom_round(x, mode)` that rounds a float x to the nearest integer, where `mode` controls tie-breaking when x is exactly halfway (e.g. 2.5): mode='up' always rounds .5 up (2.5 -> 3, -2.5 -> -2), mode='down' always rounds .5 down (2.5 -> 2, -2.5 -> -3), mode='even' rounds .5 to the nearest even integer (2.5 -> 2, 3.5 -> 4). Non-halfway values round normally regardless of mode.","If the number is *not* halfway (`abs(x % 1) != 0.5`), use standard rounding (`math.floor(x + 0.5)` for positive, or standard `round()` / `math.trunc`).",over_summarization,0
+task_035,"Write a function `allocate_seats(requests, capacity)` where `requests` is a list of (name, party_size) tuples in priority order. Seat parties in order ONLY if the remaining capacity can fit the whole party (no splitting parties). Return a list of names that got seated, in the order they were seated. Skip (do not seat) any party that doesn't fit, but keep checking later parties against remaining capacity.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that allocates seats to groups based on priority order and a fixed venue capacity. Parties cannot be split up; they must either be seated in their entirety or skipped entirely.
+
+**Function Signature:**
+```python
+def allocate_seats(requests, capacity):
+    """"""
+    Args:
+        requests (list of tuples): A list where each element is (name, party_size).
+                                   Ordered by priority (highest priority first).
+        capacity (int): The total number of available seats.
+
+    Returns:
+        list of str: The names of the parties that successfully got seated, 
+                     in the exact order they were seated.
+    """"""
+```
+
+**Key Rules & Behavior:**
+1. **No Splitting:** A party is seated *only* if the `remaining_capacity` is greater than or equal to their `party_size`.
+2. **Order Preservation:** Process the `requests` list in the exact order provided (which represents priority).
+3. **Skipping:** If a party does not fit, skip them completely, reduce nothing from the capacity, and continue checking the remaining parties in the list.
+4. **Output:** Return a list containing only the `name` strings of the successfully seated parties, ordered by when they were seated.
+
+**Edge Cases to Handle:**
+- `capacity` is 0 or negative.
+- `requests` list is empty.
+- A party's size is larger than the initial total capacity (should be skipped).
+- Parties with a `party_size` of 0 (decide if they fit into remaining capacity; typically they take 0 seats and fit).
+- Total capacity is large enough to fit all parties.
+
+**Proposed Approach:**
+1. Initialize an empty list `seated_parties = []`.
+2. Maintain a variable `remaining_capacity = capacity`.
+3. Loop through each `(name, party_size)` in `requests`:
+   - Check if `party_size <= remaining_capacity`.
+   - If yes: append `name` to `seated_parties` and decrement `remaining_capacity` by `party_size`.
+   - If no: do nothing and continue the loop.
+4. Return `seated_parties`.",none,1
+task_035,"Write a function `allocate_seats(requests, capacity)` where `requests` is a list of (name, party_size) tuples in priority order. Seat parties in order ONLY if the remaining capacity can fit the whole party (no splitting parties). Return a list of names that got seated, in the order they were seated. Skip (do not seat) any party that doesn't fit, but keep checking later parties against remaining capacity.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that allocates seats to groups based on priority order and a fixed venue capacity. Parties cannot be split up; they must either be seated in their entirety or skipped entirely.
+
+**Function Signature:**
+
+
+**Key Rules & Behavior:**
+
+**Edge Cases to Handle:**
+
+**Proposed Approach:**",tool_result_drop,0
+task_035,"Write a function `allocate_seats(requests, capacity)` where `requests` is a list of (name, party_size) tuples in priority order. Seat parties in order ONLY if the remaining capacity can fit the whole party (no splitting parties). Return a list of names that got seated, in the order they were seated. Skip (do not seat) any party that doesn't fit, but keep checking later parties against remaining capacity.","**Skipping:** If a party does not fit, skip them completely, reduce nothing from the capacity, and continue checking the remaining parties in the list.",over_summarization,0
+task_036,"Write a function `caesar_cipher(text, shift, mode)` implementing a Caesar cipher. mode='encode' shifts each letter forward by `shift` positions in the alphabet (wrapping z->a), mode='decode' shifts backward. Preserve case. Non-letter characters (spaces, punctuation, digits) must remain UNCHANGED and not consume a shift position.","HANDOFF MESSAGE FOR AGENT B:
+
+You need to implement a Python function that performs a Caesar cipher encryption and decryption. 
+
+### Function Signature
+```python
+def caesar_cipher(text: str, shift: int, mode: str) -> str:
+```
+
+### Requirements & Behavior
+1. **Modes**: 
+   - `mode='encode'`: Shift each letter forward in the alphabet by `shift` positions (wrapping 'z' to 'a' and 'Z' to 'A').
+   - `mode='decode'`: Shift each letter backward in the alphabet by `shift` positions.
+2. **Case Preservation**: Uppercase letters must remain uppercase, and lowercase letters must remain lowercase.
+3. **Non-Letter Characters**: Spaces, punctuation, digits, and any other non-alphabetic characters must remain completely unchanged and **must not** consume or affect the shift position of surrounding letters.
+
+### Edge Cases to Handle
+- Large shift values (e.g., `shift = 29` or negative shifts). Using modulo arithmetic (`shift % 26`) will be helpful.
+- Empty strings (`text = """"`).
+- Text containing exclusively non-letter characters.
+- Both uppercase and lowercase boundaries (a-z, A-Z).
+
+### Suggested Approach
+1. Normalize the shift using `shift = shift % 26`. If `mode == 'decode'`, negate the shift (`shift = -shift`).
+2. Iterate through each character in `text`.
+3. Check if the character is alphabetic using `.isalpha()`.
+4. If it is a letter:
+   - Determine its ASCII/Unicode base (`ord('a')` for lowercase, `ord('A')` for uppercase).
+   - Compute the new character: `chr(base + (ord(char) - base + shift) % 26)`.
+5. If it is not a letter, leave it as-is.
+6. Accumulate and return the transformed string.",none,1
+task_036,"Write a function `caesar_cipher(text, shift, mode)` implementing a Caesar cipher. mode='encode' shifts each letter forward by `shift` positions in the alphabet (wrapping z->a), mode='decode' shifts backward. Preserve case. Non-letter characters (spaces, punctuation, digits) must remain UNCHANGED and not consume a shift position.","HANDOFF MESSAGE FOR AGENT B:
+
+You need to implement a Python function that performs a Caesar cipher encryption and decryption. 
+
+### Function Signature
+
+
+### Requirements & Behavior
+
+### Edge Cases to Handle
+
+### Suggested Approach",tool_result_drop,0
+task_036,"Write a function `caesar_cipher(text, shift, mode)` implementing a Caesar cipher. mode='encode' shifts each letter forward by `shift` positions in the alphabet (wrapping z->a), mode='decode' shifts backward. Preserve case. Non-letter characters (spaces, punctuation, digits) must remain UNCHANGED and not consume a shift position.",**Modes**: - `mode='encode'`: Shift each letter forward in the alphabet by `shift` positions (wrapping 'z' to 'a' and 'Z' to 'A').,over_summarization,0
+task_037,"Write a function `dedupe_within_window(items, window)` that builds an output list by scanning items left to right: for each item, check the last `window` items ALREADY ADDED to the output (not the original input) -- if the current item's value already appears among those, skip it; otherwise append it to the output. Items outside that recent window of output can repeat freely.","**HANDOFF MESSAGE FOR AGENT B**
+
+Your task is to implement a Python function that removes duplicates from a sequence based on a sliding window of **already generated output items**, rather than the input sequence.
+
+### Function Signature
+```python
+def dedupe_within_window(items, window):
+    """"""
+    Scans items left-to-right. For each item, checks the last `window` items 
+    ALREADY ADDED to the output. If the current item's value is present in that 
+    recent output window, skip it. Otherwise, append it to the output.
+    
+    Parameters:
+    - items (iterable): The input collection of items to process.
+    - window (int): The size of the recent output history to check against.
+    
+    Returns:
+    - list: The deduplicated output list.
+    """"""
+```
+
+### Key Rules & Behavior
+1. **Output-Based Tracking:** The `window` constraint applies strictly to the items that have *already made it into the result list*. 
+2. **Window Sliding:** If `window` is $k$, you only check for duplicates among the last $k$ elements of the *output*. Older elements in the output list no longer block the current item from being added.
+3. **Value Equality:** Items should be compared by value (standard equality, `==`).
+4. **Preservation:** The relative order of the non-skipped items must be preserved.
+
+### Edge Cases to Handle
+- **`window <= 0`**: If the window size is zero or negative, no recent output items can block new additions (effectively no deduplication happens, or every item is allowed). Handle gracefully (e.g., return the original items as a list, or skip checks).
+- **`window` larger than output size**: If the output currently has fewer than `window` items, check all items currently in the output.
+- **Empty input (`items = []`)**: Should return an empty list `[]`.
+- **Large windows / all duplicates**: If `window` is very large (e.g., greater than or equal to total items), it acts as a global deduplicator.
+
+### Recommended Approach
+1. Initialize an empty list for `output`.
+2. Iterate through each `item` in `items`.
+3. Slice the last `window` elements from the current `output` list (e.g., `output[-window:]` if `window > 0 else []`).
+4. Check if `item` exists in that slice.
+5. If it does **not** exist, append `item` to `output`.
+6. Return `output` at the end.",none,1
+task_037,"Write a function `dedupe_within_window(items, window)` that builds an output list by scanning items left to right: for each item, check the last `window` items ALREADY ADDED to the output (not the original input) -- if the current item's value already appears among those, skip it; otherwise append it to the output. Items outside that recent window of output can repeat freely.","- **`window` larger than output size**: If the output currently has fewer than `window` items, check all items currently in the output.",over_summarization,0
+task_038,"Write a function `budget_split(total, ratios)` that splits an integer `total` amount among parties according to a list of integer `ratios` (e.g. [2, 3, 5] means 2:3:5). Splits must be integers and must sum EXACTLY to total -- distribute any remainder (due to integer division) one unit at a time to the parties with the LARGEST ratio first, in order of ratio descending, ties broken by original index.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function named `budget_split(total, ratios)` that distributes an integer `total` amount among multiple parties based on a list of integer `ratios` (e.g., `[2, 3, 5]`). The resulting split amounts must be integers and must sum **EXACTLY** to the `total`. 
+
+**Exact Function Signature:**
+```python
+def budget_split(total: int, ratios: list[int]) -> list[int]:
+```
+
+**Detailed Rules & Requirements:**
+1. **Proportional Allocation:** Each party initially receives `(total * ratio) // sum(ratios)` (integer division).
+2. **Remainder Distribution:** Because of integer division, the sum of the initial allocations may be less than `total`. The remainder (`total - sum(initial_allocations)`) must be distributed **one unit at a time** (i.e., `+1` per party) to ensure the sum equals `total` exactly.
+3. **Tie-Breaking & Priority for Remainder:** 
+   - Distribute the remainder units to the parties with the **largest ratios first**.
+   - If there are ties in the ratio values, break ties by giving priority to the **original index** (earlier indices first, i.e., lower index in the `ratios` list gets the extra unit first).
+
+**Key Edge Cases to Handle:**
+- `total` is 0.
+- `total` is smaller than `len(ratios)` (though standard proportion logic applies, some might get 0).
+- Ratios with duplicate maximum values (ensure the tie-breaker correctly favors the smaller index).
+- A single ratio (e.g., `[5]`, where `total` goes entirely to that single party).
+
+**Suggested Approach:**
+1. Calculate the sum of the `ratios`.
+2. Compute the initial base allocation for each ratio using integer division: `(total * r) // sum_ratios`.
+3. Calculate the remaining amount: `remainder = total - sum(base_allocations)`.
+4. Create a list of tuples representing each party: `(ratio, original_index, base_allocation)`.
+5. Sort these parties to determine remainder priority: sort primarily by **ratio descending**, and secondarily by **original_index ascending**.
+6. Iterate through the top `remainder` parties in this sorted order and increment their allocation by 1.
+7. Re-sort or map the final allocations back to their **original order of indices** before returning the list of integers.",none,1
+task_038,"Write a function `budget_split(total, ratios)` that splits an integer `total` amount among parties according to a list of integer `ratios` (e.g. [2, 3, 5] means 2:3:5). Splits must be integers and must sum EXACTLY to total -- distribute any remainder (due to integer division) one unit at a time to the parties with the LARGEST ratio first, in order of ratio descending, ties broken by original index.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function named  that distributes an integer  amount among multiple parties based on a list of integer  (e.g., ). The resulting split amounts must be integers and must sum **EXACTLY** to the . 
+
+**Exact Function Signature:**
+
+
+**Detailed Rules & Requirements:**
+
+**Key Edge Cases to Handle:**
+
+**Suggested Approach:**",tool_result_drop,0
+task_038,"Write a function `budget_split(total, ratios)` that splits an integer `total` amount among parties according to a list of integer `ratios` (e.g. [2, 3, 5] means 2:3:5). Splits must be integers and must sum EXACTLY to total -- distribute any remainder (due to integer division) one unit at a time to the parties with the LARGEST ratio first, in order of ratio descending, ties broken by original index.","- If there are ties in the ratio values, break ties by giving priority to the **original index** (earlier indices first, i.e., lower index in the `ratios` list gets the extra unit first).",over_summarization,0
+task_039,"Write a function `find_missing_ranges(nums, lo, hi)` that, given a SORTED list of unique integers `nums` and bounds `lo`/`hi` (inclusive), returns a list of [start, end] ranges (inclusive) representing all integers in [lo, hi] that are MISSING from nums. Single missing numbers should still be represented as [x, x].","Agent B, your task is to implement the `find_missing_ranges(nums, lo, hi)` function. 
+
+Here are all the details you need:
+
+### **Function Signature**
+```python
+def find_missing_ranges(nums: list[int], lo: int, hi: int) -> list[list[int]]:
+```
+
+### **Problem Description**
+Given a sorted list of unique integers `nums` and two inclusive bounds `lo` and `hi`, find all numbers in the range `[lo, hi]` that are **missing** from `nums`. Return these missing numbers grouped into inclusive ranges represented as `[start, end]` lists. Even single missing numbers must be represented as `[x, x]`.
+
+### **Key Edge Cases to Handle**
+1. **`nums` is completely empty:** The entire range `[lo, hi]` is missing, so return `[[lo, hi]]`.
+2. **Missing numbers below `nums[0]`:** If `lo < nums[0]`, the range `[lo, nums[0] - 1]` is missing.
+3. **Missing numbers above `nums[-1]`:** If `hi > nums[-1]`, the range `[nums[-1] + 1, hi]` is missing.
+4. **`lo` and `hi` bounds tightly matching `nums`:** If no numbers are missing, return an empty list `[]`.
+5. **Single element gaps:** E.g., if a number `x` is missing, the range must be formatted as `[x, x]`, not just `[x]`.
+
+### **Approach/Plan**
+1. Initialize a result list, say `ranges = []`.
+2. Maintain a pointer or expected lower bound, starting with `next_val = lo`. You can also conceptually pad the `nums` array or handle boundaries before iterating, between elements, and after the last element:
+   - Check if `lo < nums[0]` (or use `lo - 1` as the previous element to start the logic).
+   - Iterate through adjacent pairs in `nums`. If `nums[i] - nums[i-1] > 1`, there is a missing range from `nums[i-1] + 1` to `nums[i] - 1`.
+   - After the loop, check if the last element `nums[-1] < hi`. If so, the range from `nums[-1] + 1` to `hi` is missing.
+3. Append each valid `[start, end]` interval to your result list.
+4. Return the result list.",none,1
+task_039,"Write a function `find_missing_ranges(nums, lo, hi)` that, given a SORTED list of unique integers `nums` and bounds `lo`/`hi` (inclusive), returns a list of [start, end] ranges (inclusive) representing all integers in [lo, hi] that are MISSING from nums. Single missing numbers should still be represented as [x, x].","You can also conceptually pad the `nums` array or handle boundaries before iterating, between elements, and after the last element: - Check if `lo < nums[0]` (or use `lo - 1` as the previous element to start the logic).",over_summarization,0
+task_040,"Write a function `safe_divide_chain(numbers)` that takes a list and divides them left to right (numbers[0] / numbers[1] / numbers[2] / ...) using FLOAT division. If at any point a division by zero would occur, return the string 'undefined' instead of raising an error. If the list has fewer than 2 elements, return the single element (or None for empty list).","**HANDOFF MESSAGE FOR AGENT B**
+
+Your task is to write a Python function named `safe_divide_chain(numbers)`. 
+
+### Function Signature
+```python
+def safe_divide_chain(numbers):
+    ...
+```
+
+### Requirements & Behavior
+- The function takes a list of numbers (`numbers`).
+- It performs sequential division from left to right: `(((numbers[0] / numbers[1]) / numbers[2]) / ...)`.
+- It must use **float division** (i.e., Python's `/` operator).
+- If division by zero is encountered at any step, immediately halt the operation and return the string `'undefined'`.
+- **Edge cases to handle:**
+  - **Empty list (`[]`):** Return `None`.
+  - **Single-element list (`[x]`):** Return that single element (e.g., `[5]` returns `5`).
+  - **Zeros in the chain:** E.g., `[10, 0, 5]` should return `'undefined'`, while `[0, 5, 2]` should evaluate `0 / 5 / 2` and return `0.0`.
+
+### Suggested Approach
+1. Handle the edge cases first: check if the list is empty (return `None`) or has length 1 (return `numbers[0]`).
+2. Initialize a running result with `numbers[0]`.
+3. Loop through the remaining elements in `numbers` starting from index 1.
+4. Inside the loop, check if the current divisor is `0` (or `0.0`). If so, return `'undefined'`. Otherwise, divide the running result by the current element.
+5. Return the final float result after the loop completes successfully.",none,1
+task_040,"Write a function `safe_divide_chain(numbers)` that takes a list and divides them left to right (numbers[0] / numbers[1] / numbers[2] / ...) using FLOAT division. If at any point a division by zero would occur, return the string 'undefined' instead of raising an error. If the list has fewer than 2 elements, return the single element (or None for empty list).","**HANDOFF MESSAGE FOR AGENT B**
+
+Your task is to write a Python function named . 
+
+### Function Signature
+
+
+### Requirements & Behavior
+
+### Suggested Approach",tool_result_drop,0
+task_040,"Write a function `safe_divide_chain(numbers)` that takes a list and divides them left to right (numbers[0] / numbers[1] / numbers[2] / ...) using FLOAT division. If at any point a division by zero would occur, return the string 'undefined' instead of raising an error. If the list has fewer than 2 elements, return the single element (or None for empty list).",Handle the edge cases first: check if the list is empty (return `None`) or has length 1 (return `numbers[0]`).,over_summarization,0
+task_041,"Write a function `normalize_whitespace(text)` that collapses any run of whitespace (spaces, tabs, newlines) into a SINGLE space, strips leading/trailing whitespace, but PRESERVES exactly one blank line (represented as '\n\n' in output) wherever the original text had two or more consecutive newlines, treating that as a paragraph break separate from normal whitespace collapsing.","**Handoff Message for Agent B**
+
+Your task is to implement a Python function that normalizes whitespace in a given text while preserving paragraph breaks. 
+
+### Function Signature
+```python
+def normalize_whitespace(text: str) -> str:
+```
+
+### Requirements & Behavior
+1. **Paragraph Preservation:** Two or more consecutive newlines in the original text represent a paragraph break. These must be preserved in the output as exactly one blank line (`\n\n`).
+2. **Whitespace Collapsing:** Within each paragraph/block of text, any run of horizontal whitespace, spaces, tabs, and single newlines must be collapsed into a *single space*.
+3. **Stripping:** Leading and trailing whitespace from the entire text (as well as around paragraph breaks) must be removed.
+
+### Key Edge Cases to Handle
+- **Multiple blank lines:** E.g., three or more consecutive newlines should still collapse down to a single paragraph break (`\n\n`).
+- **Mixed whitespace around newlines:** Spaces and tabs preceding or following newlines should not create extra blank lines or messy spacing.
+- **Empty or all-whitespace strings:** Should return an empty string (`""""`).
+- **Text with no newlines:** Should collapse all spaces and tabs into single spaces and strip ends.
+
+### Recommended Approach
+1. **Split by paragraph breaks:** Use a regular expression or string splitting to identify blocks separated by two or more newlines (`\n\s*\n+` or similar).
+2. **Process each block:** For each text block, replace all internal whitespace characters (spaces, tabs, single newlines) with a single space, and `.strip()` the result.
+3. **Rejoin:** Filter out any empty blocks (resulting from excessive newlines) and join the processed blocks back together using `\n\n`.
+4. **Final cleanup:** Ensure overall leading and trailing whitespace is stripped.",none,1
+task_041,"Write a function `normalize_whitespace(text)` that collapses any run of whitespace (spaces, tabs, newlines) into a SINGLE space, strips leading/trailing whitespace, but PRESERVES exactly one blank line (represented as '\n\n' in output) wherever the original text had two or more consecutive newlines, treating that as a paragraph break separate from normal whitespace collapsing.","**Process each block:** For each text block, replace all internal whitespace characters (spaces, tabs, single newlines) with a single space, and `.strip()` the result.",over_summarization,0
+task_042,"Write a function `stack_based_eval(tokens)` that evaluates a Reverse Polish Notation expression given as a list of string tokens (numbers and operators +, -, *, /). Division must be INTEGER division truncating toward zero (e.g. -7 // 2 in RPN should give -3, not Python's default -4). Return the final integer result.","**Handoff Message for Agent B**
+
+**Objective:**
+Write a Python function that evaluates a Reverse Polish Notation (RPN) expression provided as a list of string tokens. The supported operators are `+`, `-`, `*`, and `/`. Division must be integer division that truncates toward zero (e.g., `-7 / 2` should result in `-3`, unlike Python's standard floor division operator `//` which rounds toward negative infinity). Return the final integer result.
+
+**Function Signature:**
+```python
+def stack_based_eval(tokens: list[str]) -> int:
+```
+
+**Key Edge Cases to Handle:**
+1. **Truncating Division toward Zero:** When dividing two integers, if the result is negative, you must truncate toward zero (e.g., `-5 / 2` should be `-2`, not `-3`). In Python, this can be achieved by performing standard float division and casting to `int` (which truncates the decimal part toward zero), i.e., `int(a / b)`, provided both operands are integers.
+2. **Order of Operations in Non-Commutative Operators:** For `-` and `/`, the second popped value from the stack is the left operand, and the first popped value is the right operand. (i.e., `left - right` or `left / right`).
+3. **Single Token Expressions:** A list containing just a single number token should immediately return that number as an integer.
+
+**Plan / Approach:**
+1. Initialize an empty list to act as a stack.
+2. Iterate through each token in the `tokens` list:
+   - If the token is an operator (`+`, `-`, `*`, `/`):
+     - Pop two elements from the stack: `right = stack.pop()` and `left = stack.pop()`.
+     - Apply the corresponding operation:
+       - `+`: `left + right`
+       - `-`: `left - right`
+       - `*`: `left * right`
+       - `/`: `int(left / right)` to ensure truncation toward zero.
+     - Push the result back onto the stack.
+   - If the token is a number:
+     - Convert it to an integer (`int(token)`) and push it onto the stack.
+3. After processing all tokens, the single remaining element in the stack is the final result. Return it.",none,1
+task_042,"Write a function `stack_based_eval(tokens)` that evaluates a Reverse Polish Notation expression given as a list of string tokens (numbers and operators +, -, *, /). Division must be INTEGER division truncating toward zero (e.g. -7 // 2 in RPN should give -3, not Python's default -4). Return the final integer result.","**Order of Operations in Non-Commutative Operators:** For `-` and `/`, the second popped value from the stack is the left operand, and the first popped value is the right operand.",over_summarization,0
+task_043,"Write a function `schedule_meetings(meetings)` where `meetings` is a list of (start, end) tuples in 24hr integer hours. Return True if NONE of the meetings overlap (touching endpoints like (9,10) and (10,11) do NOT count as overlapping), False if any two overlap.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function to determine whether a given list of meetings are completely non-overlapping. 
+
+**Function Signature:**
+```python
+def schedule_meetings(meetings: list[tuple[int, int]]) -> bool:
+```
+
+**Rules & Behavior:**
+- `meetings` is a list of tuples representing time intervals in 24-hour integer hours: `(start, end)`.
+- Return `True` if **none** of the meetings overlap.
+- Return `False` if **any** two meetings overlap.
+- **Crucial Edge Case Rule:** Touching endpoints (e.g., one meeting ends at `10` and another starts at `10`, like `(9, 10)` and `(10, 11)`) do **NOT** count as overlapping. They are valid.
+
+**Key Edge Cases to Handle:**
+1. Empty list `[]` or a single meeting `[(9, 10)]`: Should return `True`.
+2. Meetings provided in unsorted order (e.g., `[(10, 12), (9, 10)]`): The function must handle or sort them properly.
+3. Exact duplicates or completely nested intervals (e.g., `(9, 12)` and `(10, 11)`): Should return `False`.
+4. Touching endpoints (e.g., `(9, 10)` and `(10, 11)`): Should return `True`.
+
+**Recommended Approach:**
+1. Handle edge cases where the list length is 0 or 1 by returning `True`.
+2. Sort the `meetings` list primarily by the start time (`meeting[0]`).
+3. Iterate through the sorted meetings starting from the second element.
+4. For each meeting, compare its `start` time with the `end` time of the immediately preceding meeting. 
+5. If the current meeting's `start` is *strictly less* than the previous meeting's `end` (`current_start < previous_end`), an overlap occurs—return `False`.
+6. If the loop finishes without finding any overlaps, return `True`.",none,1
+task_044,"Write a function `parse_version(v)` that parses a version string like '1.2.3' into a tuple of 3 integers (major, minor, patch). Missing parts default to 0 (e.g. '1.2' -> (1,2,0), '1' -> (1,0,0)). Then write a SECOND function `compare_versions(v1, v2)` that returns -1 if v1 < v2, 0 if equal, 1 if v1 > v2, comparing major first, then minor, then patch, using parse_version internally.","HANDOFF MESSAGE FOR AGENT B:
+
+You need to implement two Python functions related to version comparison:
+
+1. `parse_version(v)`
+   - **Purpose:** Parses a version string into a tuple of 3 integers: `(major, minor, patch)`.
+   - **Input:** A string `v` (e.g., `'1.2.3'`, `'1.2'`, `'1'`).
+   - **Output:** A tuple of 3 integers.
+   - **Edge Cases & Behavior:** 
+     - Missing parts must default to `0`. For example, `'1.2'` becomes `(1, 2, 0)` and `'1'` becomes `(1, 0, 0)`.
+     - Assume standard dot-separated version formats (e.g., split by `.` and convert present segments to integers, padding with zeros up to length 3).
+
+2. `compare_versions(v1, v2)`
+   - **Purpose:** Compares two version strings.
+   - **Input:** Two version strings, `v1` and `v2`.
+   - **Output:** An integer:
+     - `-1` if `v1 < v2`
+     - `0` if `v1 == v2`
+     - `1` if `v1 > v2`
+   - **Approach:** Use `parse_version` internally on both arguments to convert them to 3-element integer tuples, then compare them element-by-element (major first, then minor, then patch). Python's built-in tuple comparison (`<`, `==`, `>`) handles this ordering automatically once both are tuples of the same length.",none,1
+task_045,"Write a function `token_bucket_allow(events, capacity, refill_rate)` simulating a rate limiter. `events` is a sorted list of integer timestamps (seconds) at which requests arrive. Start with `capacity` tokens. Each event consumes 1 token if available (allowed), else it's rejected. Tokens refill at `refill_rate` tokens per second (capped at `capacity`), calculated based on elapsed time since the last event. Return a list of booleans, one per event, indicating whether it was allowed.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Build a Python rate limiter function using the Token Bucket algorithm. The function needs to process a chronological list of event timestamps and determine whether each request is allowed or rejected based on available tokens, which refill over time.
+
+**Exact Function Signature:**
+```python
+def token_bucket_allow(events: list[int], capacity: float, refill_rate: float) -> list[bool]:
+```
+
+**Function Details & Rules:**
+- `events`: A sorted list of integer timestamps (in seconds) representing arriving requests.
+- `capacity`: The maximum number of tokens the bucket can hold. Start with the bucket completely full (i.e., `capacity` tokens at the time of the first event, or assume it starts at full capacity).
+- `refill_rate`: The rate at which tokens refill per second.
+- **Refill Logic:** Between any two consecutive events (at time $t_{i-1}$ and $t_i$), elapsed time is $\Delta t = t_i - t_{i-1}$. New tokens added = $\Delta t \times \text{refill\_rate}$.
+- **Cap:** Total tokens can never exceed `capacity`.
+- **Consumption:** Each event attempts to consume 1 token. If current tokens $\ge 1$, allow the event (`True`) and subtract 1 token. Otherwise, reject the event (`False`).
+- **Return Value:** A list of booleans (one for each event in `events`) indicating whether the request was allowed (`True`) or rejected (`False`).
+
+**Key Edge Cases to Handle:**
+1. **Empty Events List:** If `events` is empty, return an empty list `[]`.
+2. **Simultaneous Events:** If multiple events occur at the exact same timestamp ($\Delta t = 0$), no tokens should be refilled between them.
+3. **Floating-Point Precision:** Token counts should be tracked as floats (or appropriate types) to handle fractional refills accurately before comparing against 1.0.
+4. **Capacity Limits:** Ensure token accumulation never strictly exceeds `capacity` after refilling.
+
+**Recommended Plan/Approach:**
+1. Initialize `tokens = float(capacity)` and a `last_time` tracker (set to `events[0]` if `events` is not empty, though the very first event doesn't get a refill since it's the starting point).
+2. Iterate through each `event` time in `events`.
+3. If it's not the first event, calculate elapsed time `delta_t = event - last_time`.
+4. Refill tokens: `tokens = min(float(capacity), tokens + delta_t * refill_rate)`.
+5. Update `last_time = event`.
+6. Check if `tokens >= 1.0`:
+   - If yes: `tokens -= 1.0`, append `True` to results.
+   - If no: append `False` to results (token is not consumed when rejected).
+7. Return the results list.",none,1
+task_045,"Write a function `token_bucket_allow(events, capacity, refill_rate)` simulating a rate limiter. `events` is a sorted list of integer timestamps (seconds) at which requests arrive. Start with `capacity` tokens. Each event consumes 1 token if available (allowed), else it's rejected. Tokens refill at `refill_rate` tokens per second (capped at `capacity`), calculated based on elapsed time since the last event. Return a list of booleans, one per event, indicating whether it was allowed.","Initialize `tokens = float(capacity)` and a `last_time` tracker (set to `events[0]` if `events` is not empty, though the very first event doesn't get a refill since it's the starting point).",over_summarization,0
+task_046,"Write a function `chunk_list(items, size)` that splits a list into consecutive chunks of exactly `size` elements each. The LAST chunk, if it has fewer than `size` elements, should be DROPPED entirely (not included as a partial chunk). If `size` is 0 or negative, return an empty list.","HANDOFF MESSAGE FOR AGENT B:
+
+Please implement the following Python function according to the specifications below.
+
+1. Function Name and Signature:
+   `def chunk_list(items, size):`
+
+2. Restatement of the Problem:
+   The function takes a list `items` and an integer `size`. It must split the list into consecutive chunks where each chunk contains *exactly* `size` elements. 
+   - Crucially, if the final chunk has fewer than `size` elements, it must be **dropped entirely** (omitted from the result).
+   - If `size` is less than or equal to `0`, the function should return an empty list `[]`.
+
+3. Key Edge Cases to Handle:
+   - `size <= 0`: Return `[]` immediately.
+   - `size` is greater than the length of `items`: Return `[]` since the only chunk would be partial.
+   - `items` is empty: Return `[]`.
+   - `size` evenly divides the length of `items`: All chunks are of exact `size`, and no items are dropped.
+   - `size` does not evenly divide the length of `items`: The remainder elements at the end are discarded.
+
+4. Implementation Plan / Approach:
+   - First, validate the input: if `size <= 0` or `not items`, return `[]`.
+   - Iterate through the list using a step of `size` (e.g., using a `for` loop with `range(0, len(items), size)`).
+   - For each start index $i$, slice the list: `chunk = items[i : i + size]`.
+   - Only append the chunk to your result list if `len(chunk) == size`. This automatically drops any trailing partial chunk.
+   - Return the list of chunks.",none,1
+task_046,"Write a function `chunk_list(items, size)` that splits a list into consecutive chunks of exactly `size` elements each. The LAST chunk, if it has fewer than `size` elements, should be DROPPED entirely (not included as a partial chunk). If `size` is 0 or negative, return an empty list.","HANDOFF MESSAGE FOR AGENT B:
+
+Please implement the following Python function according to the specifications below.
+
+   
+
+   The function takes a list  and an integer . It must split the list into consecutive chunks where each chunk contains *exactly*  elements. 
+
+",tool_result_drop,0
+task_046,"Write a function `chunk_list(items, size)` that splits a list into consecutive chunks of exactly `size` elements each. The LAST chunk, if it has fewer than `size` elements, should be DROPPED entirely (not included as a partial chunk). If `size` is 0 or negative, return an empty list.",- `size` does not evenly divide the length of `items`: The remainder elements at the end are discarded.,over_summarization,0
+task_008,Write a function that counts the frequency of each word in a string (case-insensitive) and returns a dict.,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that calculates the word frequency in a given input string and returns the results as a dictionary. 
+
+**Function Signature:**
+```python
+def count_word_frequency(text: str) -> dict:
+```
+
+**Requirements & Edge Cases to Handle:**
+1. **Case-Insensitive:** Words must be counted regardless of their casing (e.g., ""Apple"", ""apple"", and ""APPLE"" should all be treated as the same word, converted to lowercase).
+2. **Punctuation:** Strip standard punctuation attached to words (e.g., `""hello!""` or `""world,""` should become `""hello""` and `""world""`).
+3. **Whitespace:** Handle multiple spaces, tabs, and newlines gracefully.
+4. **Empty Input:** If the input string is empty or contains only whitespace/punctuation, return an empty dictionary `{}`.
+
+**Recommended Approach:**
+1. Check if the input string is empty or purely whitespace; if so, return `{}`.
+2. Convert the entire string to lowercase.
+3. Use `re.findall(r'\b\w+\b', text.lower())` to extract all valid word tokens while automatically ignoring punctuation and whitespace boundaries.
+4. Iterate through the list of words and build a frequency dictionary (using `collections.Counter` or a standard dictionary with `.get()`).
+5. Return the resulting dictionary.",none,1
+task_012,Write a function that removes all duplicate elements from a list while preserving the original order of first occurrence.,"Agent B, your task is to write a Python function that removes all duplicate elements from a list while preserving the original order in which they first appeared.
+
+Here are the exact requirements for your implementation:
+
+**Function Signature:**
+```python
+def remove_duplicates(input_list: list) -> list:
+```
+
+**Key Edge Cases to Handle:**
+- An empty list (`[]`) should return an empty list.
+- A list with no duplicates should return a new list with identical elements and order.
+- A list with all identical elements should return a list with a single element.
+- The input list can contain mixed data types (e.g., integers, strings, floats), and the function should handle them correctly without type coercion issues.
+- The function should return a *new* list, leaving the original input list unmodified.
+
+**Plan/Approach:**
+- Use a `set` to keep track of elements you have already seen, which allows for $O(1)$ lookup time.
+- Iterate through the `input_list`, and for each element, check if it is in the seen set.
+- If it is not in the set, append it to your result list and add it to the seen set.
+- Return the result list at the end of the iteration. This naturally preserves the original order and runs in $O(n)$ time complexity.",none,1
+task_016,Write a function that returns the maximum depth (number of nesting levels) of a nested list.,"AGENT B HANDOFF MESSAGE
+
+Task: Write a Python function that calculates the maximum nesting depth of a nested list.
+
+Function Signature:
+`def max_depth(lst: list) -> int:`
+
+Key Edge Cases to Handle:
+1. An empty list `[]` should return a depth of `0`.
+2. A flat list containing no nested lists (e.g., `[1, 2, 3]`) should return a depth of `1`.
+3. Deeply nested lists (e.g., `[1, [2, [3, [4]]]]`) should return the correct maximum depth level.
+4. Lists containing mixed types (integers, strings, and lists) should only increment depth when encountering a nested `list` type.
+5. Empty nested lists (e.g., `[[]]`) should be handled correctly.
+
+Recommended Approach:
+Use a recursive function. 
+- Base case: If the input is not a list, return `0`.
+- Recursive step: If the input is a list, the depth is `1` plus the maximum depth among its elements. Iterate through each item in the list, recursively call the function on each item, find the maximum of those results, and add `1`. Handle the edge case of an empty list returning `0` for the inner max calculation so that an empty list overall evaluates to `0` (or `1` + `0` = `1` depending on how you define an empty list's depth—standard convention: an empty list `[]` has depth `1` as a container, or `0` if it contains no elements. Let's define `max_depth([]) = 1` if it's the root list, but wait, usually a flat list is depth 1. Let's make sure: `max_depth([]) -> 1` or `0`? Let's use: `1 + max( (max_depth(x) for x in lst), default=0 )` if `lst` is a list, else `0`. This means `max_depth([])` returns `1 + 0 = 1`, and a flat list returns `1`. If the problem strictly means nesting levels where `[]` has 0 nesting, adjust accordingly. Let's ensure the recursive approach handles this cleanly).",none,1
+task_020,Write a function that rotates a list to the right by k positions.,"AGENT B HANDOFF MESSAGE
+
+Objective:
+Write a function that rotates a given list to the right by `k` positions.
+
+Function Signature:
+```python
+def rotate_right(lst: list, k: int) -> list:
+    """"""
+    Rotates the input list `lst` to the right by `k` positions.
+    Returns a new rotated list (or modifies in place, but returning a new list is preferred for safety).
+    """"""
+```
+
+Key Edge Cases to Handle:
+1. **Empty list (`lst = []`)**: Should return an empty list regardless of `k`.
+2. **`k = 0`**: Should return a copy of the original list unchanged.
+3. **`k` is greater than the list length (`k > len(lst)`)**: `k` should be normalized using modulo arithmetic (`k = k % len(lst)`) so that rotating by a multiple of the length results in no change, and avoids unnecessary full rotations.
+4. **Negative values of `k`**: (Optional/Robustness) Consider if `k` could be negative (rotating left). If strictly positive expected, just ensure standard modulo handles positive integers.
+5. **List of length 1**: Should always return the single-element list unchanged.
+
+Suggested Approach:
+1. Handle the base case: if the list is empty, return `[].copy()`.
+2. Normalize `k`: compute `k = k % len(lst)`. If `k == 0`, return `lst.copy()`.
+3. Slice the list to isolate the last `k` elements and the remaining elements.
+4. Concatenate the last `k` elements with the remaining elements in the correct order: `lst[-k:] + lst[:-k]`.
+5. Return the resulting new list.",none,1
+task_020,Write a function that rotates a list to the right by k positions.,"AGENT B HANDOFF MESSAGE Objective: Write a function that rotates a given list to the right by `k` positions. Function Signature: ```python def rotate_right(lst: list, k: int) -> list: """""" Rotates the input list `lst` to the right by `k` positions. Returns a new rotated list (or modifies in place, but returning a new list is preferred for safety). """""" ``` Key Edge Cases to Handle: 1. **Empty list (`lst = []`)**: Should return an empty list regardless of `k`. 2. **`k = 0`**: Should return a copy of the original list unchanged. 3. **`k` is greater than the list length (`k > len(lst)`)**: `k` should be normalized using modulo arithmetic (`k = k % len(lst)`) so that",truncation,0
+task_047,"Write a function `resolve_aliases(mapping)` where `mapping` is a dict of string -> string that may contain CHAINS of aliases (e.g. {'a': 'b', 'b': 'c'} means a resolves to c). Return a new dict where every key maps directly to its FINAL value (the one that isn't itself a key in the mapping). If a cycle is detected (e.g. a->b->a), map that key to None instead of looping forever.","HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that resolves alias chains in a dictionary.
+
+### Function Signature
+```python
+def resolve_aliases(mapping: dict[str, str]) -> dict[str, str | None]:
+```
+
+### Requirements & Edge Cases
+1. **Chain Resolution**: Given a dictionary of string-to-string mappings, resolve each key to its final target value. The final value is defined as a value that does *not* appear as a key in the original mapping (or resolves to a terminal value).
+2. **Cycle Detection**: If an alias chain contains a cycle (e.g., `{'a': 'b', 'b': 'a'}` or a self-reference `{'a': 'a'}`), the keys involved in the cycle must map to `mathrm{None}` in the returned dictionary instead of causing an infinite loop.
+3. **Return Value**: Return a *new* dictionary mapping every original key to its resolved final value (or `None` if part of a cycle).
+
+### Suggested Approach
+1. Iterate through each key in the input `mapping`.
+2. For each key, trace its chain using a helper or a traversal loop.
+3. Keep track of visited nodes during the current traversal to detect cycles:
+   - If you hit a key already visited in the current path, a cycle is detected -> mark all nodes in this current path as `None`.
+   - If you hit a key that has already been fully resolved (memoization), use its cached result.
+   - If you hit a value that is not a key in the mapping, that is the final target value.
+4. Store the resolved result for each key and return the new dictionary.",none,1
+task_047,"Write a function `resolve_aliases(mapping)` where `mapping` is a dict of string -> string that may contain CHAINS of aliases (e.g. {'a': 'b', 'b': 'c'} means a resolves to c). Return a new dict where every key maps directly to its FINAL value (the one that isn't itself a key in the mapping). If a cycle is detected (e.g. a->b->a), map that key to None instead of looping forever.","HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that resolves alias chains in a dictionary.
+
+### Function Signature
+
+
+### Requirements & Edge Cases
+
+### Suggested Approach",tool_result_drop,0
+task_048,"Write a function `weighted_median(values, weights)` that computes the weighted median of a list of numbers with corresponding weights. The weighted median is the smallest value v such that the sum of weights for all elements <= v is at least half the total weight. Assume values and weights are parallel lists of the same length, all weights positive.","Agent B, please implement the `weighted_median(values, weights)` function according to the following specifications:
+
+### Function Signature
+```python
+def weighted_median(values, weights):
+    """"""
+    Computes the weighted median of a list of numbers with corresponding weights.
+    
+    Parameters:
+    values (list): A list of numerical values.
+    weights (list): A parallel list of positive numerical weights of the same length as values.
+    
+    Returns:
+    The weighted median value.
+    """"""
+```
+
+### Definition & Requirements
+The weighted median is defined as the smallest value $v$ in `values` such that the cumulative sum of weights for all elements $\le v$ is at least half of the total weight (i.e., $\sum_{x \le v} w_x \ge \frac{1}{2} \sum w_i$).
+
+### Key Edge Cases to Handle
+- Lists with a single element.
+- Even vs. odd total weight distributions.
+- Values that are not pre-sorted (inputs can be in any order).
+- Floating-point precision when comparing cumulative weights to half the total weight.
+
+### Implementation Plan
+1. Combine `values` and `weights` into pairs and sort them in ascending order based on the `values`.
+2. Calculate the total sum of all weights and determine the target threshold (`total_weight / 2.0`).
+3. Iterate through the sorted pairs while maintaining a running cumulative sum of the weights.
+4. Return the first `value` where the cumulative weight meets or exceeds the target threshold.",none,1
+task_050,"Write a function `next_business_day(day_of_week)` that takes an integer 0-6 (0=Monday, 6=Sunday) representing today, and returns the integer for the NEXT business day (Mon-Fri only). Friday(4) and Saturday(5) both roll to Monday(0); Sunday(6) rolls to Monday(0) too.","HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function named `next_business_day(day_of_week)` that determines the next business day given a current day of the week.
+
+**Inputs and Outputs:**
+- Input: An integer from 0 to 6 representing the day of the week, where:
+  - `0` = Monday
+  - `1` = Tuesday
+  - `2` = Wednesday
+  - `3` = Thursday
+  - `4` = Friday
+  - `5` = Saturday
+  - `6` = Sunday
+- Output: An integer (0-6) representing the *next* business day (Monday through Friday only).
+
+**Edge Cases & Rules (Business Days Only - Mon-Fri):**
+- Monday (0) -> Tuesday (1)
+- Tuesday (1) -> Wednesday (2)
+- Wednesday (2) -> Thursday (3)
+- Thursday (3) -> Friday (4)
+- Friday (4) -> Monday (0)
+- Saturday (5) -> Monday (0)
+- Sunday (6) -> Monday (0)
+
+**Plan/Approach:**
+Implement the function using a simple mapping dictionary or conditional logic:
+```python
+def next_business_day(day_of_week: int) -> int:
+    # Mon-Thu (0-3) simply increment by 1
+    if 0 <= day_of_week <= 3:
+        return day_of_week + 1
+    # Fri (4), Sat (5), and Sun (6) all roll over to Monday (0)
+    elif 4 <= day_of_week <= 6:
+        return 0
+    else:
+        raise ValueError(""Invalid day_of_week. Must be between 0 and 6."")
+```
+Ensure input validation or handle invalid ranges appropriately if needed, and make sure the function signature matches `next_business_day(day_of_week)`.",none,1
+task_050,"Write a function `next_business_day(day_of_week)` that takes an integer 0-6 (0=Monday, 6=Sunday) representing today, and returns the integer for the NEXT business day (Mon-Fri only). Friday(4) and Saturday(5) both roll to Monday(0); Sunday(6) rolls to Monday(0) too.","HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function named  that determines the next business day given a current day of the week.
+
+**Inputs and Outputs:**
+
+**Edge Cases & Rules (Business Days Only - Mon-Fri):**
+
+**Plan/Approach:**
+Implement the function using a simple mapping dictionary or conditional logic:
+
+Ensure input validation or handle invalid ranges appropriately if needed, and make sure the function signature matches .",tool_result_drop,0
+task_051,"Write a function `sparse_matrix_multiply(a, b)` that multiplies two matrices represented as dicts mapping (row, col) -> nonzero value (missing entries are 0). `a` is m x n, `b` is n x p. Return the result in the SAME sparse dict format, with ZERO entries in the result explicitly EXCLUDED (not stored as 0).","Agent B, your task is to implement a function that multiplies two sparse matrices. Here are all the details you need:
+
+### Function Signature
+```python
+def sparse_matrix_multiply(a, b):
+    """"""
+    Multiplies two sparse matrices represented as dictionaries.
+    
+    :param a: Dict representing matrix A of size m x n. 
+              Keys are (row, col) tuples, values are nonzero numbers.
+    :param b: Dict representing matrix B of size n x p. 
+              Keys are (row, col) tuples, values are nonzero numbers.
+    :return: Dict representing the result matrix (m x p) in the same sparse format.
+    """"""
+```
+
+### Requirements & Edge Cases
+1. **Input Format**: Matrices `a` and `b` are dictionaries where keys are `(row, col)` tuples and values are nonzero elements. Missing coordinates imply a value of 0.
+2. **Output Format**: Return a dictionary of the same format. 
+3. **Zero Exclusions**: Any resulting entries that evaluate to `0` must be **explicitly excluded** from the output dictionary (do not store keys with value `0`).
+4. **Edge Cases**:
+   - Empty matrices (`a` or `b` is empty): Should return an empty dict.
+   - Matrices with no overlapping multiplication paths resulting in non-zero values: Should return an empty dict.
+   - Dimensions that don't match for multiplication (though assumed valid per standard matrix multiplication rules, handle gracefully if needed).
+
+### Recommended Approach
+1. To compute the product $C = A \times B$, an entry $C[i, j]$ is calculated as the dot product of row $i$ of $A$ and column $j$ of $B$: 
+   $$C[i, j] = \sum_k A[i, k] \times B[k, j]$$
+2. **Optimization for Sparsity**: Instead of iterating through all possible indices, index matrix `b` by its rows so you can quickly find all non-zero entries $B[k, j]$ for a given $k$. 
+   - Create an index for `b`: map each row $k$ to a list/dict of $(col, value)$ pairs.
+3. Iterate through the non-zero entries of `a`. For each entry `(i, k)` with value `val_a`:
+   - Look up all columns $j$ where $B[k, j]$ exists with `val_b`.
+   - Accumulate products into a temporary results data structure (e.g., a `collections.defaultdict(float)` keyed by `(i, j)`).
+4. After processing all products, filter out any accumulated sums that equal `0` (due to floating-point cancellation, if applicable) and build the final sparse dictionary.",none,1
+task_051,"Write a function `sparse_matrix_multiply(a, b)` that multiplies two matrices represented as dicts mapping (row, col) -> nonzero value (missing entries are 0). `a` is m x n, `b` is n x p. Return the result in the SAME sparse dict format, with ZERO entries in the result explicitly EXCLUDED (not stored as 0).","To compute the product $C = A \times B$, an entry $C[i, j]$ is calculated as the dot product of row $i$ of $A$ and column $j$ of $B$: $$C[i, j] = \sum_k A[i, k] \times B[k, j]$$ 2.",over_summarization,0
+task_052,"Write a function `trim_outliers(values, k)` that removes elements more than `k` standard deviations from the MEAN of the ORIGINAL list (compute mean/stdev once, up front, before removing anything -- do not recompute after each removal). Use population standard deviation. Return the filtered list preserving original order.","Handoff Message for Agent B:
+
+You need to implement a Python function named `trim_outliers(values, k)` that filters out outlier elements from a list based on the mean and population standard deviation of the **original** dataset.
+
+### Function Signature
+```python
+def trim_outliers(values: list[float], k: float) -> list[float]:
+```
+
+### Requirements & Behavior
+1. **Compute upfront:** Calculate the mean ($\mu$) and the population standard deviation ($\sigma$) of the entire input list *once*, prior to any filtering. Do not recalculate these metrics iteratively as elements are removed.
+2. **Population Standard Deviation:** Use the population standard deviation formula ($\sigma = \sqrt{\frac{\sum (x - \mu)^2}{N}}$), not the sample standard deviation (e.g., `statistics.pstdev` or `numpy` with default/explicit degrees of freedom `ddof=0`).
+3. **Filtering Condition:** Keep only the elements $x$ that satisfy:
+   $$\mu - (k \cdot \sigma) \le x \le \mu + (k \cdot \sigma)$$
+4. **Order Preservation:** Return a new list containing the retained elements in their original relative order.
+
+### Key Edge Cases to Handle
+- **Empty list (`values = []`):** Should safely return an empty list without division-by-zero errors.
+- **Single-element list (`values = [x]`):** $\sigma$ will be `0`. An element equals the mean, so it should be kept (or handled gracefully without errors).
+- **All identical elements (`values = [5, 5, 5]`):** $\sigma = 0$. All elements equal the mean, so all should be retained.
+- **Negative or zero `k`:** Works mathematically as defined (if $k=0$, only elements exactly equal to the mean are kept).
+
+### Suggested Approach
+1. Handle the edge case of an empty `values` list (return `[]`).
+2. Compute the mean of `values`.
+3. Compute the population standard deviation of `values` (using `statistics.pstdev(values)` or manually using `sum` and `math.sqrt`).
+4. Calculate the lower and upper bounds: `lower_bound = mean - (k * stdev)` and `upper_bound = mean + (k * stdev)`.
+5. Use a list comprehension to filter `values` for elements falling inclusively within `[lower_bound, upper_bound]`.
+6. Return the filtered list.",none,1
+task_053,"Write a function `deep_merge(d1, d2)` that merges two nested dictionaries. If a key exists in both and BOTH values are dicts, merge them recursively. If a key exists in both and at least one value is NOT a dict, the value from `d2` OVERWRITES d1's value entirely (no list concatenation or other merging).","Handoff Message for Agent B:
+
+Please implement a Python function named `deep_merge(d1, d2)` that recursively merges two nested dictionaries. 
+
+**Requirements & Behavior:**
+- **Exact Function Signature:** `def deep_merge(d1, d2):`
+- **Merging Rule for Dicts:** If a key exists in both `d1` and `d2`, and **both** values are dictionaries (`dict`), call `deep_merge` recursively on them.
+- **Overwriting Rule:** If a key exists in both `d1` and `d2`, but at least one of the values is **not** a dictionary, the value from `d2` must completely overwrite the value in `d1` (no list concatenation, no type checking other than `dict`, just straight replacement).
+- **Non-overlapping Keys:** Keys present in only `d1` or only `d2` should be preserved in the resulting dictionary.
+- **Immutability (Best Practice):** Ensure you do not mutate the original input dictionaries `d1` and `d2` in-place unless standard, but returning a new merged dictionary is preferred.
+
+**Key Edge Cases to Handle:**
+- Overwriting a dict with a non-dict (e.g., `d1 = {'a': {'x': 1}}`, `d2 = {'a': 5}` -> result: `{'a': 5}`).
+- Overwriting a non-dict with a dict (e.g., `d1 = {'a': 5}`, `d2 = {'a': {'x': 1}}` -> result: `{'a': {'x': 1}}`).
+- Handling empty dictionaries (`{}`).
+- Ensuring deep copies or avoiding shared references in nested structures where appropriate.
+
+**Plan / Approach:**
+1. Create a copy of `d1` (or build a new result dict) so you don't mutate the inputs directly.
+2. Iterate through all keys and values in `d2`.
+3. For each key, check if it already exists in the result dictionary and if both the existing value and the `d2` value are instances of `dict`.
+4. If both are dicts, recursively call `deep_merge` and assign the result.
+5. Otherwise, simply assign/overwrite with the value from `d2`.
+6. Return the resulting dictionary.",none,1
+task_054,Write a function `longest_increasing_run(nums)` that returns the length of the longest STRICTLY increasing contiguous (not subsequence) run in a list of integers. An empty list returns 0.,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that calculates the length of the longest strictly increasing contiguous subsegment (run) within a list of integers.
+
+**Function Signature:**
+```python
+def longest_increasing_run(nums: list[int]) -> int:
+```
+
+**Key Edge Cases to Handle:**
+1. **Empty list (`[]`):** Should return `0`.
+2. **Single-element list (`[x]`):** Should return `1`.
+3. **Strictly decreasing list (e.g., `[3, 2, 1]`):** Should return `1` (since the run must be *strictly* increasing, equal adjacent elements like `[1, 1, 1]` should also yield a maximum run length of `1`).
+4. **Already sorted list (e.g., `[1, 2, 3, 4]`):** Should return the full length of the list.
+
+**Brief Plan / Approach:**
+- Handle the empty list edge case immediately by returning `0`.
+- Maintain two variables: `max_len` (to keep track of the overall longest run found) and `current_len` (to track the length of the current strictly increasing run). Both can be initialized to `1` since a non-empty list has at least a run of length 1.
+- Iterate through the list starting from the second element (index 1 up to `len(nums)`).
+- For each element at index `i`, compare it with the previous element (`nums[i] > nums[i-1]`):
+  - If true, increment `current_len` by 1.
+  - If false, reset `current_len` to 1.
+- At each step, update `max_len = max(max_len, current_len)`.
+- Return `max_len` at the end of the iteration.",none,1
+task_055,"Write a function `format_currency(amount, currency)` that formats a float as a currency string. For currency='USD', format as '$X,XXX.XX' with comma thousands separators and exactly 2 decimals. For currency='JPY', format as 'Y-X,XXX' with comma separators and NO decimal places (JPY has no subunits), rounding HALF UP on exact .5 values (e.g. 1234.5 rounds to 1235, not banker's rounding to even). Negative amounts get a leading '-' before the symbol.","Handoff for Agent B:
+
+Please implement a Python function named `format_currency(amount, currency)` that formats a numeric float amount into a specific currency string based on the given currency code ('USD' or 'JPY').
+
+### Exact Signature:
+```python
+def format_currency(amount: float, currency: str) -> str:
+```
+
+### Requirements & Formatting Rules:
+1. **USD Currency (`currency='USD'`):**
+   - Format as `$X,XXX.XX` (comma thousands separators, exactly 2 decimal places).
+   - Example: `1234567.89` -> `'$1,234,567.89'`
+
+2. **JPY Currency (`currency='JPY'`):**
+   - Format as `Y-X,XXX` (comma thousands separators, NO decimal places since JPY has no subunits).
+   - **Crucial Rounding Rule:** Must use traditional **ROUND HALF UP** for exact `.5` values (e.g., `1234.5` rounds to `1235`, not Python's default banker's rounding).
+
+3. **Negative Amounts:**
+   - Negative amounts must place a leading `-` sign *before* the currency symbol.
+   - Examples: 
+     - `-1234.56` (USD) -> `'-$1,234.56'`
+     - `-1234.5` (JPY) -> `'-Y-1,235'`
+
+### Implementation Approach & Edge Cases:
+- **Handling Round HALF UP:** Python's built-in `round()` uses round-to-even (banker's rounding). To properly implement round-half-up for positive and negative numbers, you can use the `decimal` module with `ROUND_HALF_UP` rounding mode, or manually implement the half-up logic before formatting.
+- **Sign Separation:** It is easiest to extract the absolute value of `amount` to handle the formatting (commas, decimals, symbols) and then prepend `-` if the original amount was strictly less than zero.
+- **Unsupported Currencies:** (Optional safety) Handle or assume valid inputs as specified.",none,1
+task_055,"Write a function `format_currency(amount, currency)` that formats a float as a currency string. For currency='USD', format as '$X,XXX.XX' with comma thousands separators and exactly 2 decimals. For currency='JPY', format as 'Y-X,XXX' with comma separators and NO decimal places (JPY has no subunits), rounding HALF UP on exact .5 values (e.g. 1234.5 rounds to 1235, not banker's rounding to even). Negative amounts get a leading '-' before the symbol.","Handoff for Agent B: Please implement a Python function named `format_currency(amount, currency)` that formats a numeric float amount into a specific currency string based on the given currency code ('USD' or 'JPY'). ### Exact Signature: ```python def format_currency(amount: float, currency: str) -> str: ``` ### Requirements & Formatting Rules: 1. **USD Currency (`currency='USD'`):** - Format as `$X,XXX.XX` (comma thousands separators, exactly 2 decimal places). - Example: `1234567.89` -> `'$1,234,567.89'` 2. **JPY Currency (`currency='JPY'`):** - Format as `Y-X,XXX` (comma thousands separators, NO decimal places since JPY has no subunits). - **Crucial Rounding Rule:** Must use traditional **ROUND HALF UP** for exact `.5` values (e.g., `1234.5` rounds to `1235`, not Python's default banker's rounding). 3. **Negative Amounts:**",truncation,0
+task_055,"Write a function `format_currency(amount, currency)` that formats a float as a currency string. For currency='USD', format as '$X,XXX.XX' with comma thousands separators and exactly 2 decimals. For currency='JPY', format as 'Y-X,XXX' with comma separators and NO decimal places (JPY has no subunits), rounding HALF UP on exact .5 values (e.g. 1234.5 rounds to 1235, not banker's rounding to even). Negative amounts get a leading '-' before the symbol.","Handoff for Agent B:
+
+Please implement a Python function named `format_currency(amount, currency)` that formats a numeric float amount into a specific currency string based on the given currency code ('USD' or 'JPY').
+
+### Exact Signature:
+```python
+def format_currency(amount: float, currency: str) -> str:
+```
+
+### Requirements & Formatting Rules:
+1. 3. **Negative Amounts:**
+   - Negative amounts must place a leading `-` sign *before* the currency symbol.
+   - Examples: 
+     - `-1234.56` (USD) -> `'-$1,234.56'`
+     - `-1234.5` (JPY) -> `'-Y-1,235'`
+
+### Implementation Approach & Edge Cases:
+- **Handling Round HALF UP:** Python's built-in `round()` uses round-to-even (banker's rounding). It is easiest to extract the absolute value of `amount` to handle the formatting (commas, decimals, symbols) and then prepend `-` if the original amount was strictly less than zero.
+- **Unsupported Currencies:** (Optional safety) Handle or assume valid inputs as specified.",entity_omission,0
+task_055,"Write a function `format_currency(amount, currency)` that formats a float as a currency string. For currency='USD', format as '$X,XXX.XX' with comma thousands separators and exactly 2 decimals. For currency='JPY', format as 'Y-X,XXX' with comma separators and NO decimal places (JPY has no subunits), rounding HALF UP on exact .5 values (e.g. 1234.5 rounds to 1235, not banker's rounding to even). Negative amounts get a leading '-' before the symbol.","Handoff for Agent B:
+
+Please implement a Python function named  that formats a numeric float amount into a specific currency string based on the given currency code ('USD' or 'JPY').
+
+### Exact Signature:
+
+
+### Requirements & Formatting Rules:
+
+
+
+### Implementation Approach & Edge Cases:",tool_result_drop,0
+task_055,"Write a function `format_currency(amount, currency)` that formats a float as a currency string. For currency='USD', format as '$X,XXX.XX' with comma thousands separators and exactly 2 decimals. For currency='JPY', format as 'Y-X,XXX' with comma separators and NO decimal places (JPY has no subunits), rounding HALF UP on exact .5 values (e.g. 1234.5 rounds to 1235, not banker's rounding to even). Negative amounts get a leading '-' before the symbol.","Please implement a Python function named `format_currency(amount, currency)` that formats a numeric float amount into a specific currency string based on the given currency code ('USD' or 'JPY').",over_summarization,0
+task_056,"Write a function `topo_sort_courses(num_courses, prereqs)` where `prereqs` is a list of [course, prereq] pairs meaning `prereq` must come before `course`. Return a valid ordering (list of course indices 0..num_courses-1) satisfying all prerequisites. If it's impossible (a cycle exists), return an empty list.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a function that performs a topological sort on a set of courses given their prerequisite relationships. If a valid ordering exists, return it as a list of course indices. If a cycle exists (making it impossible to complete all courses), return an empty list.
+
+**Function Signature:**
+```python
+def topo_sort_courses(num_courses: int, prereqs: list[list[int]]) -> list[int]:
+    """"""
+    Parameters:
+    - num_courses: Total number of courses, labeled from 0 to num_courses - 1.
+    - prereqs: A list of pairs where prereqs[i] = [course, prereq], meaning 
+               'prereq' must be taken before 'course'.
+               
+    Returns:
+    - A valid list of course indices representing the topological order, 
+      or an empty list [] if a cycle is detected.
+    """"""
+```
+
+**Key Edge Cases to Handle:**
+1. **No Prerequisites (`prereqs` is empty):** Should return any valid ordering of courses (e.g., `[0, 1, 2, ..., num_courses - 1]`).
+2. **Disconnected Graphs:** Courses with no incoming or outgoing edges should still be included in the final output.
+3. **Cycles (Invalid Graph):** Any direct or indirect dependency loop (e.g., `[[0, 1], [1, 0]]` or self-loops like `[[0, 0]]`) must be detected, resulting in an empty list `[]` return value.
+4. **Zero Courses (`num_courses = 0`):** Should handle gracefully and return `[]`.
+
+**Proposed Plan / Approach:**
+1. **Graph Representation:** Build an adjacency list where each course points to its dependents (or vice versa, depending on the chosen algorithm). Counting in-degrees (number of incoming edges for each node) is recommended.
+2. **Algorithm (Kahn's Algorithm / BFS):**
+   - Initialize an in-degree array of size `num_courses` with zeros, and populate it using `prereqs`.
+   - Use a queue (or stack) to collect all courses with an in-degree of `0` (no prerequisites).
+   - Pop nodes from the queue, append them to your result list, and for each neighbor of the popped node, decrement its in-degree. If a neighbor's in-degree drops to `0`, push it onto the queue.
+3. **Cycle Detection:**
+   - After processing, check if the length of your result list equals `num_courses`. 
+   - If they are equal, return the result list. If not (meaning some nodes were never added due to being trapped in a cycle), return `[]`.",none,1
+task_057,"Write a function `redact_pii(text)` that replaces any substring matching a US phone number pattern (XXX-XXX-XXXX where X is a digit) with 'XXX-XXX-XXXX', and any substring matching an email pattern (word characters, @, word characters, dot, word characters) with '[REDACTED_EMAIL]'. Everything else in the text must remain UNCHANGED, including surrounding punctuation and spacing.","Agent B, please implement the Python function `redact_pii(text)` based on the following specifications:
+
+**Function Signature:**
+```python
+def redact_pii(text: str) -> str:
+```
+
+**Functionality Requirements:**
+1. **US Phone Numbers:** Replace any substring matching the pattern `XXX-XXX-XXXX` (where X is a digit, e.g., `123-456-7890`) with the literal string `'XXX-XXX-XXXX'`.
+2. **Email Addresses:** Replace any substring matching an email pattern (defined as word characters, followed by `@`, followed by word characters, followed by a dot `.`, followed by word characters—e.g., `user@example.com`) with the literal string `'[REDACTED_EMAIL]'`.
+3. **Preservation:** Everything else in the input text (including surrounding punctuation, spacing, and unmatched text) must remain completely unchanged.
+
+**Key Edge Cases to Handle:**
+- Multiple occurrences of phone numbers and emails in the same text string.
+- Punctuation directly touching the phone numbers or emails (ensure the regex targets the specific patterns without stripping necessary surrounding context, or handle boundaries correctly).
+- Overlapping patterns (though phone and email patterns are distinct, ensure no unintended consumption of characters).
+
+**Recommended Approach:**
+Use Python's `re` module with regular expressions:
+- Phone regex: `\d{3}-\d{3}-\d{4}`
+- Email regex: `\w+@\w+\.\w+` (adjusting for standard word-character boundaries as specified).
+Use `re.sub()` to substitute the matches with their respective redaction strings.",none,1
+task_057,"Write a function `redact_pii(text)` that replaces any substring matching a US phone number pattern (XXX-XXX-XXXX where X is a digit) with 'XXX-XXX-XXXX', and any substring matching an email pattern (word characters, @, word characters, dot, word characters) with '[REDACTED_EMAIL]'. Everything else in the text must remain UNCHANGED, including surrounding punctuation and spacing.","Agent B, please implement the Python function `redact_pii(text)` based on the following specifications:
+
+**Function Signature:**
+```python
+def redact_pii(text: str) -> str:
+```
+
+**Functionality Requirements:**
+1. 3. **Preservation:** Everything else in the input text (including surrounding punctuation, spacing, and unmatched text) must remain completely unchanged.
+
+ **Key Edge Cases to Handle:**
+- Multiple occurrences of phone numbers and emails in the same text string.
+ - Punctuation directly touching the phone numbers or emails (ensure the regex targets the specific patterns without stripping necessary surrounding context, or handle boundaries correctly).
+ - Overlapping patterns (though phone and email patterns are distinct, ensure no unintended consumption of characters).
+
+ **Recommended Approach:**
+ Use Python's `re` module with regular expressions:
+- Phone regex: `\d{3}-\d{3}-\d{4}`
+- Email regex: `\w+@\w+\.\w+` (adjusting for standard word-character boundaries as specified).
+ Use `re.sub()` to substitute the matches with their respective redaction strings.",entity_omission,0
+task_057,"Write a function `redact_pii(text)` that replaces any substring matching a US phone number pattern (XXX-XXX-XXXX where X is a digit) with 'XXX-XXX-XXXX', and any substring matching an email pattern (word characters, @, word characters, dot, word characters) with '[REDACTED_EMAIL]'. Everything else in the text must remain UNCHANGED, including surrounding punctuation and spacing.","Agent B, please implement the Python function  based on the following specifications:
+
+**Function Signature:**
+
+
+**Functionality Requirements:**
+
+**Key Edge Cases to Handle:**
+
+**Recommended Approach:**
+Use Python's  module with regular expressions:
+Use  to substitute the matches with their respective redaction strings.",tool_result_drop,0
+task_057,"Write a function `redact_pii(text)` that replaces any substring matching a US phone number pattern (XXX-XXX-XXXX where X is a digit) with 'XXX-XXX-XXXX', and any substring matching an email pattern (word characters, @, word characters, dot, word characters) with '[REDACTED_EMAIL]'. Everything else in the text must remain UNCHANGED, including surrounding punctuation and spacing.","**Email Addresses:** Replace any substring matching an email pattern (defined as word characters, followed by `@`, followed by word characters, followed by a dot `.`, followed by word characters—e.g., `user@example.com`) with the literal string `'[REDACTED_EMAIL]'`.",over_summarization,0
+task_058,"Write a function `min_coins(amount, coins)` that returns the MINIMUM number of coins needed to make exactly `amount` using unlimited quantities of the given coin denominations. If it's impossible to make the exact amount, return -1.","HANDOFF MESSAGE FOR AGENT B:
+
+Your task is to write a Python function that solves the classic coin change problem (finding the minimum number of coins needed to make a specific amount).
+
+### Function Signature
+`def min_coins(amount: int, coins: list[int]) -> int:`
+
+### Requirements
+- **Inputs**: 
+  - `amount`: A non-negative integer representing the target value to make.
+  - `coins`: A list of positive integers representing available coin denominations.
+- **Output**: 
+  - Return the minimum number of coins required to make exactly `amount`.
+  - If the target `amount` cannot be formed with the given coins, return `-1`.
+  - You have an unlimited supply of each coin denomination.
+
+### Key Edge Cases to Handle
+1. **`amount == 0`**: Should return `0` (0 coins needed).
+2. **Impossible to form `amount`**: If no combination of coins adds up to `amount` (e.g., `amount = 3`, `coins = [2]`), return `-1`.
+3. **Empty coin list (`coins = []`)**: If `amount > 0`, return `-1`. If `amount == 0`, return `0`.
+4. **Coins larger than amount**: Coins that exceed the remaining amount should simply be ignored.
+
+### Recommended Approach (Dynamic Programming)
+- Use a bottom-up dynamic programming approach.
+- Create a DP table (or list) of size `amount + 1`, initialized to `infinity` (or `amount + 1` as a sentinel value).
+- Set `dp[0] = 0` since 0 amount requires 0 coins.
+- Iterate `i` from `1` to `amount`:
+  - For each coin in `coins`, if `i - coin >= 0`, update `dp[i] = min(dp[i], dp[i - coin] + 1)`.
+- After filling the table, check if `dp[amount]` is still infinity. If it is, return `-1`; otherwise, return `dp[amount]`.",none,1
+task_058,"Write a function `min_coins(amount, coins)` that returns the MINIMUM number of coins needed to make exactly `amount` using unlimited quantities of the given coin denominations. If it's impossible to make the exact amount, return -1.","HANDOFF MESSAGE FOR AGENT B:
+
+Your task is to write a Python function that solves the classic coin change problem (finding the minimum number of coins needed to make a specific amount).
+
+### Function Signature
+
+
+### Requirements
+
+### Key Edge Cases to Handle
+
+### Recommended Approach (Dynamic Programming)",tool_result_drop,0
+task_058,"Write a function `min_coins(amount, coins)` that returns the MINIMUM number of coins needed to make exactly `amount` using unlimited quantities of the given coin denominations. If it's impossible to make the exact amount, return -1.","**Impossible to form `amount`**: If no combination of coins adds up to `amount` (e.g., `amount = 3`, `coins = [2]`), return `-1`.",over_summarization,0
+task_059,"Write a function `sliding_window_max(nums, k)` that returns a list containing the maximum value in every contiguous window of size `k` as it slides from left to right across `nums`. If k > len(nums), return a single-element list with the max of the whole array.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that computes the maximum value in every contiguous sliding window of size `k` as it moves from left to right across an array/list of numbers `nums`.
+
+**Function Signature:**
+```python
+def sliding_window_max(nums: list[int], k: int) -> list[int]:
+```
+
+**Key Edge Cases to Handle:**
+1. **`k > len(nums)`**: Return a single-element list containing the maximum value of the entire `nums` array.
+2. **`k == 1`**: Return a copy of the original `nums` list (each element is its own window max).
+3. **Empty `nums`**: (Assuming standard constraints, but if `nums` is empty, handle gracefully or return empty list depending on expectations—though problem implies valid inputs where $k \ge 1$).
+
+**Recommended Approach (Optimal $O(n)$ Time Complexity):**
+- Use a **monotonic decreasing queue** (specifically, a `collections.deque`) to store the *indices* of the elements in the current window.
+- As you iterate through the array with index `i`:
+  1. Remove indices from the front of the deque if they fall outside the current window (i.e., `index < i - k + 1`).
+  2. Remove indices from the back of the deque if the corresponding values in `nums` are less than or equal to `nums[i]` (since they can never be the maximum while `nums[i]` is in the window).
+  3. Append the current index `i` to the back of the deque.
+  4. Once the window reaches size `k` (i.e., `i >= k - 1`), append the element at the front of the deque (`nums[deque[0]]`) to your result list.",none,1
+task_059,"Write a function `sliding_window_max(nums, k)` that returns a list containing the maximum value in every contiguous window of size `k` as it slides from left to right across `nums`. If k > len(nums), return a single-element list with the max of the whole array.","**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that computes the maximum value in every contiguous sliding window of size  as it moves from left to right across an array/list of numbers .
+
+**Function Signature:**
+
+
+**Key Edge Cases to Handle:**
+
+**Recommended Approach (Optimal $O(n)$ Time Complexity):**",tool_result_drop,0
+task_059,"Write a function `sliding_window_max(nums, k)` that returns a list containing the maximum value in every contiguous window of size `k` as it slides from left to right across `nums`. If k > len(nums), return a single-element list with the max of the whole array.",Remove indices from the back of the deque if the corresponding values in `nums` are less than or equal to `nums[i]` (since they can never be the maximum while `nums[i]` is in the window).,over_summarization,0
+task_060,"Write a function `diff_lists(old, new)` that compares two lists and returns a dict with keys 'added' (items in new but not old), 'removed' (items in old but not new), and 'unchanged' (items in both), where counts matter for duplicates -- e.g. if old has two 'x' and new has one 'x', that's 1 removed 'x', not 0. Each value is a list (order doesn't matter within each).","Handoff Message for Agent B:
+
+1. **Function to Build:**
+   Write a Python function that compares two lists (`old` and `new`) taking element counts (duplicates) into account. It must return a dictionary with three keys:
+   - `'added'`: items present in `new` but not in `old` (respecting multiplicity).
+   - `'removed'`: items present in `old` but not in `new` (respecting multiplicity).
+   - `'unchanged'`: items present in both lists (respecting multiplicity).
+   
+   The order of elements within the result lists does not matter.
+
+2. **Exact Signature:**
+   ```python
+   def diff_lists(old, new):
+   ```
+
+3. **Key Edge Cases to Handle:**
+   - **Duplicates / Counts:** If `old` has two `'x'` and `new` has one `'x'`, then `'removed'` should contain one `'x'`, `'unchanged'` should contain one `'x'`, and `'added'` should be empty.
+   - **Empty lists:** Handling cases where either `old`, `new`, or both are empty.
+   - **Disjoint lists:** Lists with no overlapping elements (all added/removed, none unchanged).
+   - **Data types:** Items inside the lists are hashable (standard list items like strings, numbers, tuples).
+
+4. **Plan / Approach:**
+   - Use `collections.Counter` on both lists to easily handle frequency counts of items.
+   - For `'unchanged'`, take the intersection of counts (i.e., `min(old_count[item], new_count[item])` for each item).
+   - For `'removed'`, items are those in `old` whose counts exceed their counts in `new` (i.e., `old_count[item] - new_count[item] > 0`).
+   - For `'added'`, items are those in `new` whose counts exceed their counts in `old` (i.e., `new_count[item] - old_count[item] > 0`).
+   - Flatten these counts back into lists for each dictionary value and return the dict.",none,1
+task_060,"Write a function `diff_lists(old, new)` that compares two lists and returns a dict with keys 'added' (items in new but not old), 'removed' (items in old but not new), and 'unchanged' (items in both), where counts matter for duplicates -- e.g. if old has two 'x' and new has one 'x', that's 1 removed 'x', not 0. Each value is a list (order doesn't matter within each).","Handoff Message for Agent B:
+
+   Write a Python function that compares two lists ( and ) taking element counts (duplicates) into account. It must return a dictionary with three keys:
+   
+   The order of elements within the result lists does not matter.
+
+   
+
+",tool_result_drop,0
+task_060,"Write a function `diff_lists(old, new)` that compares two lists and returns a dict with keys 'added' (items in new but not old), 'removed' (items in old but not new), and 'unchanged' (items in both), where counts matter for duplicates -- e.g. if old has two 'x' and new has one 'x', that's 1 removed 'x', not 0. Each value is a list (order doesn't matter within each).","- For `'removed'`, items are those in `old` whose counts exceed their counts in `new` (i.e., `old_count[item] - new_count[item] > 0`).",over_summarization,0
