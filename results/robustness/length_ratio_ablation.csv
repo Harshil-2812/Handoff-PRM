@@ -1,0 +1,7 @@
+model,feature_set,features_used,oof_auroc,oof_auprc,oof_brier
+XGBoost,Full_3_Features,"cosine_similarity, entity_overlap, length_ratio",0.9535213167835943,0.9455104631040349,0.06064587276665378
+XGBoost,No_Length_Ratio,"cosine_similarity, entity_overlap",0.8809363194819213,0.8825022790838893,0.12944121011124568
+XGBoost,Length_Ratio_Only,length_ratio,0.9514301133297356,0.9654249071530859,0.061245684764998115
+LogisticRegression,Full_3_Features,"cosine_similarity, entity_overlap, length_ratio",0.964112250404749,0.9714886724446695,0.05825080100006174
+LogisticRegression,No_Length_Ratio,"cosine_similarity, entity_overlap",0.8800593631948191,0.8941740087133236,0.1392101431396112
+LogisticRegression,Length_Ratio_Only,length_ratio,0.9630329195898543,0.9707945018571156,0.06095482667288793

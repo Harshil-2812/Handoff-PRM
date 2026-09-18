@@ -1,0 +1,22 @@
+# Credentials & secrets
+.env
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+
+# System / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Archives & temporary extractions
+*.zip
+zip_contents/
+
+# Logs
+*.log

@@ -1,0 +1,4 @@
+condition,task_count,pass_rate,avg_retries,avg_prm_score,avg_word_count
+gated_blind,16,0.6875,0.0,0.9038418475538492,220.1875
+gated_shap,16,0.6875,0.0,0.9038418475538492,220.1875
+ungated,16,0.6875,0.0,0.9038418475538492,220.1875
