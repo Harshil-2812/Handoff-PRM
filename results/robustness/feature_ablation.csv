@@ -1,15 +1,21 @@
 model,feature_set,features_used,oof_auroc,mean_fold_auroc,std_fold_auroc,oof_auprc,oof_brier
-XGBoost,Full_3_Features,"cosine_similarity, entity_overlap, length_ratio",0.94152,0.943603,0.014422,0.918937,0.073746
-XGBoost,No_Length_Ratio,"cosine_similarity, entity_overlap",0.8831,0.883903,0.030256,0.856872,0.128249
-XGBoost,No_Cosine_Similarity,"entity_overlap, length_ratio",0.943797,0.947913,0.010877,0.927803,0.076963
-XGBoost,No_Entity_Overlap,"cosine_similarity, length_ratio",0.941896,0.943467,0.009863,0.923207,0.072341
-XGBoost,Cosine_Similarity_Only,cosine_similarity,0.718212,0.721456,0.037297,0.69592,0.195065
-XGBoost,Entity_Overlap_Only,entity_overlap,0.874834,0.876967,0.037107,0.871015,0.137142
-XGBoost,Length_Ratio_Only,length_ratio,0.934752,0.939753,0.008325,0.923327,0.08561
-LogisticRegression,Full_3_Features,"cosine_similarity, entity_overlap, length_ratio",0.951828,0.953631,0.010129,0.947794,0.079866
-LogisticRegression,No_Length_Ratio,"cosine_similarity, entity_overlap",0.869705,0.87105,0.03648,0.879123,0.143841
-LogisticRegression,No_Cosine_Similarity,"entity_overlap, length_ratio",0.949551,0.951491,0.009903,0.946335,0.083907
-LogisticRegression,No_Entity_Overlap,"cosine_similarity, length_ratio",0.950464,0.952537,0.010091,0.945294,0.086728
-LogisticRegression,Cosine_Similarity_Only,cosine_similarity,0.727355,0.729392,0.034626,0.694872,0.203741
-LogisticRegression,Entity_Overlap_Only,entity_overlap,0.86331,0.862781,0.038276,0.874327,0.146387
-LogisticRegression,Length_Ratio_Only,length_ratio,0.944405,0.947541,0.008184,0.941495,0.097102
+XGBoost,Full_All_Features,"cosine_similarity, entity_overlap, length_ratio, sentence_count_ratio, section_coverage, verbatim_copy_rate, trailing_specificity, constraint_count, role_pronoun_rate, novel_api_rate, function_name_preserved, signature_param_diff, nli_contradiction_max, nli_entailment_mean",0.683646,0.685178,0.009956,0.247435,0.12705
+XGBoost,No_Length_Ratio,"cosine_similarity, entity_overlap, sentence_count_ratio, section_coverage, verbatim_copy_rate, trailing_specificity, constraint_count, role_pronoun_rate, novel_api_rate, function_name_preserved, signature_param_diff, nli_contradiction_max, nli_entailment_mean",0.679062,0.679864,0.01102,0.242906,0.127324
+XGBoost,No_Cosine_Similarity,"entity_overlap, length_ratio, sentence_count_ratio, section_coverage, verbatim_copy_rate, trailing_specificity, constraint_count, role_pronoun_rate, novel_api_rate, function_name_preserved, signature_param_diff, nli_contradiction_max, nli_entailment_mean",0.683987,0.685673,0.013701,0.24758,0.127051
+XGBoost,No_Entity_Overlap,"cosine_similarity, length_ratio, sentence_count_ratio, section_coverage, verbatim_copy_rate, trailing_specificity, constraint_count, role_pronoun_rate, novel_api_rate, function_name_preserved, signature_param_diff, nli_contradiction_max, nli_entailment_mean",0.684797,0.686568,0.009788,0.246977,0.126997
+XGBoost,Core_3_Features,"cosine_similarity, entity_overlap, length_ratio",0.566392,0.567643,0.007723,0.181404,0.132556
+XGBoost,Cosine_Similarity_Only,cosine_similarity,0.524642,0.525126,0.007395,0.166492,0.134396
+XGBoost,Entity_Overlap_Only,entity_overlap,0.557574,0.558865,0.007306,0.18113,0.133818
+XGBoost,Length_Ratio_Only,length_ratio,0.568921,0.569679,0.002957,0.182997,0.132519
+XGBoost,Function_Name_Preserved_Only,function_name_preserved,0.499609,0.5,0.0,0.160874,0.135065
+XGBoost,Section_Coverage_Only,section_coverage,0.581624,0.585704,0.008036,0.186838,0.131883
+LogisticRegression,Full_All_Features,"cosine_similarity, entity_overlap, length_ratio, sentence_count_ratio, section_coverage, verbatim_copy_rate, trailing_specificity, constraint_count, role_pronoun_rate, novel_api_rate, function_name_preserved, signature_param_diff, nli_contradiction_max, nli_entailment_mean",0.672536,0.674802,0.01289,0.239547,0.12954
+LogisticRegression,No_Length_Ratio,"cosine_similarity, entity_overlap, sentence_count_ratio, section_coverage, verbatim_copy_rate, trailing_specificity, constraint_count, role_pronoun_rate, novel_api_rate, function_name_preserved, signature_param_diff, nli_contradiction_max, nli_entailment_mean",0.665341,0.667439,0.015538,0.236326,0.129417
+LogisticRegression,No_Cosine_Similarity,"entity_overlap, length_ratio, sentence_count_ratio, section_coverage, verbatim_copy_rate, trailing_specificity, constraint_count, role_pronoun_rate, novel_api_rate, function_name_preserved, signature_param_diff, nli_contradiction_max, nli_entailment_mean",0.671774,0.673368,0.013242,0.238736,0.129555
+LogisticRegression,No_Entity_Overlap,"cosine_similarity, length_ratio, sentence_count_ratio, section_coverage, verbatim_copy_rate, trailing_specificity, constraint_count, role_pronoun_rate, novel_api_rate, function_name_preserved, signature_param_diff, nli_contradiction_max, nli_entailment_mean",0.673253,0.675412,0.013277,0.239971,0.129441
+LogisticRegression,Core_3_Features,"cosine_similarity, entity_overlap, length_ratio",0.577783,0.578605,0.004199,0.188261,0.13349
+LogisticRegression,Cosine_Similarity_Only,cosine_similarity,0.549535,0.549922,0.005411,0.178387,0.134309
+LogisticRegression,Entity_Overlap_Only,entity_overlap,0.56187,0.562559,0.005478,0.183003,0.134172
+LogisticRegression,Length_Ratio_Only,length_ratio,0.567771,0.567465,0.003446,0.182215,0.134482
+LogisticRegression,Function_Name_Preserved_Only,function_name_preserved,0.499609,0.5,0.0,0.16081,0.135065
+LogisticRegression,Section_Coverage_Only,section_coverage,0.581977,0.58576,0.007966,0.186908,0.131995

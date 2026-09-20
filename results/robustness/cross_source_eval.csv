@@ -1,0 +1,5 @@
+test_source,n_test,n_train,auroc,auprc
+hand_easy,218,2478,0.6939,0.2787
+hand_hard,311,2385,0.7151,0.2653
+humaneval,942,1754,0.6623,0.2291
+mbpp,1225,1471,0.65,0.242

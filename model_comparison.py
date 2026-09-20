@@ -1,4 +1,4 @@
-﻿"""
+"""
 TABLE VIII -- Full GroupKFold Model Comparison (re-run on new dataset)
 
 Evaluates Logistic Regression, XGBoost, Random Forest, and SVM (RBF)
@@ -28,27 +28,33 @@ from sklearn.metrics import (
 from sklearn.model_selection import GroupKFold
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from xgboost import XGBClassifier
 import time
 
 
-FEATURE_COLS = ["cosine_similarity", "entity_overlap", "length_ratio"]
+def get_feature_cols(df):
+    return [c for c in df.columns if c not in ["task_id", "source", "corruption_type", "label"]]
 
 
 def _clone(name: str):
     """Return a fresh unfitted model instance."""
     if name == "LogisticRegression":
-        return LogisticRegression(random_state=42, max_iter=1000)
+        return LogisticRegression(class_weight="balanced", random_state=42, max_iter=1000)
     if name == "XGBoost":
         return XGBClassifier(
             n_estimators=50, max_depth=3, learning_rate=0.1,
             random_state=42, eval_metric="logloss",
         )
     if name == "RandomForest":
-        return RandomForestClassifier(n_estimators=50, max_depth=3, random_state=42)
+        return RandomForestClassifier(n_estimators=50, max_depth=3, class_weight="balanced", random_state=42)
     if name == "SVM_RBF":
-        return SVC(probability=True, random_state=42)
+        return make_pipeline(
+            StandardScaler(),
+            SVC(probability=True, class_weight="balanced", random_state=42)
+        )
     raise ValueError(f"Unknown model: {name}")
 
 
@@ -58,7 +64,9 @@ def run_model_comparison():
     os.makedirs("results/calibration", exist_ok=True)
 
     df = pd.read_csv("features.csv")
+    FEATURE_COLS = get_feature_cols(df)
     print(f"Loaded features.csv  ->  {len(df)} rows, {df['task_id'].nunique()} tasks")
+    print(f"Using {len(FEATURE_COLS)} features: {FEATURE_COLS}")
     X = df[FEATURE_COLS].values
     y = df["label"].values
     groups = df["task_id"].values

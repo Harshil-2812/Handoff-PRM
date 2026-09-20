@@ -1,0 +1,21 @@
+task_id,entry_point,corruption_type,is_corrupted,prm_score,gate_decision,action_taken,ungated_passed,ungated_error,gated_passed,gated_error
+task_001,sum_even,clean,False,0.2444,BLOCK,Fallback to raw problem statement,False,Function 'sum_even' not found in generated code.,True,Success
+task_002,is_palindrome,truncation,True,0.0131,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_003,second_largest,clean,False,0.2397,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_004,top_scorer,over_summarization,True,0.0518,BLOCK,Fallback to raw problem statement,False,AssertionError: ,True,Success
+task_005,flatten,clean,False,0.0766,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_006,is_prime,tool_result_drop,True,0.0065,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_007,merge_sorted,clean,False,0.0115,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_008,word_freq,fake_completion,True,0.0983,BLOCK,Fallback to raw problem statement,False,Function 'word_freq' not found in generated code.,True,Success
+task_009,longest_common_prefix,clean,False,0.2509,BLOCK,Fallback to raw problem statement,False,Function 'longest_common_prefix' not found in generated code.,True,Success
+task_010,is_balanced,truncation,True,0.0849,BLOCK,Fallback to raw problem statement,False,AttributeError: 'tuple' object has no attribute 'left',True,Success
+task_011,count_vowels,clean,False,0.2349,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_012,dedupe,over_summarization,True,0.0077,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_013,is_anagram,clean,False,0.2368,BLOCK,Fallback to raw problem statement,False,Function 'is_anagram' not found in generated code.,True,Success
+task_014,fibonacci,tool_result_drop,True,0.0356,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_015,invert_dict,clean,False,0.2489,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_016,max_depth,fake_completion,True,0.1926,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_017,is_perfect_square,clean,False,0.2131,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_018,group_by_length,truncation,True,0.0086,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_019,running_sum,clean,False,0.2319,BLOCK,Fallback to raw problem statement,True,Success,True,Success
+task_020,rotate_list,over_summarization,True,0.0786,BLOCK,Fallback to raw problem statement,True,Success,True,Success

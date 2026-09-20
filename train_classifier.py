@@ -14,12 +14,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_score, recall_score, roc_auc_score, classification_report
 
 FEATURES_CSV = "features.csv"
-FEATURE_COLS = ["cosine_similarity", "entity_overlap", "length_ratio"]
 MODEL_OUT = "handoff_prm.joblib"
 
 
 def main():
     df = pd.read_csv(FEATURES_CSV)
+    FEATURE_COLS = [c for c in df.columns if c not in ["task_id", "source", "corruption_type", "label"]]
+    print(f"Using {len(FEATURE_COLS)} features: {FEATURE_COLS}")
     X = df[FEATURE_COLS]
     y = df["label"]
 

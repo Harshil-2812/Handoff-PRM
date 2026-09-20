@@ -1,4 +1,4 @@
-﻿"""
+"""
 A5 -- Full Feature Ablation Script
 
 Extends the original length-ratio diagnostic to cover ALL three features
@@ -32,17 +32,26 @@ from xgboost import XGBClassifier
 from sklearn.linear_model import LogisticRegression
 
 
-FEATURE_COLS = ["cosine_similarity", "entity_overlap", "length_ratio"]
+def get_all_features(df):
+    return [c for c in df.columns if c not in ["task_id", "source", "corruption_type", "label"]]
 
-FEATURE_SETS = {
-    "Full_3_Features":        ["cosine_similarity", "entity_overlap", "length_ratio"],
-    "No_Length_Ratio":        ["cosine_similarity", "entity_overlap"],
-    "No_Cosine_Similarity":   ["entity_overlap", "length_ratio"],
-    "No_Entity_Overlap":      ["cosine_similarity", "length_ratio"],
-    "Cosine_Similarity_Only": ["cosine_similarity"],
-    "Entity_Overlap_Only":    ["entity_overlap"],
-    "Length_Ratio_Only":      ["length_ratio"],
-}
+
+def get_feature_sets(all_features):
+    fsets = {
+        "Full_All_Features":         all_features,
+        "No_Length_Ratio":           [f for f in all_features if f != "length_ratio"],
+        "No_Cosine_Similarity":      [f for f in all_features if f != "cosine_similarity"],
+        "No_Entity_Overlap":         [f for f in all_features if f != "entity_overlap"],
+        "Core_3_Features":           ["cosine_similarity", "entity_overlap", "length_ratio"],
+        "Cosine_Similarity_Only":    ["cosine_similarity"],
+        "Entity_Overlap_Only":       ["entity_overlap"],
+        "Length_Ratio_Only":         ["length_ratio"],
+    }
+    if "function_name_preserved" in all_features:
+        fsets["Function_Name_Preserved_Only"] = ["function_name_preserved"]
+    if "section_coverage" in all_features:
+        fsets["Section_Coverage_Only"] = ["section_coverage"]
+    return fsets
 
 
 def _make_model(name: str):
@@ -58,8 +67,12 @@ def run_ablation():
     os.makedirs("results/robustness", exist_ok=True)
 
     df = pd.read_csv("features.csv")
+    all_features = get_all_features(df)
+    FEATURE_SETS = get_feature_sets(all_features)
+    FEATURE_COLS = all_features
+
     print(f"Loaded features.csv  ->  {len(df)} rows, {df['task_id'].nunique()} unique tasks")
-    print("Columns:", list(df.columns))
+    print(f"Features ({len(all_features)}):", all_features)
     print("Label distribution:\n", df["label"].value_counts().to_string(), "\n")
 
     # -----------------------------------------------------------------------

@@ -1,0 +1,5 @@
+model,optimal_threshold_f1,optimal_threshold_youden,f1_at_0_50,f1_calibrated,precision_calibrated,recall_calibrated,accuracy_calibrated
+"XGBoost (Standard, depth=3)",0.1713,0.1346,0.0,0.3575,0.2265,0.8479,0.5093
+XGBoost (Regularized + Balanced),0.4657,0.4446,0.3533,0.357,0.2232,0.8917,0.4829
+"Logistic Regression (L2, C=0.1)",0.5089,0.4535,0.3461,0.3487,0.2368,0.6613,0.6024
+Random Forest (max_depth=3),0.458,0.458,0.3503,0.352,0.2194,0.8894,0.4729

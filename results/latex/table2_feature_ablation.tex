@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Ablation Study of Feature Sets under 5-Fold GroupKFold Cross-Validation (XGBoost). Demonstrates that while length ratio fails under length-preserving corruptions (0.569 AUROC), the multi-feature PRM achieves 0.684 AUROC.}
+\label{tab:feature_ablation}
+\begin{tabular}{llcc}
+\toprule
+\textbf{Feature Configuration} & \textbf{Features Included} & \textbf{OOF AUROC} & \textbf{OOF AUPRC} \\
+\midrule
+\textbf{Full All Features} (14 feats) & All structural + lexical + NLI & \textbf{0.6836} & \textbf{0.2474} \\
+No Length Ratio (13 feats) & cosine_similarity, entity_overlap, ... & 0.6791 & 0.2429 \\
+No Cosine Similarity (13 feats) & entity_overlap, length_ratio, sente... & 0.6840 & 0.2476 \\
+No Entity Overlap (13 feats) & cosine_similarity, length_ratio, se... & 0.6848 & 0.2470 \\
+Core 3 Features (3 feats) & cosine_similarity, entity_overlap, ... & 0.5664 & 0.1814 \\
+Cosine Similarity Only (1 feats) & cosine_similarity... & 0.5246 & 0.1665 \\
+Entity Overlap Only (1 feats) & entity_overlap... & 0.5576 & 0.1811 \\
+Length Ratio Only (1 feats) & length_ratio... & 0.5689 & 0.1830 \\
+Function Name Preserved Only (1 feats) & function_name_preserved... & 0.4996 & 0.1609 \\
+Section Coverage Only (1 feats) & section_coverage... & 0.5816 & 0.1868 \\
+\bottomrule
+\end{tabular}
+\end{table}

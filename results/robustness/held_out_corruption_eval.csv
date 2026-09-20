@@ -1,0 +1,11 @@
+held_out_corruption,n_neg_test,n_pos_test,train_size,auroc,auprc
+entity_omission,31,434,2665,0.5904,0.943
+fake_completion,434,434,2262,0.8324,0.8397
+inject_false_constraint,434,434,2262,0.6054,0.5885
+invert_objective,227,434,2469,0.4714,0.6381
+negate_edge_case,322,434,2374,0.5285,0.5986
+over_summarization,127,434,2569,0.9899,0.9938
+signature_rename,433,434,2263,0.508,0.5106
+tool_result_drop,112,434,2584,0.993,0.9981
+truncation,73,434,2623,0.8951,0.9676
+wrong_algorithm_name,69,434,2627,0.5363,0.8683

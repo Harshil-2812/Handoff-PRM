@@ -1,108 +1,109 @@
-﻿"""
-Robustness Analysis Script
+"""
+Robustness Analysis using OUT-OF-FOLD predictions.
 
-Evaluates performance breakdowns of the trained PRM model:
-  1. Across corruption types (truncation, entity_omission, tool_result_drop, over_summarization)
-  2. Across task sources (hand_easy, hand_hard, humaneval, mbpp, ...)
+Uses the OOF predictions from model_comparison.py (results/calibration/oof_predictions.csv)
+rather than re-running the trained model, giving honest held-out performance numbers.
 
-Loads the model from results/models/prm_final.joblib (with handoff_prm.joblib fallback).
-Outputs CSVs to results/robustness/.
+Outputs:
+  results/robustness/robustness_by_corruption.csv
+  results/robustness/robustness_by_source.csv
+
+Usage: python analyze_robustness.py
 """
 
 import os
-import joblib
-import numpy as np
 import pandas as pd
-from sklearn.metrics import roc_auc_score, average_precision_score, accuracy_score, confusion_matrix
+import numpy as np
+from sklearn.metrics import roc_auc_score, average_precision_score, accuracy_score
+
+OOF_PATH     = "results/calibration/oof_predictions.csv"
+FEAT_PATH    = "features.csv"
+OUTPUT_DIR   = "results/robustness"
 
 
-MODEL_PATHS = ["results/models/prm_final.joblib", "handoff_prm.joblib"]
+def load_oof_with_metadata():
+    """Merge OOF predictions with corruption_type and source from features.csv."""
+    oof  = pd.read_csv(OOF_PATH)
+    feat = pd.read_csv(FEAT_PATH)
+
+    # oof has: index (matches features.csv row order), y_true, oof_prob
+    # Merge on index position
+    merged = feat.copy()
+    model_col = "XGBoost" if "XGBoost" in oof.columns else "LogisticRegression"
+    merged["oof_prob"] = oof[model_col].values
+    merged["y_true"]   = oof["label"].values
+
+    return merged
 
 
-def _load_model():
-    for path in MODEL_PATHS:
-        if os.path.exists(path):
-            bundle = joblib.load(path)
-            model = bundle.get("model") or bundle.get("lr_model")
-            return model, bundle["feature_cols"]
-    raise FileNotFoundError(
-        "No trained model found. Run model_comparison.py first."
-    )
-
-
-def run_robustness_analysis():
-    os.makedirs("results/robustness", exist_ok=True)
-
-    df = pd.read_csv("features.csv")
-    model, feature_cols = _load_model()
-
-    X = df[feature_cols].values
-    y = df["label"].values
-
-    probs = model.predict_proba(X)[:, 1]
-    df["pred_prob"]  = probs
-    threshold = 0.5
-    df["pred_label"] = (probs >= threshold).astype(int)
-
+def robustness_by_corruption(df):
     positives = df[df["label"] == 1]
+    results = []
 
-    # 1. Performance by Corruption Type
-    corruption_stats = []
-    for corr in df["corruption_type"].unique():
+    for corr in sorted(df["corruption_type"].unique()):
         if corr == "none":
             continue
-        sub_df = pd.concat([positives, df[df["corruption_type"] == corr]])
-        y_sub = sub_df["label"].values
-        p_sub = sub_df["pred_prob"].values
-        l_sub = sub_df["pred_label"].values
+        sub = pd.concat([positives, df[df["corruption_type"] == corr]]).drop_duplicates()
+        y    = sub["label"].values
+        prob = sub["oof_prob"].values
 
-        auroc = roc_auc_score(y_sub, p_sub)
-        auprc = average_precision_score(y_sub, p_sub)
-        acc   = accuracy_score(y_sub, l_sub)
-        tn, fp, fn, tp = confusion_matrix(y_sub, l_sub).ravel()
-        fnr = fn / (fn + tp) if (fn + tp) > 0 else 0.0
-        fpr = fp / (fp + tn) if (fp + tn) > 0 else 0.0
-
-        corruption_stats.append({
-            "corruption_type":     corr,
-            "count_negatives":     len(df[df["corruption_type"] == corr]),
-            "auroc":               round(auroc, 4),
-            "auprc":               round(auprc, 4),
-            "accuracy":            round(acc, 4),
-            "false_positive_rate": round(fpr, 4),
-            "false_negative_rate": round(fnr, 4),
-        })
-
-    corr_df = pd.DataFrame(corruption_stats)
-    corr_df.to_csv("results/robustness/robustness_by_corruption.csv", index=False)
-    print("=== Robustness by Corruption Type ===")
-    print(corr_df.to_string(index=False))
-
-    # 2. Performance by Task Source
-    source_stats = []
-    for src in df["source"].unique():
-        sub_df = df[df["source"] == src]
-        if len(sub_df["label"].unique()) < 2:
+        if len(np.unique(y)) < 2:
             continue
-        y_sub = sub_df["label"].values
-        p_sub = sub_df["pred_prob"].values
-        l_sub = sub_df["pred_label"].values
 
-        source_stats.append({
-            "source":        src,
-            "total_samples": len(sub_df),
-            "positives":     int((y_sub == 1).sum()),
-            "negatives":     int((y_sub == 0).sum()),
-            "auroc":         round(roc_auc_score(y_sub, p_sub), 4),
-            "auprc":         round(average_precision_score(y_sub, p_sub), 4),
-            "accuracy":      round(accuracy_score(y_sub, l_sub), 4),
+        auroc = roc_auc_score(y, prob)
+        auprc = average_precision_score(y, prob)
+        pred  = (prob >= 0.5).astype(int)
+        acc   = accuracy_score(y, pred)
+        n_neg = len(df[df["corruption_type"] == corr])
+
+        results.append({
+            "corruption_type":  corr,
+            "n_negatives":      n_neg,
+            "oof_auroc":        round(auroc, 4),
+            "oof_auprc":        round(auprc, 4),
+            "oof_accuracy":     round(acc, 4),
         })
 
-    src_df = pd.DataFrame(source_stats)
-    src_df.to_csv("results/robustness/robustness_by_source.csv", index=False)
-    print("\n=== Robustness by Source ===")
-    print(src_df.to_string(index=False))
+    return pd.DataFrame(results)
+
+
+def robustness_by_source(df):
+    results = []
+    for src in sorted(df["source"].unique()):
+        sub = df[df["source"] == src]
+        y    = sub["label"].values
+        prob = sub["oof_prob"].values
+        if len(np.unique(y)) < 2:
+            continue
+        auroc = roc_auc_score(y, prob)
+        auprc = average_precision_score(y, prob)
+        results.append({
+            "source":       src,
+            "n_total":      len(sub),
+            "n_positives":  int((y == 1).sum()),
+            "n_negatives":  int((y == 0).sum()),
+            "oof_auroc":    round(auroc, 4),
+            "oof_auprc":    round(auprc, 4),
+        })
+    return pd.DataFrame(results)
 
 
 if __name__ == "__main__":
-    run_robustness_analysis()
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    if not os.path.exists(OOF_PATH):
+        print(f"ERROR: {OOF_PATH} not found. Run model_comparison.py first.")
+        exit(1)
+
+    df = load_oof_with_metadata()
+    print(f"Loaded {len(df)} OOF predictions")
+
+    corr_df = robustness_by_corruption(df)
+    corr_df.to_csv(f"{OUTPUT_DIR}/robustness_by_corruption.csv", index=False)
+    print("\n=== OOF Robustness by Corruption Type ===")
+    print(corr_df.to_string(index=False))
+
+    src_df = robustness_by_source(df)
+    src_df.to_csv(f"{OUTPUT_DIR}/robustness_by_source.csv", index=False)
+    print("\n=== OOF Robustness by Source ===")
+    print(src_df.to_string(index=False))

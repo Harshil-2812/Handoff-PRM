@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Out-of-Fold PRM Detection Performance by Failure / Corruption Category. Structural and completeness failures are reliably detected ($>$0.90 AUROC), while semantic logic inversions require dedicated natural language inference verification.}
+\label{tab:corruption_robustness}
+\begin{tabular}{llccc}
+\toprule
+\textbf{Corruption Mode} & \textbf{Category} & \textbf{Negatives} & \textbf{OOF AUROC} & \textbf{OOF AUPRC} \\
+\midrule
+\texttt{tool_result_drop} & Structural & 112 & 0.9997 & 0.9999 \\
+\texttt{over_summarization} & Structural & 127 & 0.9984 & 0.9995 \\
+\texttt{fake_completion} & Completeness & 434 & 0.9539 & 0.9578 \\
+\texttt{truncation} & Structural &  73 & 0.9043 & 0.9728 \\
+\texttt{inject_false_constraint} & Completeness & 434 & 0.6105 & 0.6085 \\
+\texttt{wrong_algorithm_name} & Semantic / Logic &  69 & 0.5648 & 0.8751 \\
+\texttt{entity_omission} & Structural &  31 & 0.5398 & 0.9327 \\
+\texttt{negate_edge_case} & Semantic / Logic & 322 & 0.5326 & 0.6098 \\
+\texttt{signature_rename} & Schema / Interface & 433 & 0.5132 & 0.5152 \\
+\texttt{invert_objective} & Semantic / Logic & 227 & 0.4991 & 0.6561 \\
+\bottomrule
+\end{tabular}
+\end{table}

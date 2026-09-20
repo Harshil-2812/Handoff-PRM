@@ -1,0 +1,5 @@
+model,auroc_mean,auroc_ci_lower,auroc_ci_upper,auprc_mean,auprc_ci_lower,auprc_ci_upper,brier_score
+"XGBoost (Standard, depth=3)",0.6844,0.66,0.7076,0.2504,0.2203,0.2811,0.127
+XGBoost (Regularized + Balanced),0.6824,0.6597,0.7063,0.2431,0.2158,0.2732,0.2232
+"Logistic Regression (L2, C=0.1)",0.6684,0.645,0.6929,0.2384,0.2108,0.2679,0.23
+Random Forest (max_depth=3),0.6681,0.6439,0.6919,0.2352,0.2078,0.2661,0.2218

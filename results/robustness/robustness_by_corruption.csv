@@ -1,5 +1,11 @@
-corruption_type,count_negatives,auroc,auprc,accuracy,false_positive_rate,false_negative_rate
-tool_result_drop,112,0.9997,0.9999,0.9853,0.0,0.0184
-truncation,73,0.9649,0.9932,0.9507,0.2329,0.0184
-over_summarization,127,0.9999,1.0,0.9857,0.0,0.0184
-entity_omission,31,0.7665,0.9742,0.9312,0.7742,0.0184
+corruption_type,n_negatives,oof_auroc,oof_auprc,oof_accuracy
+entity_omission,31,0.5398,0.9327,0.0667
+fake_completion,434,0.9539,0.9578,0.5
+inject_false_constraint,434,0.6105,0.6085,0.5
+invert_objective,227,0.4991,0.6561,0.3434
+negate_edge_case,322,0.5326,0.6098,0.4259
+over_summarization,127,0.9984,0.9995,0.2264
+signature_rename,433,0.5132,0.5152,0.4994
+tool_result_drop,112,0.9997,0.9999,0.2051
+truncation,73,0.9043,0.9728,0.144
+wrong_algorithm_name,69,0.5648,0.8751,0.1372

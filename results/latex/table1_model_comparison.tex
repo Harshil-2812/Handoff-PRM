@@ -1,0 +1,18 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{5-Fold GroupKFold Cross-Validation Model Comparison. Tasks in training folds are strictly disjoint from validation folds. AUROC and AUPRC reported with 95\% bootstrap confidence intervals across 1,000 resamples. Precision, Recall, and F1 evaluated at operating threshold calibrated via training folds.}
+\label{tab:model_comparison}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Model Architecture} & \textbf{OOF AUROC [95\% CI]} & \textbf{OOF AUPRC [95\% CI]} & \textbf{Brier} & \textbf{Calibrated F1} & \textbf{Rec. / Prec.} & \textbf{Latency} \\
+\midrule
+XGBoost (Standard, depth=3) & 0.684 [0.660, 0.708] & 0.250 [0.220, 0.281] & 0.127 & 0.357 & 0.85 / 0.23 & 1.2 ms \\
+\textbf{XGBoost (Regularized + Balanced)} & \textbf{0.682 [0.660, 0.706]} & \textbf{0.243 [0.216, 0.273]} & \textbf{0.223} & \textbf{0.357} & 0.89 / 0.22 & 1.2 ms \\
+Logistic Regression (L2, C=0.1) & 0.668 [0.645, 0.693] & 0.238 [0.211, 0.268] & 0.230 & 0.349 & 0.66 / 0.24 & 0.1 ms \\
+Random Forest (max_depth=3) & 0.668 [0.644, 0.692] & 0.235 [0.208, 0.266] & 0.222 & 0.352 & 0.89 / 0.22 & 6.0 ms \\
+\midrule
+Length-Ratio Baseline & 0.567 [0.541, 0.594] & 0.184 [0.162, 0.207] & 0.141 & 0.282 & 0.50 / 0.20 & $<$0.01 ms \\
+\bottomrule
+\end{tabular}
+\end{table*}

@@ -1,5 +1,5 @@
-source,total_samples,positives,negatives,auroc,auprc,accuracy
-hand_easy,63,35,28,0.9898,0.9889,0.9048
-hand_hard,126,45,81,0.9964,0.9929,0.9683
-humaneval,288,145,143,0.9912,0.9844,0.9653
-mbpp,300,209,91,0.9552,0.9718,0.9033
+source,n_total,n_positives,n_negatives,oof_auroc,oof_auprc
+hand_easy,218,35,183,0.6874,0.2506
+hand_hard,311,45,266,0.7434,0.2796
+humaneval,942,145,797,0.6963,0.2459
+mbpp,1225,209,1016,0.6585,0.2429
