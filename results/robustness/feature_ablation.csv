@@ -1,0 +1,15 @@
+model,feature_set,features_used,oof_auroc,mean_fold_auroc,std_fold_auroc,oof_auprc,oof_brier
+XGBoost,Full_3_Features,"cosine_similarity, entity_overlap, length_ratio",0.94152,0.943603,0.014422,0.918937,0.073746
+XGBoost,No_Length_Ratio,"cosine_similarity, entity_overlap",0.8831,0.883903,0.030256,0.856872,0.128249
+XGBoost,No_Cosine_Similarity,"entity_overlap, length_ratio",0.943797,0.947913,0.010877,0.927803,0.076963
+XGBoost,No_Entity_Overlap,"cosine_similarity, length_ratio",0.941896,0.943467,0.009863,0.923207,0.072341
+XGBoost,Cosine_Similarity_Only,cosine_similarity,0.718212,0.721456,0.037297,0.69592,0.195065
+XGBoost,Entity_Overlap_Only,entity_overlap,0.874834,0.876967,0.037107,0.871015,0.137142
+XGBoost,Length_Ratio_Only,length_ratio,0.934752,0.939753,0.008325,0.923327,0.08561
+LogisticRegression,Full_3_Features,"cosine_similarity, entity_overlap, length_ratio",0.951828,0.953631,0.010129,0.947794,0.079866
+LogisticRegression,No_Length_Ratio,"cosine_similarity, entity_overlap",0.869705,0.87105,0.03648,0.879123,0.143841
+LogisticRegression,No_Cosine_Similarity,"entity_overlap, length_ratio",0.949551,0.951491,0.009903,0.946335,0.083907
+LogisticRegression,No_Entity_Overlap,"cosine_similarity, length_ratio",0.950464,0.952537,0.010091,0.945294,0.086728
+LogisticRegression,Cosine_Similarity_Only,cosine_similarity,0.727355,0.729392,0.034626,0.694872,0.203741
+LogisticRegression,Entity_Overlap_Only,entity_overlap,0.86331,0.862781,0.038276,0.874327,0.146387
+LogisticRegression,Length_Ratio_Only,length_ratio,0.944405,0.947541,0.008184,0.941495,0.097102

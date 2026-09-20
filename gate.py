@@ -14,16 +14,14 @@ Usage:
         # send result["reason"] back to Agent A and retry
 """
 
-import os
-import json
 import joblib
 import pandas as pd
 from feature_extraction import extract_features
 
-MODEL_PATH = "results/models/prm_final.joblib"
-FALLBACK_MODEL_PATH = "handoff_prm.joblib"
-THRESHOLD_PATH = "results/calibration/threshold.json"
+MODEL_PATH = "handoff_prm.joblib"
 
+# Plain-language hint templates keyed by which feature contributed most
+# negatively to the score. Tune the wording as you see real failure cases.
 FEATURE_HINTS = {
     "cosine_similarity": (
         "Your handoff doesn't align well with what the next agent needs -- "
@@ -40,28 +38,14 @@ FEATURE_HINTS = {
     ),
 }
 
-def load_locked_threshold() -> float:
-    try:
-        with open(THRESHOLD_PATH, "r") as f:
-            meta = json.load(f)
-            return float(meta.get("locked_threshold", 0.33))
-    except Exception:
-        return 0.33
 
 class HandoffGate:
-    def __init__(self, threshold: float = None, model_path: str = None):
-        if model_path is None:
-            model_path = MODEL_PATH if os.path.exists(MODEL_PATH) else FALLBACK_MODEL_PATH
+    def __init__(self, threshold: float = 0.7, model_path: str = MODEL_PATH):
         bundle = joblib.load(model_path)
-        # Prefer XGBoost model for SHAP, but fall back to saved model
-        self.model = bundle.get("model") or bundle.get("lr_model")
-        self.explainer = bundle.get("explainer")
+        self.model = bundle["model"]
+        self.explainer = bundle["explainer"]
         self.feature_cols = bundle["feature_cols"]
-        
-        if threshold is None:
-            self.threshold = load_locked_threshold()
-        else:
-            self.threshold = threshold
+        self.threshold = threshold
 
     def check(self, handoff: str, reference_text: str) -> dict:
         feats = extract_features(handoff, reference_text)

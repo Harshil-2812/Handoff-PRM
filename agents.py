@@ -198,33 +198,9 @@ Output ONLY a Python code block, nothing else."""
     return _extract_code(text)
 
 
-def agent_a_retry_plan(problem: str, previous_handoff: str, feedback: str) -> str:
-    """
-    Agent A retry prompt: receives previous handoff and feedback from PRM gate,
-    generates an improved handoff message addressing the feedback.
-    """
-    prompt = f"""You are Agent A in a two-agent coding pipeline. You previously wrote a handoff message for Agent B, but it was REJECTED by an automated Process Reward Model (PRM) gate.
-
-Original Problem statement:
-{problem}
-
-Your Previous Handoff Message:
-{previous_handoff}
-
-Feedback from PRM Gate:
-{feedback}
-
-Please rewrite and improve your handoff message to resolve the feedback and ensure Agent B has all necessary details (function name/signature, edge cases, clear instructions, explicit logic).
-Output ONLY the revised handoff message, nothing else."""
-    handoff = _generate(prompt, MODEL_A)
-    if not handoff:
-        raise RuntimeError("Agent A returned an empty handoff on retry")
-    return handoff
-
 def _extract_code(text: str) -> str:
     """Pulls code out of a ```python ... ``` block, or returns raw text if no block found."""
     match = re.search(r"```(?:python)?\s*\n(.*?)```", text, re.DOTALL)
     if match:
         return match.group(1).strip()
     return text.strip()
-

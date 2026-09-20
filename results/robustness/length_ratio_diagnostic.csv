@@ -1,5 +1,0 @@
-corruption_type,sample_count,length_ratio_auroc,length_ratio_auprc
-tool_result_drop,23,0.9996011168727563,0.9999165971643031
-truncation,12,0.9587155963302751,0.9948273200770954
-over_summarization,25,1.0,1.0
-entity_omission,8,0.7809633027522935,0.979206509020488

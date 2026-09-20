@@ -1,0 +1,13 @@
+feature,corruption_type,sample_count,auroc,auprc
+cosine_similarity,tool_result_drop,112,0.860146,0.948793
+cosine_similarity,truncation,73,0.556357,0.861202
+cosine_similarity,over_summarization,127,0.785442,0.882589
+cosine_similarity,entity_omission,31,0.42374,0.920859
+entity_overlap,tool_result_drop,112,0.920167,0.977405
+entity_overlap,truncation,73,0.744887,0.934462
+entity_overlap,over_summarization,127,0.931601,0.979571
+entity_overlap,entity_omission,31,0.679017,0.961735
+length_ratio,tool_result_drop,112,0.989847,0.997267
+length_ratio,truncation,73,0.926867,0.986004
+length_ratio,over_summarization,127,0.994993,0.998521
+length_ratio,entity_omission,31,0.621228,0.957641

@@ -1,5 +1,5 @@
 corruption_type,count_negatives,auroc,auprc,accuracy,false_positive_rate,false_negative_rate
-tool_result_drop,23,1.0,1.0,1.0,0.0,0.0
-truncation,12,1.0,1.0,0.9834710743801653,0.16666666666666666,0.0
-over_summarization,25,0.9999999999999999,0.9999999999999998,1.0,0.0,0.0
-entity_omission,8,0.9575688073394495,0.9965995012906619,0.9572649572649573,0.625,0.0
+tool_result_drop,112,0.9997,0.9999,0.9853,0.0,0.0184
+truncation,73,0.9649,0.9932,0.9507,0.2329,0.0184
+over_summarization,127,0.9999,1.0,0.9857,0.0,0.0184
+entity_omission,31,0.7665,0.9742,0.9312,0.7742,0.0184

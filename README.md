@@ -1,235 +1,159 @@
-# Handoff PRM — Process Reward Model for Inter-Agent Context Transfer
+# Handoff PRM
 
-**Tagline**: *“Don’t grade the final output — grade the handoff.”*  
-**Research Paper Report**: [FINAL_EXPERIMENT_REPORT.md](FINAL_EXPERIMENT_REPORT.md)  
-**Master Specification**: [MASTER_RESEARCH_DOCUMENT.md](MASTER_RESEARCH_DOCUMENT.md)  
+Handoff PRM is a small research pipeline for measuring whether an AI planner's
+handoff gives a coding agent enough information to solve a task. It uses two
+Gemini agents:
 
----
+1. Agent A reads the original problem and writes a handoff/specification.
+2. Agent B reads only that handoff and generates the implementation.
+3. The implementation is automatically tested.
+4. Passing handoffs are corrupted in several ways and sent to Agent B again.
+5. Original handoffs are labeled `1`; corrupted handoffs that cause failure are
+   labeled `0`.
+6. Structural and semantic features are extracted and used to train an XGBoost
+   classifier, which can score future handoffs before they reach Agent B.
 
-## 1. What the System Does
+## Requirements
 
-In multi-agent LLM systems (e.g., Agent A planner $\rightarrow$ Agent B coder), failure to transfer critical context during handoffs is a major source of overall system failure. Standard evaluation paradigms evaluate only the final code output after execution. 
+- Python 3.10 or newer
+- A Gemini API key with access to the configured models in `agents.py`
+- Internet access for Gemini, Sentence Transformers, and spaCy model downloads
 
-**Handoff PRM** is an ultra-lightweight (<0.01 ms inference latency) Process Reward Model designed to grade the quality of intermediate handoff messages in real time before downstream execution.
+## Setup
 
-1. **Agent A (Planner)** reads the problem statement and generates a handoff message/plan.
-2. **Handoff PRM** extracts 3 fast features and computes a probability quality score $S$.
-3. If $S \ge 0.330$, the handoff is **accepted** and passed to Agent B.
-4. If $S < 0.330$, the handoff is **rejected**, and SHAP feature attribution returns targeted feedback hints to Agent A for closed-loop revision.
-5. **Agent B (Coder)** receives *only* the handoff message (never the original problem directly) and writes Python code.
+Create and activate a virtual environment:
 
----
-
-## 2. System Architecture
-
-```
-    Agent A (Planner)
-           |
-           | Handoff Message (H)
-           v
-    3-Feature Extractor (feature_extraction.py)
-    - cosine_similarity (all-MiniLM-L6-v2)
-    - entity_overlap (spaCy NER)
-    - length_ratio (words_H / words_P)
-           |
-           v
-    Handoff PRM Gate (gate.py)
-          / \
-         /   \
-   S >= 0.330  S < 0.330
-       |         |
-    (PASS)    (REJECT + SHAP Feedback)
-       |         |
-       v         +---> Agent A Retry Loop
-    Agent B (Coder)
-       |
-       v
-    Code Execution & Unit Test Grade
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
----
+Install the Python dependencies:
 
-## 3. Production Feature Representation
-
-1. `cosine_similarity`: Cosine embedding distance between sentence-level embeddings of problem statement $P$ and handoff $H$ (`all-MiniLM-L6-v2`).
-2. `entity_overlap`: Jaccard similarity of load-bearing identifiers (spaCy NER proper nouns, function signatures `def func(...)`, and constraint keywords).
-3. `length_ratio`: Ratio of word count in handoff message to problem statement ($\text{Length}_H / \text{Length}_P$).
-
----
-
-## 4. Dataset Summary
-
-- **Total Rollouts**: **177**
-- **Unique Coding Tasks**: **109**
-- **Positive Examples (`label=1`)**: **109** (100% clean handoffs where Agent B passed unit tests)
-- **Negative Examples (`label=0`)**: **68** (100% outcome-verified failures where corruption caused Agent B failure)
-- **Discarded Weak Negatives**: **368** corrupted rollouts where Agent B passed despite corruption were explicitly filtered out.
-- **Evaluation Splitting**: Evaluated under 5-Fold `GroupKFold` task-grouped cross-validation (zero task leakage across splits).
-
----
-
-## 5. Model Results & Comparison
-
-| Classifier | OOF AUROC ($\pm$ Std) | OOF AUPRC | Brier Score | Accuracy | F1 Score | Latency / Example | API Cost |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Logistic Regression** | **0.9641 ($\pm$ 0.0453)** | **0.9715** | **0.0583** | **93.22%** | **0.9455** | **< 0.01 ms** | **$0.00** |
-| **XGBoost Classifier** | 0.9535 ($\pm$ 0.0429) | 0.9455 | 0.0606 | 91.53% | 0.9321 | 0.04 ms | $0.00 |
-| **Random Forest** | 0.9514 ($\pm$ 0.0411) | 0.9350 | 0.0636 | 93.22% | 0.9459 | 0.12 ms | $0.00 |
-| **SVM (RBF Kernel)** | 0.9369 ($\pm$ 0.0574) | 0.9150 | 0.0553 | 93.79% | 0.9507 | 0.02 ms | $0.00 |
-| *LLM-as-a-Judge Baseline* | 0.8640 | 0.8810 | N/A | 84.20% | 0.8510 | 3,933.00 ms | ~$0.0015 |
-
-> **Note on Model Architecture & SHAP**:
-> Logistic Regression is reported as the primary statistical model due to its top OOF AUROC (0.9641). The saved runtime bundle `results/models/prm_final.joblib` retains both Logistic Regression and XGBoost (0.9535 AUROC), with XGBoost powering `gate.py` to enable native `shap.TreeExplainer` feature attribution hints upon rejection.
-
----
-
-## 6. Operating Threshold
-
-- **Locked Operating Threshold**: **$\tau^* = 0.330$** (optimizes OOF F1 score to **0.9558**).
-- **Rule**:
-  - Score $\ge 0.330 \rightarrow$ **PASS** (Proceed to Agent B)
-  - Score $< 0.330 \rightarrow$ **REJECT** (Generate SHAP feedback for Agent A revision)
-
----
-
-## 7. Feature Ablation & Length Ratio Diagnostic
-
-- **Full 3-Feature Model**: **0.9641 AUROC**
-- **Without `length_ratio`**: **0.8801 AUROC** (drops by -8.40%)
-- **`length_ratio` Alone**: **0.9630 AUROC**
-
-### Diagnostic Insight & Limitation
-`length_ratio` is an exceptionally strong linear indicator for coarse volumetric context compressions (ANOVA $F = 42.58$, $p = 8.66 \times 10^{-25}$, $\eta^2 = 0.4975$). On `over_summarization` and `tool_result_drop`, `length_ratio` alone achieves >0.999 AUROC. 
-
-However, on subtle structural damage like `entity_omission`, `length_ratio` alone drops to **0.7810 AUROC**. Combining `length_ratio` with `entity_overlap` restores entity omission detection to **0.9576 AUROC**. 
-
-*Limitation*: Length ratio is strongly predictive for benchmark corruptions, but real-world deployments where an LLM generates verbose but incorrect plans require `entity_overlap` and `cosine_similarity`.
-
----
-
-## 8. Robustness Summary
-
-- **By Corruption Category**:
-  - `tool_result_drop`: 1.0000 AUROC
-  - `over_summarization`: 1.0000 AUROC
-  - `truncation`: 1.0000 AUROC (98.35% accuracy)
-  - `entity_omission`: 0.9576 AUROC (95.73% accuracy)
-- **By Task Benchmark Source**:
-  - `hand_easy`: 1.0000 AUROC
-  - `hand_hard`: 0.9975 AUROC
-  - `humaneval`: 1.0000 AUROC
-  - `mbpp`: 1.0000 AUROC
-
----
-
-## 9. Live Multi-Agent Gating Experiment Results
-
-Evaluated on 16 benchmark tasks across 3 pipeline conditions (`ungated`, `gated_blind`, `gated_shap`):
-
-| Pipeline Condition | Task Count | Downstream Code Pass Rate | Avg PRM Score | Avg Retries Triggered | False Rejections |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Ungated Baseline** | 16 | **68.75%** | 0.9038 | 0.0 | 0.0% |
-| **Gated (Blind Retry)** | 16 | **68.75%** | 0.9038 | 0.0 | 0.0% |
-| **Gated (SHAP Retry)** | 16 | **68.75%** | 0.9038 | 0.0 | 0.0% |
-
-*Honest Assessment*: For clean initial generations produced from scratch by Agent A, mean PRM scores were **0.9038** (min 0.4976), cleanly exceeding $\tau^* = 0.330$. The gate registered **0 false rejections** and introduced zero token or latency overhead. On clean initial plans, the gating pilot did not change downstream pass rates because no retries were needed.
-
----
-
-## 10. How to Reproduce
-
-### 10.1 Local Reproduction (Zero Cost, No API Key Required)
-Reproduce model training, calibration, diagnostics, figures, and unit test suite locally using existing outcome-grounded rollouts:
-
-```bash
-# 1. Install dependencies
-pip install -r REQUIREMENTS.txt
-python -m nltk.downloader punkt punkt_tab
+```powershell
+pip install -r requirements.txt
 python -m spacy download en_core_web_sm
-
-# 2. Run length-ratio diagnostic & ablation (Phase 3)
-python diagnose_length_ratio.py
-
-# 3. Train models & compute 5-fold GroupKFold comparison (Phase 4)
-python train_prm_final.py
-
-# 4. Perform probability calibration & lock threshold (Phase 5)
-python calibrate_prm.py
-
-# 5. Run robustness analysis across corruptions & sources (Phase 9)
-python analyze_robustness.py
-
-# 6. Generate publication-ready figures (Phase 10)
-python generate_figures.py
-
-# 7. Run automated test suite (Phase 11)
-python test_pipeline.py
 ```
 
-### 10.2 Live LLM Rollout & Gating Execution (Requires Gemini API Key)
-To run live Gemini Agent A/B rollouts or gating experiments:
+Create a local `.env` file in the project root:
 
-```bash
-# Copy placeholder env file and set your key
-cp .env.example .env
-# Edit .env: GEMINI_API_KEY=your_api_key_here
-
-# Run live gating experiment
-python run_gated_experiment.py
+```text
+GEMINI_API_KEY=your-gemini-api-key
 ```
 
----
+`agents.py` loads this value with `python-dotenv` and `os.getenv`. The `.env`
+file is ignored by Git. Never commit API keys. Because a key was previously
+present in source history, rotate it before using this project publicly.
 
-## 11. Project Directory Structure
+## Run The Pipeline
 
+Run these commands from the project root, in order:
+
+```powershell
+# Generate and label rollouts
+python rollout_runner.py
+
+# Convert rollouts.csv into numeric features.csv
+python build_dataset.py
+
+# Train and save the classifier as handoff_prm.joblib
+python train_classifier.py
 ```
-handoff-prm/
-├── README.md
-├── REQUIREMENTS.txt
-├── .env.example
-├── .gitignore
-├── FINAL_EXPERIMENT_REPORT.md
-├── MASTER_RESEARCH_DOCUMENT.md
-├── agents.py
-├── corruption.py
-├── feature_extraction.py
-├── gate.py
-├── rollout_runner.py
-├── train_prm_final.py
-├── calibrate_prm.py
-├── diagnose_length_ratio.py
-├── analyze_robustness.py
-├── generate_figures.py
-├── run_gated_experiment.py
-├── test_pipeline.py
-├── humaneval_tasks.py
-├── mbpp_tasks.py
-├── rollouts.csv
-├── features.csv
-├── tasks/
-│   ├── all_tasks.py
-│   └── coding_tasks.py
-└── results/
-    ├── calibration/
-    │   ├── oof_predictions.csv
-    │   └── threshold.json
-    ├── figures/
-    │   ├── ablation_study.png
-    │   ├── calibration_curve.png
-    │   ├── model_comparison_auroc.png
-    │   ├── pr_curves.png
-    │   ├── roc_curves.png
-    │   └── shap_summary.png
-    ├── gating/
-    │   └── gated_experiment.csv
-    ├── models/
-    │   └── prm_final.joblib
-    ├── robustness/
-    │   ├── length_ratio_ablation.csv
-    │   ├── length_ratio_diagnostic.csv
-    │   ├── robustness_by_corruption.csv
-    │   └── robustness_by_source.csv
-    └── tables/
-        ├── cv_results.csv
-        └── gating_comparison.csv
+
+The first command can take a long time because requests are rate-limited and
+retried. It is resumable: completed task IDs are read from `rollouts.csv`, and
+those tasks are skipped on later runs. If daily quota is exhausted, the run
+stops without writing a partial task.
+
+## Check Model Access
+
+Before a long run, verify that the configured Gemini model IDs are available to
+the API key:
+
+```powershell
+python -c "from agents import check_models; check_models()"
 ```
+
+The two model names and their requests-per-minute limits are configured near
+the top of `agents.py` as `MODEL_A`, `MODEL_B`, and `RPM_LIMITS`.
+
+## Use The Gate
+
+After `train_classifier.py` creates `handoff_prm.joblib`, score a handoff:
+
+```python
+from gate import HandoffGate
+
+gate = HandoffGate(threshold=0.7)
+result = gate.check(handoff_text, problem_text)
+
+print(result["score"])
+print(result["pass"])
+if not result["pass"]:
+    print(result["reason"])
+```
+
+The result contains the probability that the handoff is acceptable, the pass
+decision, all extracted features, and, for blocked handoffs, the feature that
+contributed most negatively to the score.
+
+## Files
+
+| File | Purpose |
+|---|---|
+| `agents.py` | Gemini client, rate limiting, retries, Agent A, and Agent B |
+| `corruption.py` | Handoff corruption functions and corruption registry |
+| `tasks/coding_tasks.py` | Coding tasks, entry-point names, and automated tests |
+| `rollout_runner.py` | Runs original/corrupted rollouts and writes `rollouts.csv` |
+| `rollouts.csv` | Resumable raw rollout dataset |
+| `feature_extraction.py` | Computes cosine similarity, entity overlap, and length ratio |
+| `build_dataset.py` | Converts `rollouts.csv` into `features.csv` |
+| `features.csv` | Numeric labeled dataset used for training |
+| `train_classifier.py` | Trains and evaluates the XGBoost classifier |
+| `handoff_prm.joblib` | Saved model, SHAP explainer, and feature-column metadata |
+| `gate.py` | Scores live handoffs and creates failure explanations |
+| `.env` | Local Gemini API key; ignored by Git |
+| `.gitignore` | Prevents local secrets and Python caches from being tracked |
+
+## Dataset And Labels
+
+Each task first needs a passing original rollout. Failed original rollouts are
+discarded because a later corrupted failure cannot be attributed to the
+corruption. For a passing original, each corruption is run independently:
+
+- Original handoff: label `1`.
+- Corrupted handoff that still passes: discarded as a weak negative.
+- Corrupted handoff that fails: label `0`.
+
+This means the CSV may contain fewer rows than the number of tasks multiplied
+by five. It also means missing task IDs can indicate original failures or
+incomplete runs, not necessarily a CSV-format problem.
+
+## Features
+
+The classifier currently uses three features:
+
+- `cosine_similarity`: semantic similarity between the handoff and problem.
+- `entity_overlap`: fraction of reference noun chunks and named entities found
+  in the handoff.
+- `length_ratio`: handoff word count divided by problem word count.
+
+The Sentence Transformers model `all-MiniLM-L6-v2` is downloaded on first use.
+The spaCy model `en_core_web_sm` must be installed during setup.
+
+## Current Limitations
+
+- The included dataset starts with only ten coding tasks.
+- Corruption functions are heuristic and should be reviewed against real
+  outputs.
+- Training currently uses one stratified train/test split; cross-validation is
+  preferable for a larger study.
+- The gate is a standalone component. It is not yet wired into a LangGraph
+  conditional workflow.
+- The current feature set is structural and lightweight; it is not a complete
+  semantic correctness model.
+
+## Security
+
+Keep `.env` local and do not commit it. If an API key is exposed, revoke or
+rotate it immediately and replace the value in `.env`.
