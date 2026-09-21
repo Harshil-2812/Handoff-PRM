@@ -1,0 +1,11 @@
+corruption_type,n,auroc
+over_summarization,63,1.0
+tool_result_drop,65,0.9999379652605459
+truncation,33,0.988880742913001
+fake_completion,11,0.8676686217008798
+entity_omission,16,0.858366935483871
+inject_false_constraint,5,0.5846774193548386
+signature_rename,14,0.454205069124424
+invert_objective,14,0.4480126728110599
+wrong_algorithm_name,8,0.4274193548387097
+negate_edge_case,6,0.3679435483870968

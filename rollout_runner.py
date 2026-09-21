@@ -24,7 +24,7 @@ from agents import agent_a_plan, agent_b_code, QuotaExhausted
 from corruption import CORRUPTION_FUNCTIONS
 
 OUTPUT_CSV = "rollouts.csv"
-FIELDNAMES = ["task_id", "problem", "handoff", "corruption_type", "label", "source"]
+FIELDNAMES = ["task_id", "problem", "handoff", "corruption_type", "label", "label_source", "source"]
 
 
 def load_completed_task_ids(path: str = OUTPUT_CSV) -> set:
@@ -118,6 +118,7 @@ def run_all(tasks=ALL_TASKS, verbose=True):
                 "handoff": handoff,
                 "corruption_type": "none",
                 "label": 1,
+                "label_source": "measured",
                 "source": task.get("source", "unknown"),
             })
 
@@ -150,6 +151,7 @@ def run_all(tasks=ALL_TASKS, verbose=True):
                     "handoff": corrupted_handoff,
                     "corruption_type": corruption_type,
                     "label": 0,
+                    "label_source": "measured",
                     "source": task.get("source", "unknown"),
                 })
 

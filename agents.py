@@ -10,13 +10,19 @@ see the original problem, a bad handoff wouldn't matter as much. Forcing
 Agent B to depend entirely on the handoff is what makes handoff quality
 causally matter.
 
-API key is hardcoded below for now -- rotate it before this repo goes anywhere.
+Multi-key parallel support: set GEMINI_KEYS in .env as a Python list literal,
+e.g. GEMINI_KEYS=['key1','key2','key3']. Each key gets its own client and
+rate-limiter; a ThreadPoolExecutor with N workers runs N tasks simultaneously,
+one per key.
 """
 
+import ast
 import os
+import queue
 import re
 import threading
 import time
+from contextlib import contextmanager
 
 from dotenv import load_dotenv
 from google import genai
@@ -24,46 +30,53 @@ from google.genai import types
 from google.genai import errors as genai_errors
 
 load_dotenv()
-api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    raise RuntimeError("GEMINI_API_KEY is not set in the environment or .env")
 
-client = genai.Client(api_key=api_key)
+# ─── Key loading ──────────────────────────────────────────────────────────────
+# Prefer GEMINI_KEYS (list) for parallel runs; fall back to single GEMINI_API_KEY.
 
-# --- Model split -------------------------------------------------------------
+def _load_keys() -> list[str]:
+    raw = os.getenv("GEMINI_KEYS", "").strip()
+    if raw:
+        try:
+            parsed = ast.literal_eval(raw)
+            if isinstance(parsed, (list, tuple)) and parsed:
+                return [str(k).strip() for k in parsed if str(k).strip()]
+        except (ValueError, SyntaxError):
+            pass
+    single = os.getenv("GEMINI_API_KEY", "").strip()
+    if single:
+        return [single]
+    raise RuntimeError(
+        "No API keys found. Set GEMINI_KEYS=['key1','key2',...] "
+        "or GEMINI_API_KEY=key in your .env"
+    )
+
+GEMINI_KEYS = _load_keys()
+N_KEYS = len(GEMINI_KEYS)
+
+# ─── Model names ──────────────────────────────────────────────────────────────
 # Free-tier quota is per-project-PER-MODEL, so putting the two agents on
 # different models gives each its own daily bucket instead of sharing one.
-# Agent A runs 1x per task, Agent B runs 5x (1 original + 4 corruptions),
-# so B is the one that needs headroom.
-#
-# Verify these strings against client.models.list() -- see check_models() below.
-MODEL_A = "gemini-3.5-flash-lite"   # ~15 RPM / 500 RPD
-MODEL_B = "gemini-3.1-flash-lite"   # ~15 RPM / 500 RPD, separate bucket
+MODEL_A = "gemini-3.5-flash-lite"
+MODEL_B = "gemini-3.5-flash-lite"
 
-# Requests-per-minute ceiling for each model. Keep these at or below the
-# dashboard values -- overrunning RPM produces 429s long before the daily cap.
-RPM_LIMITS = {
-    MODEL_A: 15,
-    MODEL_B: 15,
-}
+# Per-key RPM cap — set below the 15 RPM hard limit to leave a safety buffer.
+RPM_PER_KEY = 10
 
-MAX_RETRIES = 5  # attempts per call when the API returns a retryable error
-
-# No thinking_config: Gemini 3.x rejects the numeric thinking_budget parameter,
-# so we leave thinking on and give it headroom.
+MAX_RETRIES = 5
 GEN_CONFIG = types.GenerateContentConfig(max_output_tokens=4000)
 
 
+# ─── Public exceptions ────────────────────────────────────────────────────────
+
 class QuotaExhausted(RuntimeError):
-    """Raised when a model's quota is gone and retrying within this run is futile.
+    """Raised when a key's daily quota is gone — not worth retrying this run."""
 
-    Distinct from a normal generation failure: the runner must NOT record this
-    as a task outcome, because no outcome was actually observed.
-    """
 
+# ─── Rate limiter (one per key, not shared) ───────────────────────────────────
 
 class _RateLimiter:
-    """Spaces calls to one model so we stay under its requests-per-minute cap."""
+    """Enforces a minimum interval between calls on one key."""
 
     def __init__(self, rpm: int):
         self._min_interval = 60.0 / rpm
@@ -79,12 +92,72 @@ class _RateLimiter:
             self._last_call = time.monotonic()
 
 
-_LIMITERS = {model: _RateLimiter(rpm) for model, rpm in RPM_LIMITS.items()}
+# ─── Key pool ─────────────────────────────────────────────────────────────────
+# A Queue of (client, limiter) pairs. Each worker thread grabs one, uses it,
+# then returns it — UNLESS the key hit its daily quota, in which case the key
+# is retired (removed permanently) and the thread retries with a fresh key.
 
+class _KeyPool:
+    def __init__(self, keys: list[str], rpm: int):
+        self._lock = threading.Lock()
+        self._q: queue.Queue = queue.Queue()
+        self._active: set = set()          # id(entry) of keys still alive
+        self._entries = []
+        for key in keys:
+            c = genai.Client(api_key=key)
+            lim = _RateLimiter(rpm)
+            entry = (c, lim)
+            self._entries.append(entry)
+            self._active.add(id(entry))
+            self._q.put(entry)
+
+    @contextmanager
+    def acquire(self):
+        """Block until a (client, limiter) pair is free.
+
+        Yields (entry, retire_callback).  Call retire_callback() inside the
+        with-block to permanently remove the key from the pool instead of
+        returning it to the queue.
+        """
+        item = self._q.get()
+        retired = [False]
+
+        def retire():
+            """Remove this key from the pool permanently."""
+            retired[0] = True
+            with self._lock:
+                self._active.discard(id(item))
+                try:
+                    self._entries.remove(item)
+                except ValueError:
+                    pass
+            print(f"    [key pool] key retired (daily quota) — "
+                  f"{self.size()} key(s) still active")
+
+        try:
+            yield item, retire
+        finally:
+            if not retired[0]:
+                self._q.put(item)
+
+    def size(self) -> int:
+        """Number of keys still active (not yet retired)."""
+        with self._lock:
+            return len(self._active)
+
+    def all_clients(self):
+        with self._lock:
+            return [c for c, _ in self._entries]
+
+
+# One shared pool for the whole process (thread-safe).
+_POOL = _KeyPool(GEMINI_KEYS, RPM_PER_KEY)
+
+
+# ─── Helpers ──────────────────────────────────────────────────────────────────
 
 def _retry_delay_seconds(err: genai_errors.ClientError) -> float | None:
-    """Pulls Google's suggested retryDelay ('32s') out of a 429 payload."""
-    details = (getattr(err, "details", None) or {})
+    details = getattr(err, "details", None) or {}
     if not isinstance(details, dict):
         return None
     for detail in details.get("error", {}).get("details", []):
@@ -98,56 +171,70 @@ def _retry_delay_seconds(err: genai_errors.ClientError) -> float | None:
 
 
 def _is_daily_quota(err: genai_errors.ClientError) -> bool:
-    """True if the 429 is the per-day cap rather than the per-minute one.
-
-    A per-minute overrun is worth sleeping through. A daily cap is not -- it
-    resets on Google's clock, not in the next 60 seconds.
-    """
     return "PerDay" in str(getattr(err, "message", "")) or "PerDay" in str(err)
 
 
+# ─── Core generation (acquires a key from the pool) ───────────────────────────
+
 def _generate(prompt: str, model: str) -> str:
-    """Single-turn call to Gemini, rate-limited and retried on 429/5xx."""
-    limiter = _LIMITERS.get(model)
+    """Grabs a free key from the pool, calls Gemini, returns it. Thread-safe.
 
-    for attempt in range(MAX_RETRIES):
-        if limiter:
-            limiter.wait()
-        try:
-            response = client.models.generate_content(
-                model=model,
-                contents=prompt,
-                config=GEN_CONFIG,
-            )
-            return (response.text or "").strip()
+    When a key hits its DAILY quota it is retired from the pool and this
+    function automatically retries with the next available key.  Only when
+    the pool is fully empty does QuotaExhausted propagate to the caller.
+    """
+    while True:
+        if _POOL.size() == 0:
+            raise QuotaExhausted("All API keys have exhausted their daily quota")
 
-        except genai_errors.ClientError as err:
-            if getattr(err, "code", None) != 429:
-                raise  # 400/404 etc. are our bug, not a transient condition
-            if _is_daily_quota(err):
-                raise QuotaExhausted(f"Daily quota exhausted for {model}") from err
-            delay = _retry_delay_seconds(err) or (2.0 ** attempt)
-            print(f"    rate limited on {model}, sleeping {delay:.0f}s "
-                  f"(attempt {attempt + 1}/{MAX_RETRIES})")
-            time.sleep(delay + 1.0)
+        with _POOL.acquire() as ((client, limiter), retire):
+            for attempt in range(MAX_RETRIES):
+                limiter.wait()
+                try:
+                    response = client.models.generate_content(
+                        model=model,
+                        contents=prompt,
+                        config=GEN_CONFIG,
+                    )
+                    return (response.text or "").strip()
 
-        except genai_errors.ServerError:
-            delay = 2.0 ** attempt
-            print(f"    server error on {model}, retrying in {delay:.0f}s")
-            time.sleep(delay)
+                except genai_errors.ClientError as err:
+                    if getattr(err, "code", None) != 429:
+                        raise
+                    if _is_daily_quota(err):
+                        # Retire this key and let the outer while loop
+                        # pick up a fresh one from the pool.
+                        retire()
+                        break   # exits the for-loop; outer while retries
+                    delay = _retry_delay_seconds(err) or (2.0 ** attempt)
+                    print(f"    [key pool] rate limited, sleeping {delay:.0f}s "
+                          f"(attempt {attempt + 1}/{MAX_RETRIES})")
+                    time.sleep(delay + 1.0)
 
-    raise QuotaExhausted(f"{model} still rate limited after {MAX_RETRIES} attempts")
+                except genai_errors.ServerError:
+                    delay = 2.0 ** attempt
+                    print(f"    [key pool] server error, retrying in {delay:.0f}s")
+                    time.sleep(delay)
+            else:
+                # for-loop exhausted all MAX_RETRIES without a daily-quota hit
+                raise QuotaExhausted(f"{model} still rate limited after {MAX_RETRIES} attempts")
+            # If we broke out (key retired), outer while loop continues.
 
+
+
+# ─── Public API (unchanged signatures) ───────────────────────────────────────
 
 def check_models() -> None:
-    """Prints the model IDs this key can reach. Run before a long job."""
-    available = {m.name.removeprefix("models/") for m in client.models.list()}
+    """Prints models reachable by the first key. Run before a long job."""
+    first_client = _POOL.all_clients()[0]
+    available = {m.name.removeprefix("models/") for m in first_client.models.list()}
     for label, model in (("MODEL_A", MODEL_A), ("MODEL_B", MODEL_B)):
         mark = "OK " if model in available else "NOT FOUND"
         print(f"{mark} {label} = {model}")
-    print(f"\n{len(available)} models visible to this key:")
+    print(f"\n{len(available)} models visible to key[0]:")
     for name in sorted(available):
         print(f"  {name}")
+    print(f"\nKey pool size: {N_KEYS} key(s) loaded")
 
 
 def agent_a_plan(problem: str) -> str:
@@ -199,7 +286,7 @@ Output ONLY a Python code block, nothing else."""
 
 
 def _extract_code(text: str) -> str:
-    """Pulls code out of a ```python ... ``` block, or returns raw text if no block found."""
+    """Pulls code out of a ```python ... ``` block, or returns raw text."""
     match = re.search(r"```(?:python)?\s*\n(.*?)```", text, re.DOTALL)
     if match:
         return match.group(1).strip()
