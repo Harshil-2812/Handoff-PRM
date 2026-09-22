@@ -1,0 +1,38 @@
+% PRIMARY RESULTS TABLE
+\begin{tabular}{lccc}
+\toprule
+Condition & Ungated & Gated & $\Delta$ \\
+\midrule
+All ($n=94$) & 55.3\% & 67.0\% & +11.7\% \\
+Clean ($n=47$) & 66.0\% & 63.8\% & -2.1\% \\
+Corrupted ($n=47$) & 44.7\% & 70.2\% & +25.5\% \\
+\midrule
+\multicolumn{4}{l}{McNemar $p=0.0074$; Bootstrap 95\% CI [+4.3, +19.1] pp} \\
+\bottomrule
+\end{tabular}
+
+% CONFUSION MATRIX (corrupted tasks only)
+\begin{tabular}{lcc}
+\toprule
+& Handoff failed & Handoff passed \\
+\midrule
+Gate BLOCK & 22 (TP) & 18 (FP) \\
+Gate PASS  & 4 (FN) & 3 (TN) \\
+\midrule
+Precision & \multicolumn{2}{c}{0.550} \\
+Recall    & \multicolumn{2}{c}{0.846} \\
+F1        & \multicolumn{2}{c}{0.667} \\
+\bottomrule
+\end{tabular}
+
+% PER-CORRUPTION TABLE
+\begin{tabular}{lrrrr}
+\toprule
+Corruption type & $n$ & Ungated & Gated & $\Delta$ \\
+\midrule
+invert\_objective & 12 & 33.3\% & 75.0\% & +41.7\% \\
+truncation & 12 & 41.7\% & 75.0\% & +33.3\% \\
+over\_summarization & 12 & 50.0\% & 75.0\% & +25.0\% \\
+fake\_completion & 11 & 54.5\% & 54.5\% & +0.0\% \\
+\bottomrule
+\end{tabular}
