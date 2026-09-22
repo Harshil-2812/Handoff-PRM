@@ -1,0 +1,21 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Architecture ablation by replaying recorded gate decisions (n=94; identical downstream executions, arm variable only). ``S1 only'' = single-stage RF gate at $\tau{=}0.45$ with fallback; ``Two-stage'' = S1 plus the Stage-2 LLM judge (escalation and fail-open flips). All values are \textsc{Pass@1} in \%. Stage-2 marginal contribution is small on clean handoffs and negative on the clean arm (judge false alarms).}
+\label{tab:downstream_ablation}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Configuration} & \textbf{All} & \textbf{Clean} & \textbf{Corrupted} \\
+\midrule
+Ungated (no gate) & 55.3 & 66.0 & 44.7 \\
+S1-only (RF, $\tau{=}0.45$) & 66.0 & 66.0 & 66.0 \\
+\textbf{Two-stage (S1 + LLM judge)} & \textbf{67.0} & 63.8 & \textbf{70.2} \\
+\midrule
+Stage-2 marginal (pp) & +1.0 & $-$2.2 & +4.2 \\
+\bottomrule
+\end{tabular}
+\vspace{-2pt}
+\begin{flushleft}\small
+Judge mechanics: 59/94 first-stage passes escalated; 12 flipped to ``insufficient'' (10 corrupted, 2 clean); 2/12 flips were decisive recoveries (he\_133, mbpp\_245, both semantic inversions); 2/12 were clean false alarms (mbpp\_410, mbpp\_786), with mbpp\_410 accounting for the entire clean-arm regression.
+\end{flushleft}
+\end{table}

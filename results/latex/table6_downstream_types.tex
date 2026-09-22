@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Per-corruption-mode downstream Pass@1 on the corrupted arm (n=47; fixed parity schedule, 12/12/12/11 per mode). Intercepted = handoff blocked by either stage; Recovered = blocked handoff rescued by the circuit-breaker fallback to the pristine problem (ugated-fail $\rightarrow$ gated-pass); Hurt = ungated-pass $\rightarrow$ gated-fail. The fabricated-completion null decomposes into 3 gate false negatives and 2 unrecoverable (task-ceiling) failures, i.e., blocking never backfires.}
+\label{tab:downstream_types}
+\begin{tabular}{lccccccc}
+\toprule
+\textbf{Mode} & \textbf{$n$} & \textbf{Ungated} & \textbf{Gated} & \textbf{$\Delta$ (pp)} & \textbf{Interc.} & \textbf{Recovered} & \textbf{Hurt} \\
+\midrule
+truncation & 12 & 41.7 & 75.0 & +33.3 & 12/12 & 4 & 0 \\
+over\_summarization & 12 & 50.0 & 75.0 & +25.0 & 12/12 & 4 & 1 \\
+invert\_objective & 12 & 33.3 & 75.0 & \textbf{+41.7} & 10/12 & 5 & 0 \\
+fake\_completion & 11 & 54.5 & 54.5 & 0.0 & 6/11 & 0 & 0 \\
+\midrule
+Corrupted (all) & 47 & 44.7 & 70.2 & +25.5 & 40/47 & 13 & 1 \\
+\bottomrule
+\end{tabular}
+\vspace{-2pt}
+\begin{flushleft}\small
+Realized-failure interception: of 21 corrupted handoffs that failed in the ungated arm, 17 (81\%) were intercepted and 13 (62\% of all realized corruptions) fully recovered via fallback. Residual corrupted-arm failures: 4 gate false negatives (mbpp\_260, mbpp\_301, mbpp\_615, mbpp\_783) and 10 intercepted-but-unrecoverable tasks (fallback also failed). Overall, 35/47 blocked handoffs across both arms still produced a passing solution via fallback.
+\end{flushleft}
+\end{table}

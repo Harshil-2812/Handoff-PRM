@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\small
+\caption{End-to-end downstream Pass@1 (n=94, full held-out suite; 47 clean + 47 corrupted). Gated arm runs Agent B behind the two-stage gate with circuit-breaker fallback to the pristine problem on a block; ungated arm passes the handoff to Agent B directly. $\Delta$ = gated minus ungated in percentage points. McNemar $p$ is the exact two-sided test on discordant pairs; the 95\% CI for $\Delta$ is a paired bootstrap over 5{,}000 resamples.}
+\label{tab:downstream_overall}
+\begin{tabular}{lccccc}
+\toprule
+\multirow{2}{*}{\textbf{Task Arm}} & \multirow{2}{*}{\textbf{$n$}} & \multirow{2}{*}{\textbf{Ungated}} & \multirow{2}{*}{\textbf{Gated (two-stage)}} & \multirow{2}{*}{\textbf{$\Delta$ (pp)}} & \multirow{2}{*}{\textbf{McNemar $p$}} \\
+ & & & & & \\
+\midrule
+All tasks & 94 & 55.3 & 67.0 & \textbf{+11.7} & \textbf{0.0074}$^{*}$ \\
+Clean handoffs & 47 & 66.0 & 63.8 & $-$2.1 & 1.000 \\
+Corrupted handoffs & 47 & 44.7 & 70.2 & \textbf{+25.5} & \textbf{0.0018}$^{*}$ \\
+\bottomrule
+\end{tabular}
+\vspace{-2pt}
+\begin{flushleft}\small
+$\Delta$ 95\% CI (all tasks): $[+4.3, +19.1]$ pp (excludes 0). Discordant pairs: 13 recovered, 2 regressed. $^{*}$ Significant at $\alpha=0.05$.
+\end{flushleft}
+\end{table}
