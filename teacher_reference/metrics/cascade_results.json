@@ -1,0 +1,135 @@
+{
+  "primary_live_run": {
+    "source_log": "live_gating_logs/run_gemini_primary.log",
+    "n_total": 94,
+    "n_clean": 47,
+    "n_corrupted": 47,
+    "backbone": "gemini-1.5-flash",
+    "gate_model": "RandomForest",
+    "tau_star": 0.330,
+
+    "pass_at_1": {
+      "ungated_all": 0.5532,
+      "gated_all": 0.6702,
+      "delta_all_pp": 11.7,
+      "ungated_clean": 0.6596,
+      "gated_clean": 0.6383,
+      "delta_clean_pp": -2.1,
+      "ungated_corrupted": 0.4468,
+      "gated_corrupted": 0.7021,
+      "delta_corrupted_pp": 25.5
+    },
+
+    "mcnemar": {
+      "p_value": 0.0074,
+      "test_type": "exact two-sided McNemar",
+      "discordant_gate_hurt": 2,
+      "discordant_gate_recovered": 13,
+      "both_pass": 50,
+      "both_fail": 29,
+      "significant_at_alpha_0_05": true
+    },
+
+    "bootstrap": {
+      "n_bootstrap": 10000,
+      "seed": 42,
+      "ci_95_lower_pp": 4.3,
+      "ci_95_upper_pp": 19.1,
+      "metric": "delta Pass@1 (gated - ungated)"
+    },
+
+    "always_fallback_baseline": {
+      "afb_lower_all": 0.6702,
+      "afb_upper_all": 0.8723,
+      "gated_all": 0.6702,
+      "mcnemar_gated_vs_afb_lower_p": 1.0000,
+      "afb_lower_clean": 0.6383,
+      "afb_upper_clean": 0.9574,
+      "afb_lower_corrupted": 0.7021,
+      "afb_upper_corrupted": 0.7872,
+      "note": "AFB lower bound = gated (same rows on PASS path), AFB upper = hypothetical all-pass. Architecture claim: gate preserves info-hiding by default."
+    },
+
+    "confusion_matrix_corrupted_tasks": {
+      "note": "Positive = BLOCK; ground truth positive = ungated failed",
+      "TP": 22,
+      "FP": 18,
+      "FN": 4,
+      "TN": 3,
+      "precision": 0.550,
+      "recall": 0.846,
+      "f1": 0.667
+    },
+
+    "clean_task_cost": {
+      "fp_blocks": 7,
+      "fp_blocks_pct": 14.9,
+      "recovered_by_fallback": 5,
+      "recovery_rate": 0.714,
+      "net_irrecoverable": 2
+    },
+
+    "two_stage_architecture": {
+      "total_blocks": 47,
+      "stage1_blocks": 35,
+      "stage1_pct_of_all_blocks": 74.0,
+      "stage2_escalations": 59,
+      "stage2_added_blocks": 12,
+      "stage2_pct_of_all_blocks": 26.0,
+      "stage2_flip_rate": 0.203,
+      "tasks_on_cheap_path_only": 35,
+      "tasks_needing_judge_pct": 62.8
+    },
+
+    "per_corruption_type": {
+      "invert_objective": {
+        "n": 12,
+        "ungated_pass1": 0.333,
+        "gated_pass1": 0.750,
+        "delta_pp": 41.7,
+        "blocked": 10,
+        "recovered": 8
+      },
+      "truncation": {
+        "n": 12,
+        "ungated_pass1": 0.417,
+        "gated_pass1": 0.750,
+        "delta_pp": 33.3,
+        "blocked": 12,
+        "recovered": 9
+      },
+      "over_summarization": {
+        "n": 12,
+        "ungated_pass1": 0.500,
+        "gated_pass1": 0.750,
+        "delta_pp": 25.0,
+        "blocked": 12,
+        "recovered": 9
+      },
+      "fake_completion": {
+        "n": 11,
+        "ungated_pass1": 0.545,
+        "gated_pass1": 0.545,
+        "delta_pp": 0.0,
+        "blocked": 6,
+        "recovered": 4
+      }
+    },
+
+    "recovery_analysis": {
+      "corrupted_fail_ungated": 26,
+      "corrupted_blocked_by_gate": 40,
+      "recovered_after_block": 30,
+      "recovery_rate": 0.750,
+      "fraction_corrupted_recovered": 0.638,
+      "undetected_failures": 4
+    }
+  },
+
+  "meta": {
+    "paper_sections": ["§X", "Table IX", "Table X", "Table XI"],
+    "produced_by": "live_pilot_cascade.py",
+    "raw_log": "live_pilot_run6.log",
+    "raw_results_csv": "live_pilot_results.csv"
+  }
+}

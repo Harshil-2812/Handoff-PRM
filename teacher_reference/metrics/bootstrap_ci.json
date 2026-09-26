@@ -1,0 +1,57 @@
+{
+  "bootstrap_ci": {
+    "metric": "delta Pass@1 (gated minus ungated), percentage points",
+    "n_bootstrap": 10000,
+    "seed": 42,
+    "method": "bias-corrected bootstrap (percentile method)",
+    "ci_95_lower_pp": 4.3,
+    "ci_95_upper_pp": 19.1,
+    "point_estimate_pp": 11.7,
+    "interpretation": "With 95% confidence, gating improves Pass@1 by at least 4.3 percentage points and at most 19.1 pp."
+  },
+
+  "auroc_bootstrap_ci": {
+    "RandomForest": {
+      "auroc_mean": 0.8719,
+      "ci_95_lower": 0.8384,
+      "ci_95_upper": 0.9047,
+      "auprc_mean": 0.8154,
+      "auprc_ci_95_lower": 0.7613,
+      "auprc_ci_95_upper": 0.8713,
+      "brier_score": 0.1147
+    },
+    "XGBoost": {
+      "auroc_mean": 0.8736,
+      "ci_95_lower": 0.8377,
+      "ci_95_upper": 0.9076,
+      "auprc_mean": 0.8037,
+      "auprc_ci_95_lower": 0.7419,
+      "auprc_ci_95_upper": 0.8612,
+      "brier_score": 0.1227
+    },
+    "LogisticRegression": {
+      "auroc_mean": 0.8381,
+      "ci_95_lower": 0.7991,
+      "ci_95_upper": 0.8750,
+      "auprc_mean": 0.7390,
+      "auprc_ci_95_lower": 0.6752,
+      "auprc_ci_95_upper": 0.8034,
+      "brier_score": 0.1491
+    },
+    "SmallMLP": {
+      "auroc_mean": 0.8649,
+      "ci_95_lower": 0.8263,
+      "ci_95_upper": 0.8971,
+      "auprc_mean": 0.8117,
+      "auprc_ci_95_lower": 0.7523,
+      "auprc_ci_95_upper": 0.8675,
+      "brier_score": 0.1178
+    }
+  },
+
+  "meta": {
+    "paper_section": "§VI-B",
+    "produced_by": "regenerate_rigor_artifacts.py",
+    "source_data": "results/audit/bootstrap_confidence_intervals.csv"
+  }
+}

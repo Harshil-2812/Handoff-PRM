@@ -1,0 +1,247 @@
+﻿python : Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we 
+recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not 
+recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+At line:1 char:1
++ python live_pilot_cascade.py > live_pilot_run4.txt 2>&1; Get-Content  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Direct use of a...message_stream.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits 
+and faster downloads.
+========================================================================
+  Live Pilot ΓÇö Two-Stage Cascade (RF + LLM Judge), Two-Arm Evaluation
+  Stage-1 threshold : 0.45  (pre-registered 11-feature OOF Youden)
+  Stage-2           : LLM judge on escalated PASS band, fail-open ON
+  Recovery          : Agent B on ORIGINAL problem when gate blocks
+  Corruption        : 4 validated types, cycling across 15 corrupted tasks
+  Pilot tasks       : 50  (15 clean + 15 corrupted, 50/94 holdout)
+========================================================================
+
+Training Stage-1 gate from features CSV (11 features, no NLI)...
+Stage-1 gate ready.
+Loaded 50 holdout tasks.
+
+[round 1] 20 task(s) to (re)run (30 clean done, 0 prior API-error rows rerun) using 3 workers...
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|##########| 103/103 [00:00<00:00, 2201.18it/s]
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|##########| 103/103 [00:00<00:00, 7074.53it/s]
+[32/50] mbpp_260  (newman_prime)
+  Corruption injected: fake_completion
+  Ungated  : FAIL
+  Gate     : PASS  (Stage 2, score=0.478)
+  Gated    : FAIL  [handoff_code] (0.478)
+
+[31/50] mbpp_249  (intersection_array)
+  Clean handoff
+  Ungated  : FAIL
+  Gate     : PASS  (Stage 2, score=0.517)
+  Gated    : FAIL  [handoff_code] (0.517)
+
+[33/50] mbpp_262  (split_two_parts)
+  Clean handoff
+  Ungated  : FAIL
+  Gate     : PASS  (Stage 2, score=0.517)
+  Gated    : FAIL  [handoff_code] (0.517)
+
+[34/50] mbpp_272  (rear_extract)
+  Corruption injected: truncation
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 1, score=0.003)
+  Gated    : PASS  [fallback_raw_stage1] (0.003)
+
+[35/50] mbpp_280  (sequential_search)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.492)
+  Gated    : PASS  [handoff_code] (0.492)
+
+[36/50] mbpp_282  (sub_list)
+  Corruption injected: over_summarization
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 1, score=0.328)
+  Gated    : PASS  [fallback_raw_stage1] (0.328)
+
+[38/50] mbpp_299  (max_aggregate)
+  Corruption injected: invert_objective
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 2, score=0.696, judge=INSUFFICIENT)
+  Gated    : FAIL  [fallback_raw_stage2] (0.696)
+
+[37/50] mbpp_296  (get_Inv_Count)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.518)
+  Gated    : PASS  [handoff_code] (0.518)
+
+[40/50] mbpp_301  (dict_depth)
+  Corruption injected: fake_completion
+  Ungated  : FAIL
+  Gate     : PASS  (Stage 2, score=0.462)
+  Gated    : FAIL  [handoff_code] (0.462)
+
+[39/50] mbpp_300  (count_binary_seq)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.798)
+  Gated    : PASS  [handoff_code] (0.798)
+
+[42/50] mbpp_388  (highest_Power_of_2)
+  Corruption injected: truncation
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 1, score=0.007)
+  Gated    : PASS  [fallback_raw_stage1] (0.007)
+
+[41/50] mbpp_312  (volume_cone)
+  Clean handoff
+  Ungated  : FAIL
+  Gate     : PASS  (Stage 2, score=0.480)
+  Gated    : FAIL  [handoff_code] (0.480)
+
+[43/50] mbpp_389  (find_lucas)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.489)
+  Gated    : PASS  [handoff_code] (0.489)
+
+[44/50] mbpp_395  (first_non_repeating_character)
+  Corruption injected: over_summarization
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 1, score=0.151)
+  Gated    : PASS  [fallback_raw_stage1] (0.151)
+
+[46/50] mbpp_405  (check_tuplex)
+  Corruption injected: invert_objective
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.520)
+  Gated    : PASS  [handoff_code] (0.520)
+
+[45/50] mbpp_396  (check_char)
+  Clean handoff
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 1, score=0.422)
+  Gated    : FAIL  [fallback_raw_stage1] (0.422)
+
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+[49/50] mbpp_414  (overlapping)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 1, score=0.389)
+  Fallback error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Gated    : FAIL  [fallback_raw_stage1_error] (0.389)  [API error ΓÇö will be re-run]
+
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+[47/50] mbpp_410  (min_val)
+  Clean handoff
+  Ungated Agent B error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Ungated  : FAIL  [API error ΓÇö will be re-run]
+  Gate     : BLOCK  (Stage 2, score=0.536, judge=INSUFFICIENT)
+  Fallback error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Gated    : FAIL  [fallback_raw_stage2_error] (0.536)  [API error ΓÇö will be re-run]
+
+[48/50] mbpp_413  (extract_nth_element)
+  Corruption injected: fake_completion
+  Ungated Agent B error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Ungated  : FAIL  [API error ΓÇö will be re-run]
+  Gate     : BLOCK  (Stage 2, score=0.767, judge=INSUFFICIENT)
+  Fallback error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Gated    : FAIL  [fallback_raw_stage2_error] (0.767)  [API error ΓÇö will be re-run]
+
+[50/50] mbpp_415  (max_Product)
+  Corruption injected: truncation
+  Ungated Agent B error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Ungated  : FAIL  [API error ΓÇö will be re-run]
+  Gate     : BLOCK  (Stage 1, score=0.003)
+  Gated    : FAIL  [fallback_raw_stage1] (0.003)
+
+  Saved 50 rows; 4 with API errors will be rerun.
+
+[round 2] 4 task(s) to (re)run (46 clean done, 4 prior API-error rows rerun) using 3 workers...
+[49/50] mbpp_414  (overlapping)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.511)
+  Gated    : PASS  [handoff_code] (0.511)
+
+[48/50] mbpp_413  (extract_nth_element)
+  Corruption injected: fake_completion
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 2, score=0.780, judge=INSUFFICIENT)
+  Gated    : PASS  [fallback_raw_stage2] (0.780)
+
+[47/50] mbpp_410  (min_val)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 2, score=0.540, judge=INSUFFICIENT)
+  Gated    : FAIL  [fallback_raw_stage2] (0.540)
+
+[50/50] mbpp_415  (max_Product)
+  Corruption injected: truncation
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 1, score=0.126)
+  Gated    : FAIL  [fallback_raw_stage1] (0.126)
+
+  Saved 50 rows; 0 with API errors will be rerun.
+
+[round 3] all 50 tasks complete and clean ΓÇö done.
+Final clean rows: 50/50
+========================================================================
+  LIVE CASCADE PILOT RESULTS (two-stage, fallback recovery)
+========================================================================
+
+  Metric                                         Ungated    Gated    Delta
+  ---------------------------------------------------------------------
+  Pass@1 ΓÇö All tasks (n=50)                        56.0%    66.0%   +10.0%
+  Pass@1 ΓÇö Clean tasks (n=25)                      72.0%    68.0%    -4.0%
+  Pass@1 ΓÇö Corrupted tasks (n=25)                  40.0%    64.0%   +24.0%
+
+  Per-pair outcomes: both-pass 26 | both-fail 15 | gate hurt 2 | gate recovered 7
+  McNemar (exact, 2-sided)  : p=0.1797   n.s. at alpha=0.05
+  Bootstrap 95% CI for delta: [-0.020, +0.220]
+
+  Corrupted runs intercepted before Agent B : 21/25
+  False blocks on clean handoffs            : 5/25  (recovered via fallback)
+  BLOCK -> recovery success                 : 17 blocked that passed
+  Blocked handoffs that would have passed   : 12 (false-positive cost, zero after fallback)
+
+  Stage-2 LLM judge: escalated 31/50 Stage-1 passes, flipped 7 to INSUFFICIENT (recovered)
+
+  Per-corruption-type Pass@1 (U vs G):
+    truncation           n=7    28.6%  ->   71.4%
+    over_summarization   n=6    50.0%  ->   66.7%
+    invert_objective     n=6    33.3%  ->   66.7%
+    fake_completion      n=6    50.0%  ->   50.0%
+
+  Results saved to : live_pilot_results.csv
+========================================================================

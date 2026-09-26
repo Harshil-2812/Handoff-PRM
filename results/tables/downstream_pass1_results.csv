@@ -1,4 +1,0 @@
-Policy,Handoff_Cutoff,Downstream_Pass1_Pct,Failed_Executions,Token_Waste_Reduction_Pct,Avg_Gate_Latency_ms
-1. Ungated (Baseline),None,16.1,2262,0.0,0.0
-2. Fast PRM Only,0.81,55.0,0,100.0,0.8
-3. Two-Stage Cascading PRM (Ours),0.81,55.0,0,100.0,10.9

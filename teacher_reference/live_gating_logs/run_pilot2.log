@@ -1,0 +1,142 @@
+﻿python : Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we 
+recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not 
+recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+At line:1 char:1
++ python live_pilot_cascade.py > live_pilot_run2.txt 2>&1; Get-Content  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Direct use of a...message_stream.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits 
+and faster downloads.
+========================================================================
+  Live Pilot ΓÇö Two-Stage Cascade (RF + LLM Judge), Two-Arm Evaluation
+  Stage-1 threshold : 0.45  (pre-registered 11-feature OOF Youden)
+  Stage-2           : LLM judge on escalated PASS band, fail-open ON
+  Recovery          : Agent B on ORIGINAL problem when gate blocks
+  Corruption        : 4 validated types, cycling across 15 corrupted tasks
+  Pilot tasks       : 30  (15 clean + 15 corrupted, 30/94 holdout)
+========================================================================
+
+Training Stage-1 gate from features CSV (11 features, no NLI)...
+Stage-1 gate ready.
+Loaded 30 holdout tasks.
+
+[round 1] 13 task(s) to (re)run (17 clean done, 0 prior API-error rows rerun) using 3 workers...
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|##########| 103/103 [00:00<00:00, 4005.28it/s]
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|##########| 103/103 [00:00<00:00, 12877.08it/s]
+[16/30] mbpp_079  (word_len)
+  Corruption injected: fake_completion
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.785)
+  Gated    : PASS  [handoff_code] (0.785)
+
+[18/30] mbpp_093  (power)
+  Corruption injected: truncation
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 2, score=0.778, judge=INSUFFICIENT)
+  Gated    : PASS  [fallback_raw_stage2] (0.778)
+
+[14/30] mbpp_056  (rev)
+  Corruption injected: invert_objective
+  Ungated  : FAIL
+  Gate     : PASS  (Stage 2, score=0.734)
+  Gated    : FAIL  [handoff_code] (0.734)
+
+[19/30] mbpp_109  (odd_Equivalent)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.527)
+  Gated    : PASS  [handoff_code] (0.527)
+
+[20/30] mbpp_116  (tuple_to_int)
+  Corruption injected: over_summarization
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 1, score=0.007)
+  Gated    : PASS  [fallback_raw_stage1] (0.007)
+
+[21/30] mbpp_120  (max_product_tuple)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.492)
+  Gated    : PASS  [handoff_code] (0.492)
+
+[22/30] mbpp_127  (multiply_int)
+  Corruption injected: invert_objective
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.506)
+  Gated    : PASS  [handoff_code] (0.506)
+
+[25/30] mbpp_168  (frequency)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 1, score=0.446)
+  Gated    : PASS  [fallback_raw_stage1] (0.446)
+
+[27/30] mbpp_235  (even_bit_set_number)
+  Clean handoff
+  Ungated  : FAIL
+  Gate     : PASS  (Stage 2, score=0.555)
+  Gated    : FAIL  [handoff_code] (0.555)
+
+[26/30] mbpp_234  (volume_cube)
+  Corruption injected: truncation
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 1, score=0.190)
+  Gated    : PASS  [fallback_raw_stage1] (0.190)
+
+[29/30] mbpp_242  (count_charac)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.776)
+  Gated    : PASS  [handoff_code] (0.776)
+
+[28/30] mbpp_239  (get_total_number_of_sequences)
+  Corruption injected: over_summarization
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 1, score=0.199)
+  Gated    : PASS  [fallback_raw_stage1] (0.199)
+
+[30/30] mbpp_245  (max_sum)
+  Corruption injected: invert_objective
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 2, score=0.796, judge=INSUFFICIENT)
+  Gated    : PASS  [fallback_raw_stage2] (0.796)
+
+  Saved 30 rows; 0 with API errors will be rerun.
+
+[round 2] all 30 tasks complete and clean ΓÇö done.
+Final clean rows: 30/30
+========================================================================
+  LIVE CASCADE PILOT RESULTS (two-stage, fallback recovery)
+========================================================================
+
+  Metric                                         Ungated    Gated    Delta
+  ---------------------------------------------------------------------
+  Pass@1 ΓÇö All tasks (n=30)                        76.7%    76.7%    +0.0%
+  Pass@1 ΓÇö Clean tasks (n=15)                      80.0%    80.0%    +0.0%
+  Pass@1 ΓÇö Corrupted tasks (n=15)                  73.3%    73.3%    +0.0%
+
+  Per-pair outcomes: both-pass 22 | both-fail 6 | gate hurt 1 | gate recovered 1
+  McNemar (exact, 2-sided)  : p=1.5000   n.s. at alpha=0.05
+  Bootstrap 95% CI for delta: [-0.100, +0.100]
+
+  Corrupted runs intercepted before Agent B : 11/15
+  False blocks on clean handoffs            : 3/15  (recovered via fallback)
+  BLOCK -> recovery success                 : 11 blocked that passed
+  Blocked handoffs that would have passed   : 11 (false-positive cost, zero after fallback)
+
+  Stage-2 LLM judge: escalated 19/30 Stage-1 passes, flipped 3 to INSUFFICIENT (recovered)
+
+  Per-corruption-type Pass@1 (U vs G):
+    truncation           n=4    75.0%  ->   75.0%
+    over_summarization   n=4    50.0%  ->   75.0%
+    invert_objective     n=4    75.0%  ->   75.0%
+    fake_completion      n=3   100.0%  ->   66.7%
+
+  Results saved to : live_pilot_results.csv
+========================================================================

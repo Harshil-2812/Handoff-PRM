@@ -1,0 +1,142 @@
+{
+  "primary": {
+    "backbone": "gemini-1.5-flash",
+    "dataset": "primary_dataset_177.csv",
+    "n_rows": 483,
+    "n_tasks": 248,
+    "n_features": 11,
+    "threshold_tau_star": 0.330,
+    "threshold_method": "Youden-J on OOF predictions",
+    "models": {
+      "RandomForest": {
+        "oof_auroc": 0.8718,
+        "oof_auprc": 0.8136,
+        "oof_brier": 0.1148,
+        "oof_logloss": 0.3610,
+        "mean_fold_auroc": 0.8767,
+        "std_fold_auroc": 0.0601,
+        "bootstrap_auroc_ci_lower": 0.8384,
+        "bootstrap_auroc_ci_upper": 0.9047,
+        "train_auroc": 0.9680,
+        "generalization_gap": 0.0962,
+        "latency_ms": 0.29,
+        "n_estimators": 100,
+        "max_depth": 3
+      },
+      "XGBoost": {
+        "oof_auroc": 0.8733,
+        "oof_auprc": 0.8007,
+        "oof_brier": 0.1227,
+        "oof_logloss": 0.4617,
+        "mean_fold_auroc": 0.8739,
+        "std_fold_auroc": 0.0624,
+        "bootstrap_auroc_ci_lower": 0.8377,
+        "bootstrap_auroc_ci_upper": 0.9076,
+        "train_auroc": 0.9988,
+        "generalization_gap": 0.1255,
+        "latency_ms": 0.01,
+        "n_estimators": 100,
+        "max_depth": 3,
+        "learning_rate": 0.1,
+        "reg_alpha": 1.0,
+        "reg_lambda": 1.0
+      },
+      "LogisticRegression": {
+        "oof_auroc": 0.8378,
+        "oof_auprc": 0.7347,
+        "oof_brier": 0.1492,
+        "oof_logloss": 0.4744,
+        "mean_fold_auroc": 0.8400,
+        "std_fold_auroc": 0.0251,
+        "bootstrap_auroc_ci_lower": 0.7991,
+        "bootstrap_auroc_ci_upper": 0.8750,
+        "train_auroc": 0.8439,
+        "generalization_gap": 0.0061,
+        "latency_ms": 0.00,
+        "C": 0.1,
+        "penalty": "l2",
+        "solver": "lbfgs"
+      },
+      "SmallMLP": {
+        "oof_auroc": 0.8648,
+        "oof_auprc": 0.8079,
+        "oof_brier": 0.1179,
+        "oof_logloss": 0.3765,
+        "mean_fold_auroc": 0.8639,
+        "std_fold_auroc": 0.0557,
+        "bootstrap_auroc_ci_lower": 0.8263,
+        "bootstrap_auroc_ci_upper": 0.8971,
+        "train_auroc": 0.9226,
+        "generalization_gap": 0.0578,
+        "latency_ms": 0.00,
+        "hidden_layer_sizes": [32, 16],
+        "activation": "relu",
+        "max_iter": 500
+      },
+      "SVM": {
+        "oof_auroc": 0.8521,
+        "oof_auprc": 0.7889,
+        "oof_brier": 0.1361,
+        "oof_logloss": 0.4312,
+        "mean_fold_auroc": 0.8534,
+        "std_fold_auroc": 0.0443,
+        "bootstrap_auroc_ci_lower": 0.8102,
+        "bootstrap_auroc_ci_upper": 0.8921,
+        "train_auroc": 0.9445,
+        "generalization_gap": 0.0924,
+        "latency_ms": 0.12,
+        "kernel": "rbf",
+        "C": 1.0,
+        "probability": true
+      }
+    },
+    "cross_validation": {
+      "strategy": "GroupKFold",
+      "n_splits": 5,
+      "group_column": "task_id",
+      "seed": 42,
+      "note": "Groups by task_id to prevent data leakage: all rollouts from the same task land in the same fold"
+    },
+    "feature_set": "11_gate_features_no_NLI",
+    "features": [
+      "cosine_similarity",
+      "entity_overlap",
+      "length_ratio",
+      "sentence_count_ratio",
+      "section_coverage",
+      "verbatim_copy_rate",
+      "trailing_specificity",
+      "constraint_count",
+      "role_pronoun_rate",
+      "novel_api_rate",
+      "function_name_preserved"
+    ]
+  },
+  "qwen_3b": {
+    "backbone": "Qwen/Qwen2.5-Coder-3B-Instruct",
+    "dataset": "qwen3b_dataset_169.csv",
+    "n_rows": 169,
+    "threshold_tau_star": 0.695,
+    "threshold_method": "Youden-J on OOF predictions",
+    "best_model": "RandomForest",
+    "best_oof_auroc": 0.8341,
+    "note": "Cross-backbone evaluation; same feature extractor as primary"
+  },
+  "qwen_7b": {
+    "backbone": "Qwen/Qwen2.5-Coder-7B-Instruct",
+    "dataset": "qwen7b_dataset_300.csv",
+    "n_rows": 300,
+    "threshold_tau_star": 0.7972,
+    "threshold_method": "Youden-J on OOF predictions",
+    "best_model": "RandomForest",
+    "best_oof_auroc": 0.8619,
+    "note": "Cross-backbone evaluation; same feature extractor as primary"
+  },
+  "meta": {
+    "generated_by": "model_sweep_12features_final.py + regen_ablation.py",
+    "seed": 42,
+    "n_bootstrap": 10000,
+    "paper_table": "Table VI",
+    "git_commit": "see git log for exact hash"
+  }
+}

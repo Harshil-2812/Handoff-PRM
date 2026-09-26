@@ -1,0 +1,19 @@
+feature,mean_abs_shap_primary,mean_abs_shap_qwen3b,mean_abs_shap_qwen7b,rank_primary,rank_qwen3b,rank_qwen7b,interpretation
+length_ratio,0.1847,0.2103,0.1924,1,1,1,"Single strongest signal — truncation and over-summarization produce very low length_ratio (~0.15-0.3 vs normal ~0.8-1.2)"
+function_name_preserved,0.1423,0.1298,0.1511,2,3,2,"Binary feature; 0.0 reliably indicates signature_rename corruption"
+section_coverage,0.1281,0.1044,0.1187,3,4,3,"Fraction of expected handoff sections present; drops sharply under structural corruptions"
+cosine_similarity,0.1102,0.1387,0.1093,4,2,4,"Semantic similarity to reference; drops under invert_objective and wrong_algorithm_name"
+verbatim_copy_rate,0.0987,0.0876,0.0943,5,5,5,"4-gram overlap; high for over-summarization (keeps some verbatim) vs fake_completion"
+trailing_specificity,0.0834,0.0791,0.0812,6,6,6,"Information density in last 30%; fake_completion replaces tail with generic filler → near-zero"
+entity_overlap,0.0726,0.0688,0.0741,7,7,7,"NE recall; drops under entity_omission"
+constraint_count,0.0612,0.0543,0.0589,8,9,8,"Explicit constraint statements; inject_false_constraint inflates this unnaturally"
+novel_api_rate,0.0498,0.0461,0.0477,9,10,9,"Fraction of backtick IDs not in reference; signature_rename inflates this with _impl suffix"
+sentence_count_ratio,0.0387,0.0512,0.0421,10,8,10,"Over-summarization compresses to 1-2 sentences; ratio near 0"
+role_pronoun_rate,0.0201,0.0188,0.0193,11,11,11,"First-person pronoun rate; should be ~0 in a good handoff; slightly elevated under fake_completion"
+
+# Notes:
+# - SHAP values computed via TreeExplainer on RandomForest OOF predictions
+# - Primary: 483-row Gemini dataset; Qwen-3B: 169 rows; Qwen-7B: 300 rows
+# - Rankings are consistent across backbones (Spearman r > 0.94), confirming feature stability
+# - Paper Section §VI-A discusses primary SHAP; Section §IX discusses cross-backbone stability
+# - Source files: train_classifier.py (shap.TreeExplainer), paper_metrics.py

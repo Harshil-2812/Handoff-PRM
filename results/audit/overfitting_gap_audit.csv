@@ -1,5 +1,5 @@
-model,train_auroc,test_auroc,generalization_gap,oof_auroc,oof_auprc,status
-"XGBoost (Standard, depth=3)",0.7254,0.6852,0.0402,0.6836,0.2474,[LOW GAP]
-XGBoost (Regularized + Balanced),0.6945,0.6833,0.0112,0.6816,0.2408,[LOW GAP]
-"Logistic Regression (L2, C=0.1)",0.6715,0.6697,0.0017,0.6679,0.2361,[LOW GAP]
-Random Forest (max_depth=3),0.6872,0.669,0.0181,0.6674,0.2327,[LOW GAP]
+model,n_rows,n_features,feature_set,train_auroc,oof_auroc,generalization_gap,oof_auprc,status
+RandomForest,483,11,11_gate_features_no_NLI,0.968,0.8718,0.0962,0.8136,[OVERFIT WARNING]
+XGBoost,483,11,11_gate_features_no_NLI,0.9988,0.8733,0.1255,0.8007,[OVERFIT WARNING]
+LogisticRegression,483,11,11_gate_features_no_NLI,0.8439,0.8378,0.0061,0.7347,[LOW GAP]
+SmallMLP,483,11,11_gate_features_no_NLI,0.9226,0.8648,0.0578,0.8079,[OVERFIT WARNING]

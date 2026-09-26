@@ -1,5 +1,5 @@
-source,n_total,n_positives,n_negatives,oof_auroc,oof_auprc
-hand_easy,218,35,183,0.6874,0.2506
-hand_hard,311,45,266,0.7434,0.2796
-humaneval,942,145,797,0.6963,0.2459
-mbpp,1225,209,1016,0.6585,0.2429
+source,n_total,n_positives,n_negatives,dataset,oof_auroc,oof_auprc
+hand_easy,64,33,31,final_dataset_full_features_483rows,0.7722,0.6952
+hand_hard,127,44,83,final_dataset_full_features_483rows,0.9417,0.8323
+humaneval,141,80,61,final_dataset_full_features_483rows,0.8716,0.815
+mbpp,151,91,60,final_dataset_full_features_483rows,0.8199,0.8024

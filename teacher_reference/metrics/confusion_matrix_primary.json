@@ -1,0 +1,47 @@
+{
+  "confusion_matrix": {
+    "description": "Gate confusion matrix on corrupted tasks only (n=47). Positive class = BLOCK (gate decides handoff is bad).",
+    "ground_truth_positive": "ungated_passed == False (task failed without gate)",
+    "ground_truth_negative": "ungated_passed == True (task passed without gate)",
+
+    "matrix": {
+      "TP": 22,
+      "FP": 18,
+      "FN": 4,
+      "TN": 3
+    },
+
+    "metrics": {
+      "precision": 0.550,
+      "recall": 0.846,
+      "f1": 0.667,
+      "specificity": 0.143,
+      "balanced_accuracy": 0.495,
+      "mcc": 0.058
+    },
+
+    "interpretation": {
+      "TP": "22 corrupted handoffs correctly blocked — gate caught the corruption",
+      "FP": "18 corrupted handoffs incorrectly passed — gate missed the corruption but agent happened to succeed anyway OR gate was wrong",
+      "FN": "4 corrupted handoffs blocked but agent still failed after fallback — unrecoverable",
+      "TN": "3 corrupted handoffs correctly passed — gate rightly let these through"
+    },
+
+    "clean_task_confusion": {
+      "n": 47,
+      "FP_blocks": 7,
+      "true_negatives_passed": 40,
+      "FP_rate": 0.149,
+      "recovered_by_fallback": 5,
+      "net_irrecoverable_cost": 2
+    }
+  },
+
+  "meta": {
+    "paper_table": "Table IX",
+    "tau_star": 0.330,
+    "model": "RandomForest",
+    "produced_by": "live_pilot_cascade.py",
+    "raw_results_csv": "live_pilot_results.csv"
+  }
+}

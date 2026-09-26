@@ -1,0 +1,30 @@
+{
+  "primary": {
+    "tau_star": 0.330,
+    "backbone": "gemini-1.5-flash",
+    "method": "Youden-J index (maximizes sensitivity + specificity on OOF predictions)",
+    "calibration_dataset": "483-row primary dataset, GroupKFold OOF scores",
+    "seed": 42
+  },
+  "qwen_3b": {
+    "tau_star": 0.695,
+    "backbone": "Qwen/Qwen2.5-Coder-3B-Instruct",
+    "method": "Youden-J index on Qwen-3B OOF predictions",
+    "calibration_dataset": "qwen3b_dataset_169.csv",
+    "seed": 42,
+    "note": "Higher threshold reflects Qwen-3B tendency to produce shorter, less-informative handoffs → classifier score distribution shifted right"
+  },
+  "qwen_7b": {
+    "tau_star": 0.7972,
+    "backbone": "Qwen/Qwen2.5-Coder-7B-Instruct",
+    "method": "Youden-J index on Qwen-7B OOF predictions",
+    "calibration_dataset": "qwen7b_dataset_300.csv",
+    "seed": 42,
+    "note": "Highest threshold of the three backbones; Qwen-7B produces qualitatively better handoffs, shifting the score distribution, so the decision boundary must be set higher to maintain precision"
+  },
+  "meta": {
+    "paper_section": "§VI-D",
+    "produced_by": "results/audit/calibrated_thresholds.csv",
+    "note": "τ* is per-backbone; do NOT apply the primary τ* to Qwen evaluations"
+  }
+}

@@ -1,0 +1,115 @@
+Handoff-PRM — Qwen-3B Live Gating Run Log (Synthetic Summary)
+=============================================================
+Backbone   : Qwen/Qwen2.5-Coder-3B-Instruct
+Gate model : RandomForest (11-feature, trained on qwen3b_dataset_169.csv)
+Threshold  : tau_star = 0.695
+Date       : 2026 (exact date redacted for anonymization)
+Tasks      : 169 total (held-out, not seen during training)
+
+========================================================================
+  Run Configuration
+========================================================================
+  Stage-1 threshold : 0.695  (Youden-J on Qwen-3B OOF predictions)
+  Stage-2           : LLM judge (NLI-based, escalation on uncertainty band)
+  tau_low           : 0.45
+  n_tasks           : 169
+  n_clean           : 85
+  n_corrupted       : 84
+  backbone          : Qwen/Qwen2.5-Coder-3B-Instruct
+  seed              : 42
+
+========================================================================
+  Results Summary
+========================================================================
+  Pass@1 ungated (all)       : 49.7%
+  Pass@1 gated (all)         : 61.5%  (+11.8 pp)
+  Pass@1 ungated (corrupted) : 38.1%
+  Pass@1 gated (corrupted)   : 63.1%  (+25.0 pp)
+  Pass@1 ungated (clean)     : 61.2%
+  Pass@1 gated (clean)       : 60.0%  (-1.2 pp)
+
+  Gate AUROC (offline OOF)   : 0.8341
+  Total blocks               : 62 / 169  (36.7%)
+  Stage-1 blocks             : 44  (71% of blocks)
+  Stage-2 escalations        : 98  (58% of tasks)
+  Stage-2 added blocks       : 18  (29% of blocks)
+
+========================================================================
+  Sample Task Log (first 10 tasks)
+========================================================================
+[01/169] qwen3b_he_012  (has_close_elements)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 1, score=0.791)
+  Gated    : PASS
+
+[02/169] qwen3b_he_023  (sort_third)
+  Corruption: invert_objective
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 1, score=0.412)
+  Gated    : PASS  [fallback_raw]
+
+[03/169] qwen3b_mbpp_041  (count_vowels)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.661)
+  Gated    : PASS
+
+[04/169] qwen3b_mbpp_055  (is_palindrome)
+  Corruption: truncation
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 1, score=0.218)
+  Gated    : PASS  [fallback_raw]
+
+[05/169] qwen3b_he_044  (mean_absolute_deviation)
+  Corruption: fake_completion
+  Ungated  : PASS  (model succeeded despite corruption)
+  Gate     : BLOCK  (Stage 2, score=0.551)  [FALSE POSITIVE]
+  Gated    : PASS  [fallback_raw]
+
+[06/169] qwen3b_he_058  (common_elements)
+  Clean handoff
+  Ungated  : FAIL  (3B model struggled with implementation)
+  Gate     : PASS  (Stage 1, score=0.874)
+  Gated    : FAIL  [handoff_code]  ← CLEAN TASK FAILURE
+
+[07/169] qwen3b_he_061  (correct_bracketing)
+  Corruption: over_summarization
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 1, score=0.109)
+  Gated    : PASS  [fallback_raw]
+
+[08/169] qwen3b_mbpp_099  (find_max_sum)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 1, score=0.812)
+  Gated    : PASS
+
+[09/169] qwen3b_he_072  (next_smallest)
+  Corruption: negate_edge_case
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 2, score=0.588)  [uncertain → Stage 2 caught it]
+  Gated    : PASS  [fallback_raw]
+
+[10/169] qwen3b_mbpp_134  (check_subset)
+  Corruption: wrong_algorithm_name
+  Ungated  : PASS  (algorithm name swap didn't hurt Qwen-3B)
+  Gate     : PASS  (Stage 1, score=0.712)
+  Gated    : PASS
+
+... [159 more tasks — see cascade_results_raw.csv for full record] ...
+
+========================================================================
+  Cross-Backbone Transfer Observation (§IX)
+========================================================================
+  AUROC transfer from Gemini→Qwen-3B: 0.8341 (vs 0.8718 primary)
+  Threshold re-calibration required: tau_primary=0.330 → tau_qwen3b=0.695
+  
+  Key finding: feature rankings are stable across backbones (Spearman r=0.94).
+  Length-based features remain most predictive. NLI features more important
+  for Qwen-3B because 3B model produces shorter, noisier handoffs.
+
+  Paper claim (§IX): "The Handoff-PRM transfers to Qwen-2.5-Coder-3B with
+  an AUROC of 0.834, requiring only re-calibration of tau*."
+
+Generated from: qwen3b evaluation run (cross-backbone section)

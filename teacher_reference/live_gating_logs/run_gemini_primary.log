@@ -1,0 +1,246 @@
+﻿python : Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we 
+recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not 
+recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+At line:1 char:1
++ python live_pilot_cascade.py 2>&1 | Tee-Object -FilePath live_pilot_r ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Direct use of a...message_stream.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits 
+and faster downloads.
+========================================================================
+  Live Pilot ΓÇö Two-Stage Cascade (RF + LLM Judge), Two-Arm Evaluation
+  Stage-1 threshold : 0.45  (pre-registered 11-feature OOF Youden)
+  Stage-2           : LLM judge on escalated PASS band, fail-open ON
+  Recovery          : Agent B on ORIGINAL problem when gate blocks
+  Corruption        : 4 validated types, cycling across 15 corrupted tasks
+  Pilot tasks       : 30  (15 clean + 15 corrupted, 30/94 holdout)
+========================================================================
+
+Training Stage-1 gate from features CSV (11 features, no NLI)...
+Stage-1 gate ready.
+Loaded 30 holdout tasks: ['he_078', 'he_102', 'he_118', 'he_127', 'he_131', 'he_133', 'he_135', 'he_144', 'he_147', 'he_150', 'he_157', 'he_163', 'mbpp_018', 'mbpp_056', 'mbpp_059', 'mbpp_079', 'mbpp_092', 'mbpp_093', 'mbpp_109', 'mbpp_116', 'mbpp_120', 'mbpp_127', 'mbpp_130', 'mbpp_138', 'mbpp_168', 'mbpp_234', 'mbpp_235', 'mbpp_239', 'mbpp_242', 'mbpp_245']
+
+
+Starting 30 tasks in parallel using 6 concurrent workers...
+
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|##########| 103/103 [00:00<00:00, 6627.50it/s]
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|##########| 103/103 [00:00<00:00, 5828.33it/s]
+[06/30] he_133  (sum_squares)
+  Corruption injected: invert_objective
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 1, score=0.363)
+  Gated    : PASS  [fallback_raw_stage1] (0.363)
+
+[03/30] he_118  (get_closest_vowel)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.838)
+  Gated    : PASS  [handoff_code] (0.838)
+
+[02/30] he_102  (choose_num)
+  Corruption injected: truncation
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 1, score=0.246)
+  Gated    : FAIL  [fallback_raw_stage1] (0.246)
+
+[04/30] he_127  (intersection)
+  Corruption injected: over_summarization
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 1, score=0.034)
+  Gated    : PASS  [fallback_raw_stage1] (0.034)
+
+[05/30] he_131  (digits)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.785)
+  Gated    : PASS  [handoff_code] (0.785)
+
+[08/30] he_144  (simplify)
+  Corruption injected: fake_completion
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.800)
+  Gated    : PASS  [handoff_code] (0.800)
+
+[01/30] he_078  (hex_key)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 1, score=0.287)
+  Gated    : PASS  [fallback_raw_stage1] (0.287)
+
+[07/30] he_135  (can_arrange)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.770)
+  Gated    : PASS  [handoff_code] (0.770)
+
+[09/30] he_147  (get_max_triples)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 1, score=0.294)
+  Gated    : PASS  [fallback_raw_stage1] (0.294)
+
+[15/30] mbpp_059  (is_octagonal)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.545)
+  Gated    : PASS  [handoff_code] (0.545)
+
+[13/30] mbpp_018  (str_to_list)
+  Clean handoff
+  Ungated  : FAIL
+  Gate     : PASS  (Stage 2, score=0.452)
+  Gated    : FAIL  [handoff_code] (0.452)
+
+[12/30] he_163  (generate_integers)
+  Corruption injected: over_summarization
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 1, score=0.245)
+  Gated    : FAIL  [fallback_raw_stage1] (0.245)
+
+[17/30] mbpp_092  (is_undulating)
+  Clean handoff
+  Ungated  : FAIL
+  Gate     : PASS  (Stage 2, score=0.736)
+  Gated    : FAIL  [handoff_code] (0.736)
+
+[11/30] he_157  (right_angle_triangle)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.777)
+  Gated    : PASS  [handoff_code] (0.777)
+
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+[10/30] he_150  (x_or_y)
+  Corruption injected: truncation
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 1, score=0.402)
+  Gated    : PASS  [fallback_raw_stage1] (0.402)
+
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+[16/30] mbpp_079  (word_len)
+  Corruption injected: fake_completion
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 2, score=0.741, judge=INSUFFICIENT)
+  Fallback error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Gated    : FAIL  [fallback_raw_stage2_error] (0.741)
+
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+[19/30] mbpp_109  (odd_Equivalent)
+  Clean handoff
+  Ungated Agent B error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 2, score=0.525, judge=INSUFFICIENT)
+  Gated    : PASS  [fallback_raw_stage2] (0.525)
+
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+[21/30] mbpp_120  (max_product_tuple)
+  Clean handoff
+  Ungated Agent B error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Ungated  : FAIL
+  Gate     : PASS  (Stage 2, score=0.513)
+  Gated    : FAIL  [handoff_code] (0.513)
+
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+[20/30] mbpp_116  (tuple_to_int)
+  Corruption injected: over_summarization
+  Ungated Agent B error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 1, score=0.013)
+  Fallback error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Gated    : FAIL  [fallback_raw_stage1_error] (0.013)
+
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+[23/30] mbpp_130  (max_occurrences)
+  Clean handoff
+  Ungated  : PASS
+  Gate     : PASS  (Stage 2, score=0.559)
+  Gated    : PASS  [handoff_code] (0.559)
+
+[24/30] mbpp_138  (is_Sum_Of_Powers_Of_Two)
+  Corruption injected: fake_completion
+  Ungated  : PASS
+  Gate     : BLOCK  (Stage 2, score=0.528, judge=INSUFFICIENT)
+  Gated    : FAIL  [fallback_raw_stage2] (0.528)
+
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+[18/30] mbpp_093  (power)
+  Corruption injected: truncation
+  Ungated Agent B error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Ungated  : FAIL
+  Gate     : BLOCK  (Stage 2, score=0.776, judge=INSUFFICIENT)
+  Fallback error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Gated    : FAIL  [fallback_raw_stage2_error] (0.776)
+
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 16s (attempt 5/5)
+[22/30] mbpp_127  (multiply_int)
+  Corruption injected: invert_objective
+  Ungated Agent B error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Ungated  : FAIL
+  Gate     : PASS  (Stage 2, score=0.457)
+  Gated    : FAIL  [handoff_code] (0.457)
+
+    [key pool] rate limited, sleeping 1s (attempt 1/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 2s (attempt 2/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+    [key pool] rate limited, sleeping 4s (attempt 3/5)
+    [key pool] rate limited, sleeping 8s (attempt 4/5)
+[25/30] mbpp_168  (frequency)
+  Clean handoff
+  Ungated Agent B error: gemini-3.5-flash-lite still rate limited after 5 attempts
+  Ungated  : FAIL
+  Gate     : PASS  (Stage 2, score=0.526)
+  Gated    : FAIL  [handoff_code] (0.526)
