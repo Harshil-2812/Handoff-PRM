@@ -160,3 +160,468 @@ def sum_product(numbers: List[int]) -> Tuple[int, int]:
 ### Examples for Validation
 - `sum_product([])` ➔ `(0, 1)`
 - `sum_product([1, 2, 3, 4])` ➔ `(10, 24)`",True,True,True,3,1.0,1,1,1,Success,Success,Success,1
+he_010,humaneval,make_palindrome,tier1_weaker,gemini-3.5-flash-lite,0.9,"Handoff for Agent B:
+
+We need to build a function that tests if a given string is a palindrome (reads the same forwards and backwards).
+
+**Function Signature:**
+`def is_palindrome(s: str) -> bool:`
+
+**Key Edge Cases to Handle:**
+- Empty strings (`""""`) should return `True`.
+- Single-character strings (`""a""`) should return `True`.
+- Case sensitivity: Decide whether to treat upper and lower case letters as equivalent (standard practice for palindromes is usually case-insensitive and ignoring spaces/punctuation, but let's implement a strict check or handle standard normalization. Let's specify: standard palindrome check where we compare the string to its reverse, or optionally strip non-alphanumeric characters and lowercase. Let's make it a standard exact-match reverse check unless specified otherwise, but to be safe, standard pure string reversal: `s == s[::-1]`). Let's explicitly instruct Agent B to implement a case-insensitive check that ignores non-alphanumeric characters, as this is the most robust definition of a palindrome test.
+
+**Brief Plan/Approach:**
+1. Clean the input string `s` by converting all characters to lowercase and removing any non-alphanumeric characters (using `.isalnum()`).
+2. Compare the cleaned string to its reverse (e.g., `cleaned == cleaned[::-1]`).
+3. Return `True` if they match, `False` otherwise.",False,False,False,0,1.0,0,0,0,AssertionError: ,AssertionError: ,AssertionError: ,0
+he_010,humaneval,make_palindrome,tier2_mid,gemini-3.5-flash-lite,0.7,"HANDOFF MESSAGE FOR AGENT B:
+
+Your task is to write a Python function that checks whether a given string is a palindrome.
+
+Function Signature:
+`def is_palindrome(s: str) -> bool:`
+
+Requirements & Edge Cases:
+- A palindrome reads the same forwards and backwards.
+- Consider whether the check should be case-sensitive and if spaces/punctuation matter. (Standard implementation: check exact match of the string, or specify if normalization like lowercasing and stripping non-alphanumeric characters is expected. Please implement a standard case-sensitive exact reverse check, or clarify with standard pythonic string reversal). Let's define it as: returns True if the string reads the exact same forwards and backwards, and False otherwise. 
+- Edge cases to handle:
+  - Empty string `""""` (should return `True`)
+  - Single-character string `""a""` (should return `True`)
+  - Strings with mixed casing or spaces (handle as exact character match unless specified, but using `s == s[::-1]` is the standard approach).
+
+Plan/Approach:
+1. Use Python's slicing feature to reverse the string: `s[::-1]`.
+2. Compare the original string `s` to its reversed version.
+3. Return `True` if they are equal, `False` otherwise.",False,False,False,0,1.0,0,0,0,AssertionError: ,AssertionError: ,AssertionError: ,0
+he_010,humaneval,make_palindrome,tier3_stronger,gemini-3.5-flash,0.7,"# HANDOFF MESSAGE FOR AGENT B
+
+## Objective
+Implement a Python function that determines whether a given string is a palindrome. The function should return `True` if the string reads the same forwards and backwards, and `False` otherwise.
+
+## Function Signature
+```python
+def is_palindrome(s: str) -> bool:
+```
+
+## Problem Details & Rules
+- Treat the comparison as **case-insensitive** (e.g., `'Racecar'` is a palindrome).
+- Ignore all non-alphanumeric characters including spaces, punctuation, and symbols (e.g., `'A man, a plan, a canal: Panama'` is a palindrome).
+
+## Recommended Plan / Approach
+1. Filter the input string `s` to keep only alphanumeric characters (using `char.isalnum()`).
+2. Convert all remaining characters to lowercase.
+3. Compare the cleaned string with its reverse. Return `True` if they are equal, `False` otherwise.
+
+## Key Edge Cases to Handle
+- **Empty string (`""""`)**: Should return `True`.
+- **Single character string (`""a""`, `""Z""`, `""5""`)**: Should return `True`.
+- **String with only non-alphanumeric characters (`""!!!"", ""  ""`)**: Filters down to an empty string, should return `True`.
+- **Case sensitivity**: `""RaceCar""` should return `True`.
+- **Non-palindromes**: `""hello""`, `""ab""`, `""123421""` should return `False`.",False,False,False,0,1.0,0,0,0,AssertionError: ,AssertionError: ,AssertionError: ,0
+he_017,humaneval,parse_music,tier1_weaker,gemini-3.5-flash-lite,0.9,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that parses a string representing musical notes in a special ASCII format and returns a list of integers representing the number of beats each note lasts.
+
+### Function Signature
+```python
+def parse_music(music_string: str) -> list[int]:
+```
+
+### Note Legend & Beat Mapping
+- `'o'` : whole note -> 4 beats
+- `'o|'` : half note -> 2 beats
+- `'.|'` : quarter note -> 1 beat
+
+### Example
+- Input: `'o o| .| o| o| .| .| .| .| o o'`
+- Output: `[4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]`
+
+### Edge Cases to Handle
+- Empty string input (should return an empty list `[]`).
+- Multiple spaces between notes (ensure proper tokenization, e.g., using `.split()`).
+- Unexpected or invalid note tokens (decide whether to ignore them or raise an error, but standard `.split()` and a dictionary lookup with a default or filter is recommended).
+
+### Plan / Approach
+1. Initialize a mapping dictionary for the symbols to their respective beat counts: `{'o': 4, 'o|': 2, '.|': 1}`.
+2. Split the input `music_string` by whitespace to get individual note tokens.
+3. Iterate through the tokens, look them up in the dictionary, and collect the corresponding integer beat values into a list.
+4. Return the resulting list of integers.",True,True,True,3,1.0,1,1,1,Success,Success,Success,1
+he_017,humaneval,parse_music,tier2_mid,gemini-3.5-flash-lite,0.7,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that parses a string of musical notes in a specific ASCII format and returns a list of integers representing the number of beats each note lasts, based on a provided legend.
+
+**Function Signature:**
+```python
+def parse_music(music_string: str) -> list:
+```
+
+**Legend:**
+- `'o'` = whole note = 4 beats
+- `'o|'` = half note = 2 beats
+- `'.|'` = quarter note = 1 beat
+
+**Input / Output Example:**
+- Input: `'o o| .| o| o| .| .| .| .| o o'`
+- Output: `[4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]`
+
+**Key Edge Cases to Handle:**
+- Empty string input (should return an empty list `[]`).
+- Extra whitespace (multiple spaces between notes should not create erroneous empty tokens).
+- Malformed or unrecognized note symbols (ensure robust handling or assume well-formed inputs as per the prompt, but splitting by whitespace is safest).
+
+**Plan / Approach:**
+1. Check if the input string is empty or only contains whitespace; if so, return `[]`.
+2. Split the input string by whitespace to isolate each note representation.
+3. Map each isolated token to its corresponding beat value using a dictionary:
+   - `{'o': 4, 'o|': 2, '.|': 1}`
+4. Construct and return the resulting list of integers.",True,True,True,3,1.0,1,1,1,Success,Success,Success,1
+he_017,humaneval,parse_music,tier3_stronger,gemini-3.5-flash,0.7,"# HANDOFF MESSAGE FOR AGENT B
+
+## Objective
+Implement a function named `parse_music` that parses a string of space-separated ASCII musical notes and converts each note into its corresponding duration in beats.
+
+## Function Signature
+```python
+from typing import List
+
+def parse_music(music_string: str) -> List[int]:
+```
+
+## Note Mapping / Legend
+* `'o'`  -> Whole note = `4` beats
+* `'o|'` -> Half note  = `2` beats
+* `'.|'` -> Quarter note = `1` beat
+
+## Example
+* **Input:** `'o o| .| o| o| .| .| .| .| o o'`
+* **Output:** `[4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]`
+
+## Approach / Plan
+1. Define a dictionary mapping each string representation to its beat count: `{'o': 4, 'o|': 2, '.|': 1}`.
+2. Split `music_string` into individual tokens using standard `.split()` (which automatically handles arbitrary whitespace, leading/trailing spaces, and multiple spaces).
+3. Map each token to its integer beat duration using the lookup dictionary.
+4. Return the resulting list of integers.
+
+## Key Edge Cases to Handle
+* **Empty Input String:** If `music_string` is `""""` or contains only whitespace, return an empty list `[]`.
+* **Multiple / Irregular Spaces:** Ensure string splitting handles extra spaces between notes gracefully (e.g., `'o   o|'`).",True,True,True,3,1.0,1,1,1,Success,Success,Success,1
+he_028,humaneval,concatenate,tier1_weaker,gemini-3.5-flash-lite,0.9,"Agent B, here are the specifications for the function you need to write:
+
+- **Function Name and Signature:** 
+  `def concatenate(strings: list[str]) -> str:`
+
+- **Problem Restatement:** 
+  You need to write a function that takes a list of strings and concatenates them together into a single, continuous string.
+
+- **Key Edge Cases to Handle:**
+  - An empty list (`[]`) should return an empty string (`''`).
+  - A list with a single string should return that string unmodified.
+  - Lists with multiple strings should join them in the exact order they appear in the list.
+
+- **Approach:**
+  You can achieve this efficiently and cleanly by using Python's built-in string `join()` method (e.g., `"""".join(strings)`), which handles empty lists and multiple elements automatically.",True,True,True,3,1.0,1,1,1,Success,Success,Success,1
+he_028,humaneval,concatenate,tier2_mid,gemini-3.5-flash-lite,0.7,"Agent B, your task is to write a Python function that concatenates a list of strings into a single string. 
+
+Here are the requirements:
+- **Function Signature:** `def concatenate(strings: list[str]) -> str:`
+- **Behavior:** Takes a list of strings and joins them together in order without any separators.
+- **Edge Cases to Handle:**
+  - An empty list `[]` should return an empty string `''`.
+  - A list with a single string `['a']` should return `'a'`.
+- **Approach:** You can use Python's built-in `str.join()` method, specifically `"""".join(strings)`, which handles both empty lists and lists with multiple elements efficiently.",True,True,True,3,1.0,1,1,1,Success,Success,Success,1
+he_028,humaneval,concatenate,tier3_stronger,gemini-3.5-flash,0.7,"### HANDOFF MESSAGE FOR AGENT B
+
+**Function to Build:**
+Create a function named `concatenate` that accepts a list of strings and returns a single string containing all the elements joined together in their original order.
+
+**Exact Function Signature:**
+```python
+def concatenate(strings: list[str]) -> str:
+```
+
+**Key Edge Cases to Handle:**
+1. **Empty list:** `concatenate([])` should return an empty string `''`.
+2. **List with empty strings:** `concatenate(['', 'a', ''])` should correctly yield `'a'`.
+3. **Single-element list:** `concatenate(['hello'])` should return `'hello'`.
+4. **Lists containing special characters/whitespace:** Ensure spaces and unicode characters are preserved.
+
+**Plan / Approach:**
+- Use Python's built-in `str.join()` method: `return """".join(strings)`. This directly handles all standard string lists, empty lists, and edge cases efficiently in $O(N)$ time.",True,True,True,3,1.0,1,1,1,Success,Success,Success,1
+he_029,humaneval,filter_by_prefix,tier1_weaker,gemini-3.5-flash-lite,0.9,"Agent B, here are the specifications for the function you need to implement:
+
+- **Function Goal:** Write a function that filters a list of strings, returning only those strings that start with a specified prefix.
+- **Function Signature:** `def filter_by_prefix(strings: list[str], prefix: str) -> list[str]:`
+- **Key Edge Cases to Handle:**
+  - An empty input list (`[]`), which should return an empty list.
+  - A prefix that matches none of the strings.
+  - A prefix that matches all of the strings.
+  - An empty string as the prefix (`""""`), which should match all strings in the list.
+- **Approach:** Use a list comprehension to iterate through the input `strings` list and keep only those elements where `s.startswith(prefix)` evaluates to `True`. Return the resulting filtered list.",True,True,True,3,1.0,1,1,1,Success,Success,Success,1
+he_029,humaneval,filter_by_prefix,tier2_mid,gemini-3.5-flash-lite,0.7,"Agent B, here are the specifications for the function you need to write:
+
+**Function Purpose:**
+You need to write a function that takes a list of strings and a prefix string, and filters the list to return only the strings that start with the given prefix.
+
+**Function Signature:**
+```python
+def filter_by_prefix(strings: list[str], prefix: str) -> list[str]:
+```
+
+**Key Edge Cases to Handle:**
+- An empty input list (`[]`), which should return an empty list.
+- An empty prefix string (`""""`), which should technically match all strings in the list since every string starts with an empty string.
+- A prefix that matches none of the strings, resulting in an empty list.
+- Case sensitivity (standard string matching; e.g., 'A' does not match 'a').
+
+**Plan / Approach:**
+- Use a list comprehension to iterate through the input `strings`.
+- For each string, use the built-in string method `.startswith(prefix)` to check if it begins with the target prefix.
+- Collect and return all strings where this condition evaluates to `True`.",True,True,True,3,1.0,1,1,1,Success,Success,Success,1
+he_029,humaneval,filter_by_prefix,tier3_stronger,gemini-3.5-flash,0.7,"**HANDOFF MESSAGE FOR AGENT B**
+
+### Task Overview
+Implement a Python function `filter_by_prefix` that takes a list of strings and a prefix string, and returns a new list containing only the strings from the input list that start with the specified prefix.
+
+### Function Signature
+```python
+from typing import List
+
+def filter_by_prefix(strings: List[str], prefix: str) -> List[str]:
+```
+
+### Key Requirements & Examples
+- **Example 1:** `filter_by_prefix([], 'a')` -> `[]`
+- **Example 2:** `filter_by_prefix(['abc', 'bcd', 'cde', 'array'], 'a')` -> `['abc', 'array']`
+
+### Edge Cases to Handle
+1. **Empty input list:** If `strings` is empty, return an empty list `[]`.
+2. **Empty prefix:** If `prefix` is `""""`, every string starts with an empty prefix, so return a copy of the input list.
+3. **No matches:** If no strings start with `prefix`, return an empty list `[]`.
+4. **Strings shorter than prefix:** Handled naturally by string comparison (should not match).
+5. **Case sensitivity:** Preserve standard case sensitivity (e.g., `'a'` does not match `'Array'`).
+
+### Suggested Approach
+Use a list comprehension combined with Python's built-in string method `.startswith()`:
+```python
+return [s for s in strings if s.startswith(prefix)]
+```",True,True,True,3,1.0,1,1,1,Success,Success,Success,1
+he_038,humaneval,decode_cyclic,tier1_weaker,gemini-3.5-flash-lite,0.9,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Function to Build:**
+Write a function that encodes a given string by cycling the characters within every consecutive group of three characters. ""Cycling"" means shifting the characters in each 3-character group to the right by one position (so the 3rd character moves to the 1st position, the 1st moves to the 2nd, and the 2nd moves to the 3rd). If the string length is not a multiple of three, the remaining 1 or 2 characters at the end should remain in their original positions (or be handled as an incomplete group without cycling).
+
+**Exact Function Signature:**
+```python
+def encode_cyclic(s: str) -> str:
+    """"""
+    Returns encoded string by cycling groups of three characters.
+    """"""
+    pass
+```
+
+**Key Edge Cases to Handle:**
+1. Empty string (`""""`) -> should return `""""`.
+2. Strings with length less than 3 (e.g., `""a""`, `""ab""`) -> should return the string unchanged, as there aren't enough characters to form a full group of three.
+3. Strings whose lengths are exact multiples of 3 (e.g., `""123456""`) -> every character gets cycled into groups of 3.
+4. Strings whose lengths leave a remainder of 1 or 2 when divided by 3 (e.g., `""1234""`, `""12345""`) -> the full groups of 3 should be cycled, and the remaining trailing characters should be appended as-is.
+
+**Brief Plan/Approach:**
+1. Iterate through the string in steps of 3 (i.e., indices `0, 3, 6, ...`).
+2. For each step, extract a slice of up to 3 characters.
+3. If the slice has a length of exactly 3 (let's say indices `0, 1, 2`), cycle them by rearranging them into the order `[index 2, index 0, index 1]` (or using slice assignment/concatenation like `group[2] + group[0] + group[1]`).
+4. If the slice has fewer than 3 characters, leave it as-is.
+5. Append all processed groups/slices to a list or result string and return the final concatenated result.",False,False,False,0,1.0,0,0,0,NameError: name 'encode_cyclic' is not defined,ValueError: Function 'decode_cyclic' not found in code,NameError: name 'encode_cyclic' is not defined,0
+he_038,humaneval,decode_cyclic,tier2_mid,gemini-3.5-flash-lite,0.7,"Here is the handoff message for Agent B:
+
+---
+
+**Task Overview:**
+We need to implement a function that encodes a given input string by cycling the characters within every consecutive group of three characters. 
+
+**Function Signature:**
+```python
+def encode_cyclic(s: str) -> str:
+    """"""
+    Returns an encoded string by cycling groups of three characters.
+    """"""
+```
+
+**Behavioral Details (How the encoding works):**
+- The input string `s` should be broken down into groups of 3 characters.
+- For each group of 3 characters `(c1, c2, c3)`, the characters should be shifted/cycled left by one position, resulting in `(c2, c3, c1)`.
+- If the length of the string is not a multiple of 3, the remaining characters at the end (fewer than 3) should remain as-is without being cycled.
+
+**Key Edge Cases to Handle:**
+1. **Empty string (`""""`)**: Should return `""""`.
+2. **Strings shorter than 3 characters** (length 1 or 2, e.g., `""a""`, `""ab""`): Should be returned unchanged.
+3. **Strings with length that is an exact multiple of 3** (e.g., `""abcdef""`): Every group of 3 is cycled (`""bcaefd""`).
+4. **Strings with length not divisible by 3** (e.g., `""abcd""`): The first 3 characters are cycled, and the remainder is appended as-is (`""bcda""`).
+
+**Suggested Approach:**
+1. Iterate over the string in steps of 3 (i.e., `i` from `0` to `len(s)` with a step of `3`).
+2. Extract the substring of length up to 3: `group = s[i:i+3]`.
+3. If the length of the group is 3, cycle them: `group[1:] + group[0]`. Otherwise, leave the group as-is.
+4. Append the processed group to a list of results.
+5. Join the result list back into a single string and return it.",False,False,False,0,1.0,0,0,0,NameError: name 'encode_cyclic' is not defined,NameError: name 'encode_cyclic' is not defined,NameError: name 'encode_cyclic' is not defined,0
+he_041,humaneval,car_race_collision,tier1_weaker,gemini-3.5-flash-lite,0.9,"HANDOFF MESSAGE FOR AGENT B:
+
+Your task is to write a Python function that calculates the total number of car collisions on an infinitely long, perfectly straight road. 
+
+Here are the details you need:
+
+**Function Signature:**
+```python
+def count_collisions(left_to_right: list[float], right_to_left: list[float]) -> int:
+```
+*Note: If the problem implies a different signature (e.g., taking positions instead of lists of coordinates), adjust accordingly, but the inputs represent the initial positions of the $n$ cars moving left-to-right and the $n$ cars moving right-to-left.*
+
+**Problem Restatement & Rules:**
+- There are $n$ cars moving left-to-right (positive direction) and $n$ cars moving right-to-left (negative direction).
+- All cars travel at the exact same constant speed.
+- The two sets start very far apart (specifically, all left-to-right cars start to the left of all right-to-left cars).
+- Cars pass through each other completely unaffected upon collision (""infinitely sturdy"").
+- A collision is defined strictly as a left-to-right moving car passing/hitting a right-to-left moving car.
+- Return the total count of such pairwise collisions.
+
+**Key Mathematical Insight / Approach:**
+1. Since all cars move at the same speed, their relative order never changes. A left-to-right car will collide with a right-to-left car if and only if the left-to-right car's initial position is *less than* (to the left of) the right-to-left car's initial position.
+2. Because *every* car in the first set starts to the left of *every* car in the second set initially, every single left-to-right car is destined to pass every single right-to-left car.
+3. Therefore, if there are $n$ cars in the left-to-right set and $n$ cars in the right-to-left set, every car in the first set collides with every car in the second set. 
+4. The total number of collisions is simply $n \times n$ (or $n^2$), provided the inputs are valid lists of length $n$.
+
+**Edge Cases to Handle:**
+- Empty lists ($n = 0$): Should return `0`.
+- Different numbers of cars on each side (if the inputs can be of unequal length $n_1$ and $n_2$): The answer would be $n_1 \times n_2$. Make sure to use the lengths of the respective input lists rather than assuming a single $n$.
+
+Write the clean, well-documented function implementing this logic.",False,False,False,0,1.0,0,0,0,TypeError: car_race_collision() missing 1 required positional argument: 'right_to_left',TypeError: car_race_collision() missing 1 required positional argument: 'right_to_left',TypeError: car_race_collision() missing 1 required positional argument: 'right_to_left',0
+he_041,humaneval,car_race_collision,tier2_mid,gemini-3.5-flash-lite,0.7,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that calculates the total number of collisions between two sets of cars on an infinite, straight, one-dimensional road. 
+- Set 1 consists of $n$ cars driving from left to right (positive direction).
+- Set 2 consists of $n$ cars driving from right to left (negative direction).
+- All cars move at the exact same constant speed.
+- The two sets start infinitely far apart, with the left-to-right cars positioned entirely to the left of the right-to-left cars.
+- Cars are infinitely sturdy, meaning they pass right through each other without changing speed or trajectory upon collision. A collision occurs whenever a left-to-right car meets a right-to-left car.
+
+**Function Signature:**
+```python
+def count_collisions(left_to_right_positions: list[float], right_to_left_positions: list[float]) -> int:
+    """"""
+    Counts the total number of collisions between left-to-right and right-to-left cars.
+    
+    :param left_to_right_positions: Initial starting coordinates of cars moving left-to-right.
+    :param right_to_left_positions: Initial starting coordinates of cars moving right-to-left.
+    :return: Total number of collisions as an integer.
+    """"""
+```
+*(Note: You can assume the input lists contain the initial positions of the $n$ cars for each respective direction, sorted or unsorted. Please ensure your function handles unsorted position inputs robustly).*
+
+**Key Edge Cases to Handle:**
+1. **Unsorted Inputs:** The initial position arrays might not be sorted. Ensure you sort or process them correctly so relative order is respected.
+2. **Empty Inputs:** If $n = 0$ (empty lists), the number of collisions is `0`.
+3. **Coincident Starting Positions:** Multiple cars starting at the exact same coordinate should be handled correctly.
+4. **Scale / Performance:** Since $n$ could potentially be large, avoid an $O(n^2)$ brute-force pairwise comparison if possible. An $O(n \log n)$ approach is preferred.
+
+**Brief Plan / Approach:**
+1. Sort the initial positions of the `left_to_right_positions` array in ascending order.
+2. Sort the initial positions of the `right_to_left_positions` array in ascending order (or descending, depending on traversal).
+3. Recognize the geometric insight: Since all cars move at the same speed, a left-to-right car starting at position $L_i$ will collide with a right-to-left car starting at position $R_j$ if and only if $L_i < R_j$.
+4. Alternatively, use a two-pointer or cumulative counting approach: for every right-to-left car, count how many left-to-right cars are currently to its left. Because speeds are uniform, maintain a running count of valid left-to-right cars as you iterate through the sorted right-to-left positions, or vice-versa.",False,False,False,0,1.0,0,0,0,TypeError: car_race_collision() missing 1 required positional argument: 'right_to_left_posi,TypeError: car_race_collision() missing 1 required positional argument: 'right_to_left_posi,TypeError: car_race_collision() missing 1 required positional argument: 'right_to_left_posi,0
+he_050,humaneval,decode_shift,tier1_weaker,gemini-3.5-flash-lite,0.9,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that encodes a given string by shifting every alphabetical character forward by 5 positions in the alphabet. 
+
+**Function Signature:**
+```python
+def encode_shift_5(text: str) -> str:
+```
+
+**Requirements & Key Edge Cases to Handle:**
+1. **Alphabet Wrapping:** The shift must wrap around the alphabet. For example, 'v', 'w', 'x', 'y', 'z' should wrap around to 'a', 'b', 'c', 'd', 'e'.
+2. **Case Sensitivity:** Preserve the original case of the letters. Uppercase letters ('A'-'Z') should remain uppercase after shifting, and lowercase letters ('a'-'z') should remain lowercase.
+3. **Non-Alphabetic Characters:** Characters that are not letters (such as spaces, punctuation, numbers, and symbols) must remain unchanged in the output string.
+4. **Empty String:** If an empty string `""""` is passed, the function should return an empty string `""""`.
+
+**Brief Plan/Approach:**
+- Iterate through each character in the input string.
+- Check if the character is alphabetic using `.isalpha()`.
+- If it is a letter, determine its base ASCII value (either `ord('a')` or `ord('A')`).
+- Calculate the new shifted character using modulo arithmetic: `base + (char_code - base + 5) % 26`.
+- Convert the new ASCII value back to a character using `chr()`.
+- If it is not a letter, leave it as is.
+- Concatenate all processed characters into a result string and return it.",False,False,False,0,1.0,0,0,0,NameError: name 'encode_shift' is not defined,NameError: name 'encode_shift' is not defined,NameError: name 'encode_shift' is not defined,0
+he_050,humaneval,decode_shift,tier2_mid,gemini-3.5-flash-lite,0.7,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that encodes a given string by shifting every alphabetical character forward by 5 positions in the alphabet. 
+
+**Function Signature:**
+```python
+def encode_string(s: str) -> str:
+```
+
+**Requirements & Rules:**
+1. **Alphabet Shift:** Shift letters forward by 5. Specifically:
+   - lowercase letters ('a'-'z') wrap around from 'z' to 'a'.
+   - uppercase letters ('A'-'Z') wrap around from 'Z' to 'A'.
+2. **Non-Alpha Characters:** Leave all non-alphabetical characters (spaces, punctuation, digits, etc.) completely unchanged.
+
+**Key Edge Cases to Handle:**
+- **Wrap-around:** Characters near the end of the alphabet (e.g., 'v', 'w', 'x', 'y', 'z' and 'V', 'W', 'X', 'Y', 'Z') must wrap around correctly to the beginning. For example, 'y' becomes 'd', and 'Z' becomes 'E'.
+- **Mixed Case:** The function must correctly preserve and handle both lowercase and uppercase letters independently.
+- **Empty String:** Passing an empty string `""""` should return `""""`.
+- **Non-alphabetical input:** Strings with only numbers, spaces, or symbols (e.g., `""123!""`) should return the exact same string.
+
+**Suggested Approach:**
+1. Iterate through each character in the input string.
+2. Check if the character is an uppercase letter (`'A'` to `'Z'`) or lowercase letter (`'a'` to `'z'`).
+3. For letters, convert them to their ASCII/Unicode integer values, apply the +5 shift relative to the base ('a' or 'A'), use modulo 27--wait, modulo 26 arithmetic to handle wrap-around correctly, and convert back to a character.
+4. If it's not a letter, keep it as is.
+5. Join the transformed characters into a new result string and return it.",False,False,False,0,1.0,0,0,0,NameError: name 'encode_shift' is not defined,NameError: name 'encode_shift' is not defined,NameError: name 'encode_shift' is not defined,0
+he_051,humaneval,remove_vowels,tier1_weaker,gemini-3.5-flash-lite,0.9,"FUNCTION TO BUILD:
+Write a Python function named `remove_vowels` that takes a single string as input and returns a new string with all English vowels removed.
+
+SIGNATURE:
+```python
+def remove_vowels(text: str) -> str:
+```
+
+REQUIREMENTS & DETAILS:
+- Vowels to remove: Both lowercase and uppercase variants of 'a', 'e', 'i', 'o', 'u' ('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U').
+- All non-vowel characters (including consonants, numbers, spaces, punctuation, and newline characters like `\n`) must remain untouched in their original relative positions.
+
+KEY TEST CASES / EDGE CASES:
+- Empty string: `remove_vowels('')` -> `''`
+- String with newlines: `remove_vowels(""abcdef\nghijklm"")` -> `'bcdf\nghjklm'`
+- String with mixed case vowels: `remove_vowels('aaBAA')` -> `'B'`
+- String with no vowels: `remove_vowels('zbcd')` -> `'zbcd'`
+- String with only vowels: `remove_vowels('aaaaa')` -> `''`
+
+SUGGESTED APPROACH:
+- Iterate through each character in the input string.
+- Check if the character (case-insensitively or by checking against both lower and upper case sets) is a vowel.
+- If it is NOT a vowel, append it to a result list or string.
+- Alternatively, use a generator expression or list comprehension combined with `''.join(...)` filtering out characters present in a defined set of vowels (`""aeiouAEIOU""`).",True,True,True,3,1.0,1,1,1,Success,Success,Success,1
+he_051,humaneval,remove_vowels,tier2_mid,gemini-3.5-flash-lite,0.7,"HANDOFF MESSAGE FOR AGENT B:
+
+Please implement the Python function `remove_vowels(text: str) -> str`.
+
+**Functionality:**
+The function takes a string as input and returns a new string with all English vowels removed. Both lowercase ('a', 'e', 'i', 'o', 'u') and uppercase ('A', 'E', 'I', 'O', 'U') vowels must be removed.
+
+**Exact Signature:**
+```python
+def remove_vowels(text: str) -> str:
+```
+
+**Key Edge Cases & Behaviors:**
+- Empty string input (`''`) should return an empty string (`''`).
+- Strings with only vowels (e.g., `'aaaaa'`, `'AEIOU'`) should return an empty string (`''`).
+- Strings with no vowels (e.g., `'zbcd'`) should return the original string unchanged.
+- Whitespace, newline characters (`\n`), and punctuation must be preserved (e.g., `""abcdef\nghijklm""` becomes `'bcdf\nghjklm'`).
+
+**Suggested Approach:**
+Use a generator expression or list comprehension combined with `str.join()`. Iterate through each character in the input string and keep only those characters that are *not* present in a set/string of vowels (e.g., `""aeiouAEIOU""`).",True,True,True,3,1.0,1,1,1,Success,Success,Success,1

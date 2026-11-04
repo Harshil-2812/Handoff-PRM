@@ -73,13 +73,15 @@ _LIMITERS: Dict[str, RateLimiter] = {}
 
 def get_limiter(model: str) -> RateLimiter:
     if model not in _LIMITERS:
-        _LIMITERS[model] = RateLimiter(rpm=14)
+        # gemini-3.5-flash has stricter RPM on free tier than flash-lite
+        rpm = 8 if "flash" in model and "lite" not in model else 14
+        _LIMITERS[model] = RateLimiter(rpm=rpm)
     return _LIMITERS[model]
 
 # ── Generation with Rate-Limit & Exponential Backoff ─────────────────────────
 def generate_llm(prompt: str, model: str, temp: float = 0.7, seed: Optional[int] = None) -> str:
     limiter = get_limiter(model)
-    max_retries = 5
+    max_retries = 8
     cfg = types.GenerateContentConfig(
         temperature=temp,
         seed=seed,
@@ -97,17 +99,18 @@ def generate_llm(prompt: str, model: str, temp: float = 0.7, seed: Optional[int]
             return (resp.text or "").strip()
         except genai_errors.ClientError as e:
             if getattr(e, "code", None) == 429:
-                sleep_sec = 2.0 ** attempt + 2.0
-                print(f"    [429 Rate Limit] {model}, sleeping {sleep_sec:.1f}s (attempt {attempt+1}/{max_retries})")
+                sleep_sec = 15.0 * (1.35 ** attempt)
+                print(f"    [429 Rate Limit] {model}, sleeping {sleep_sec:.1f}s (attempt {attempt+1}/{max_retries})", flush=True)
                 time.sleep(sleep_sec)
             else:
                 raise e
         except genai_errors.ServerError as e:
-            sleep_sec = 2.0 ** attempt + 2.0
-            print(f"    [5xx Server Error] {model}, sleeping {sleep_sec:.1f}s (attempt {attempt+1}/{max_retries})")
+            sleep_sec = 5.0 * (1.4 ** attempt)
+            print(f"    [5xx Server Error] {model}, sleeping {sleep_sec:.1f}s (attempt {attempt+1}/{max_retries})", flush=True)
             time.sleep(sleep_sec)
         except Exception as e:
-            sleep_sec = 2.0 ** attempt + 1.0
+            sleep_sec = 5.0 * (1.4 ** attempt)
+            print(f"    [Network/API Exception] {model} ({type(e).__name__}), sleeping {sleep_sec:.1f}s (attempt {attempt+1}/{max_retries})", flush=True)
             time.sleep(sleep_sec)
 
     raise RuntimeError(f"Model {model} failed after {max_retries} retries.")
