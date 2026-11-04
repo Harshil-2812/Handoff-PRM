@@ -2840,3 +2840,398 @@ def remove_chars(string1: str, string2: str) -> str:
 2. Iterate through each character of `string1`.
 3. Check if the character is in the `string2` set. If it is **not**, append it to a list or result string.
 4. Join the resulting collection into a final string and return it.",False,False,False,0,1.0,0,0,0,NameError: name 'remove_dirty_chars' is not defined,NameError: name 'remove_dirty_chars' is not defined,NameError: name 'remove_dirty_chars' is not defined
+mbpp_061,mbpp,count_Substrings,tier1_weaker,gemini-3.5-flash-lite,0.95,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that counts the number of substrings in a given numeric string where the sum of the digits of the substring is equal to the length of the substring.
+
+**Function Signature:**
+```python
+def count_substrings_with_sum_equal_to_length(s: str) -> int:
+    """"""
+    Counts the number of substrings in 's' where the sum of digits 
+    equals the length of the substring.
+    """"""
+    pass
+```
+
+**Key Edge Cases to Handle:**
+1. **Empty string (`""""`):** Should return `0`.
+2. **Strings with no valid substrings:** (e.g., `""000""` where length is 1, but sum is 0 — wait, for length 1, sum must equal 1, so `0` fails). Ensure correct handling when no substrings match.
+3. **Strings with zeros and large digits:** Ensure proper integer conversion of individual characters (e.g., converting char `'5'` to int `5`).
+4. **All matching characters:** (e.g., `""111""` — substrings of length 1 have sum 1, valid; substrings of length 2 have sum 2, invalid, etc.).
+
+**Brief Plan/Approach:**
+1. Initialize a counter variable to `0`.
+2. Get the length of the string, say `n`.
+3. Use two nested loops to generate all possible substrings (outer loop for the start index `i` from `0` to `n-1`, inner loop for the end index `j` from `i` to `n-1`).
+4. For each substring `s[i:j+1]`:
+   - Calculate its length: `length = (j - i + 1)`.
+   - Calculate the sum of its digits (convert each character to an integer and sum them up).
+   - Compare the digit sum to the length. If they are equal, increment the counter.
+5. Return the final counter. 
+*(Note: Since string lengths for typical problems of this type are manageable, an $O(n^2)$ nested loop approach is straightforward and robust. If constraints require $O(n)$, prefix sums or sliding window techniques could be explored, but $O(n^2)$ is safest for correctness first).*",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_061,mbpp,count_Substrings,tier2_mid,gemini-3.5-flash-lite,0.7,"Agent B, here are the requirements and instructions for your coding task:
+
+**Function Objective:**
+Write a Python function that counts the total number of substrings within a given numeric string where the sum of the digits of the substring is equal to the length of that substring.
+
+**Exact Function Signature:**
+```python
+def count_substrings_with_sum_equal_to_length(s: str) -> int:
+    """"""
+    Counts the number of substrings in 's' where digit_sum(substring) == len(substring).
+    """"""
+    pass
+```
+
+**Key Edge Cases to Handle:**
+1. **Non-numeric characters:** Assume the input string consists strictly of digits (`'0'` through `'9'`), but ensure robustness if needed.
+2. **Empty string (`""""`):** Should return `0`.
+3. **Single character strings:** E.g., `""0""` should return `0`, while `""1""` should return `1`.
+4. **Zeros in the string:** Zeros contribute `0` to the sum and count towards the length, which naturally affects the balance (e.g., `""10""` has length 2 and sum 1, so it does not match).
+5. **Performance / Constraints:** Since substrings can be up to $O(N^2)$ in number, keep efficiency in mind. However, for typical lengths, a double-loop or optimized prefix approach works well.
+
+**Brief Plan / Approach:**
+1. Iterate through all possible starting indices `i` from `0` to `len(s) - 1`.
+2. Maintain a running sum as you extend the ending index `j` from `i` to `len(s) - 1`.
+3. At each step, calculate the current length as `(j - i + 1)`.
+4. Compare the running digit sum to the current length. If they are equal, increment your counter.
+5. Return the final count.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_061,mbpp,count_Substrings,tier3_stronger,gemini-3.5-flash-lite,0.2,"Agent B, please implement the following Python function according to these specifications:
+
+**Function Purpose:**
+Write a function that counts the number of substrings in a given string (consisting of digits) where the sum of the digits in the substring is equal to the numerical length of that substring.
+
+**Function Signature:**
+```python
+def count_digit_sum_substrings(s: str) -> int:
+    """"""
+    Counts the number of substrings in the input string 's' 
+    where the sum of the digits equals the length of the substring.
+    """"""
+    pass
+```
+
+**Key Edge Cases to Handle:**
+- Empty string (`""""`): Should return `0`.
+- Strings with non-digit characters: The problem implies digit strings, but ensure the function safely handles or assumes valid numeric digit characters (`'0'` through `'9'`).
+- Single-character substrings (e.g., `""5""` has length 1 and digit sum 5 -> not equal; `""1""` has length 1 and digit sum 1 -> equal).
+- Large strings: The approach should be efficient enough to avoid excessive time complexity (nested loops checking every substring might be $O(N^2)$, which is acceptable for typical constraints, but be mindful of performance).
+
+**Brief Plan/Approach:**
+1. Initialize a counter variable to `0`.
+2. Use a nested loop to generate all possible substrings of the input string `s`.
+   - Outer loop for the starting index `i` from `0` to `len(s) - 1`.
+   - Inner loop for the ending index `j` from `i` to `len(s) - 1`.
+3. For each substring `s[i:j+1]`:
+   - Calculate its length: `length = (j - i + 1)`.
+   - Calculate the sum of its digits: convert each character to an integer and sum them up.
+   - Compare the digit sum to the `length`. If they are equal, increment your counter.
+4. Return the final counter value.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_062,mbpp,smallest_num,tier1_weaker,gemini-3.5-flash-lite,0.95,"Agent B, 
+
+Your task is to write a Python function that finds and returns the smallest number in a given list of numbers.
+
+**Function Signature:**
+```python
+def find_smallest_number(numbers: list) -> int | float:
+    pass
+```
+
+**Key Edge Cases to Handle:**
+1. **Empty List:** If the input list is empty, the function should raise a `ValueError` with an appropriate error message.
+2. **Negative Numbers:** The list may contain negative numbers, and the function must correctly identify the most negative value as the smallest.
+3. **Floating-Point Numbers:** The list may contain a mix of integers and floats.
+4. **Single Element:** If the list contains only one element, return that element.
+
+**Approach:**
+- First, check if the input list is empty. If it is, raise a `ValueError`.
+- You can implement this efficiently using Python's built-in `min()` function, which runs in $O(n)$ time complexity, or by iterating through the list manually keeping track of the minimum value found so far. Using `min(numbers)` is preferred for readability and performance.",True,True,False,2,0.67,1,discard,0,Success,Success,ValueError: Function 'smallest_num' not found in code
+mbpp_062,mbpp,smallest_num,tier2_mid,gemini-3.5-flash-lite,0.7,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that finds and returns the smallest number in a given list of numbers.
+
+**Function Signature:**
+```python
+def find_smallest_number(numbers: list) -> int | float:
+    pass
+```
+
+**Key Edge Cases to Handle:**
+1. **Empty list:** If the input list is empty, the function should raise a `ValueError`.
+2. **Negative numbers:** The function must correctly handle lists containing negative numbers, zeros, and positive numbers.
+3. **Floating-point numbers:** The function should work with both integers and floats.
+4. **Single-element list:** Should return that single element.
+
+**Approach/Plan:**
+- First, check if the input list is empty (`if not numbers:`), and if so, raise a `ValueError`.
+- You can implement this efficiently and simply by utilizing Python's built-in `min()` function, which handles all data types and edge cases cleanly with $O(n)$ time complexity. 
+- Return the result of `min(numbers)`.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_062,mbpp,smallest_num,tier3_stronger,gemini-3.5-flash-lite,0.2,"To Agent B:
+
+Here is the specification for the function you need to write.
+
+**1. Restatement of the Problem:**
+Write a Python function that takes a list of numbers and returns the smallest number in that list.
+
+**2. Function Signature:**
+```python
+def find_smallest_number(numbers: list) -> (int, float):
+    pass
+```
+
+**3. Key Edge Cases to Handle:**
+- **Empty list:** If the input list is empty, the function should raise a `ValueError`.
+- **Negative numbers:** The function must correctly handle lists containing negative numbers.
+- **Floating-point numbers:** The function should work seamlessly with both integers and floats.
+- **Single-element list:** If the list contains only one element, return that element.
+- **Non-list input (Optional/Good practice):** Consider raising a `TypeError` if the input is not a list.
+
+**4. Plan/Approach:**
+- First, check if the input list is empty. If it is, raise a `ValueError(""The list is empty"")`.
+- You can implement this efficiently using Python's built-in `min(numbers)` function, which operates in $O(N)$ time complexity. 
+- Alternatively, you can iterate through the list, keeping track of the minimum value found so far. Using the built-in `min()` is preferred for readability and performance.",False,True,False,1,0.67,0,discard,0,ValueError: Function 'smallest_num' not found in code,Success,ValueError: Function 'smallest_num' not found in code
+mbpp_066,mbpp,pos_count,tier1_weaker,gemini-3.5-flash-lite,0.95,"**Handoff Message for Agent B:**
+
+Please write a Python function that counts the number of positive numbers (strictly greater than zero) in a given list of numbers.
+
+**Function Signature:**
+```python
+def count_positives(numbers: list) -> int:
+    """"""
+    Counts the number of positive numbers in a list.
+    """"""
+```
+
+**Key Edge Cases to Handle:**
+- Empty list `[]` should return `0`.
+- List containing only negative numbers and/or zeros should return `0`.
+- Lists with mixed types (if applicable) or floating-point numbers (ensure `> 0` logic correctly identifies positives like `0.5`).
+
+**Brief Plan/Approach:**
+- Initialize a counter or use a generator expression with the `sum()` function (e.g., `sum(1 for x in numbers if x > 0)`).
+- Iterate through the list, check if each element is greater than zero, and return the total count.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_066,mbpp,pos_count,tier2_mid,gemini-3.5-flash-lite,0.7,"HANDOFF MESSAGE FOR AGENT B:
+
+Please implement a Python function that counts the number of positive numbers (strictly greater than zero) in a given list of numbers.
+
+**Function Signature:**
+```python
+def count_positive_numbers(numbers: list) -> int:
+```
+
+**Key Edge Cases to Handle:**
+- Empty list `[]` (should return `0`).
+- Lists containing only negative numbers and/or zeros (should return `0`).
+- Lists containing a mix of integers and floating-point numbers (all should be evaluated correctly).
+- Non-numeric types in the list (assume standard inputs are numbers, but handle gracefully if needed, or stick to numeric comparisons).
+
+**Plan / Approach:**
+1. Initialize a counter variable to `0`.
+2. Iterate through each element in the input list.
+3. Check if the element is greater than `0`. If so, increment the counter.
+4. Alternatively, use a generator expression with `sum()` for a more concise and Pythonic approach: `sum(1 for x in numbers if x > 0)`.
+5. Return the final count.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_066,mbpp,pos_count,tier3_stronger,gemini-3.5-flash-lite,0.2,"HANDOFF MESSAGE FOR AGENT B:
+
+Please implement a Python function that counts the number of positive numbers in a given list.
+
+Function Signature:
+```python
+def count_positives(numbers: list) -> int:
+```
+
+Requirements & Edge Cases:
+- A ""positive"" number is strictly greater than zero ($> 0$). Zero ($0$) and negative numbers are not positive.
+- The input list may contain integers, floats, or a mix of both.
+- Handle edge cases such as:
+  - An empty list (should return `0`).
+  - A list with no positive numbers (should return `0`).
+  - A list containing only positive numbers (should return the total length of the list).
+  - A list containing `0` and negative values alongside positives.
+
+Approach:
+Iterate through the list (or use a generator expression with `sum()`) checking each element to see if it is greater than zero, and return the total count.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_068,mbpp,is_Monotonic,tier1_weaker,gemini-3.5-flash-lite,0.95,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function to determine whether a given array (list of numbers) is monotonic. An array is monotonic if it is either monotone increasing or monotone decreasing. 
+- Monotone increasing: $A[i] \le A[i+1]$ for all $i$
+- Monotone decreasing: $A[i] \ge A[i+1]$ for all $i$
+
+**Function Signature:**
+```python
+def is_monotonic(nums: list[int]) -> bool:
+    pass
+```
+
+**Edge Cases to Handle:**
+- Empty arrays (`[]`) should return `True`.
+- Arrays with a single element (`[5]`) should return `True`.
+- Arrays with all identical elements (`[2, 2, 2, 2]`) should return `True`.
+- Arrays with only two elements (`[1, 2]` or `[2, 1]`) should be handled correctly.
+
+**Brief Plan / Approach:**
+1. Initialize two boolean flags, say `increasing = True` and `decreasing = True`.
+2. Iterate through the array from the first element to the second-to-last element.
+3. For each element at index `i`, compare `nums[i]` with `nums[i+1]`:
+   - If `nums[i] > nums[i+1]`, then the array cannot be monotonically increasing, so set `increasing = False`.
+   - If `nums[i] < nums[i+1]`, then the array cannot be monotonically decreasing, so set `decreasing = False`.
+4. After the loop, return `increasing or decreasing`. If either flag remains `True`, the array is monotonic.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_068,mbpp,is_Monotonic,tier2_mid,gemini-3.5-flash-lite,0.7,"**Handoff Message for Agent B:**
+
+**Task Overview:**
+Write a Python function to determine if a given array of numbers is monotonic. An array is monotonic if it is either monotone increasing or monotone decreasing. 
+- An array `A` is monotone increasing if for all `i <= j`, `A[i] <= A[j]`.
+- An array `A` is monotone decreasing if for all `i <= j`, `A[i] >= A[j]`.
+
+**Exact Function Signature:**
+```python
+def is_monotonic(nums: list[int | float]) -> bool:
+    """"""
+    Returns True if the given list of numbers is monotonic, else False.
+    """"""
+```
+
+**Key Edge Cases to Handle:**
+1. **Empty array or single-element array:** Should return `True` (vacuously monotonic).
+2. **Arrays with all identical elements:** (e.g., `[2, 2, 2, 2]`) Should return `True` (both non-decreasing and non-increasing).
+3. **Arrays with two elements:** (e.g., `[1, 2]` or `[2, 1]`) Should be handled correctly.
+4. **Strictly increasing/decreasing vs. non-strict:** Remember that equal adjacent elements are allowed in a monotonic array.
+
+**Brief Plan/Approach:**
+1. Initialize two boolean flags (or track directions): assume the array could be both non-decreasing (`is_increasing = True`) and non-increasing (`is_decreasing = True`).
+2. Iterate through the array from the first element to the second-to-last element.
+3. For each adjacent pair `nums[i]` and `nums[i+1]`:
+   - If `nums[i] > nums[i+1]`, the array cannot be non-decreasing, so set `is_increasing = False`.
+   - If `nums[i] < nums[i+1]`, the array cannot be non-increasing, so set `is_decreasing = False`.
+4. Return `is_increasing or is_decreasing`. Alternatively, a single pass checking for violations can be optimized to $O(N)$ time complexity and $O(1)$ space complexity.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_068,mbpp,is_Monotonic,tier3_stronger,gemini-3.5-flash-lite,0.2,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that determines whether a given array of numbers is monotonic. An array is monotonic if it is either monotone increasing or monotone decreasing. 
+- An array is monotone increasing if for all $i \le j$, $A[i] \le A[j]$.
+- An array is monotone decreasing if for all $i \le j$, $A[i] \ge A[j]$.
+
+**Function Signature:**
+```python
+def is_monotonic(nums: list[int | float]) -> bool:
+    """"""
+    Returns True if the given array is monotonic, False otherwise.
+    """"""
+```
+
+**Key Edge Cases to Handle:**
+1. **Empty arrays or single-element arrays:** Should return `True` (vacuously true).
+2. **Arrays with all identical elements** (e.g., `[2, 2, 2, 2]`): Should return `True`.
+3. **Strictly increasing/decreasing arrays:** Should return `True`.
+4. **Arrays that neither increase nor decrease continuously** (e.g., `[1, 3, 2]`): Should return `False`.
+
+**Plan / Approach:**
+1. Initialize two boolean flags, say `increasing = True` and `decreasing = True`.
+2. Iterate through the array from the first element to the second-to-last element.
+3. For each adjacent pair `nums[i]` and `nums[i+1]`:
+   - If `nums[i] > nums[i+1]`, then the array cannot be monotone increasing, so set `increasing = False`.
+   - If `nums[i] < nums[i+1]`, then the array cannot be monotone decreasing, so set `decreasing = False`.
+4. At any point, if both `increasing` and `decreasing` become `False`, you can immediately return `False` to optimize.
+5. After the loop, return `increasing or decreasing`.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_079,mbpp,word_len,tier1_weaker,gemini-3.5-flash-lite,0.95,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Function Objective:**
+Write a Python function that checks whether the length of a given word (string) is odd or not. It should return `True` if the length is odd, and `False` otherwise.
+
+**Exact Function Signature:**
+```python
+def is_word_length_odd(word: str) -> bool:
+```
+
+**Key Edge Cases to Handle:**
+1. **Empty string (`""""`)**: Length is 0 (even), so it should return `False`.
+2. **Single-character string (`""a""`)**: Length is 1 (odd), so it should return `True`.
+3. **Strings with whitespace or special characters**: The length should include all characters in the string as passed.
+4. **Non-string inputs**: (Optional/Bonus) Ensure it handles or gracefully fails if passed non-string types, though assuming a `str` type hint is standard.
+
+**Brief Plan / Approach:**
+1. Use Python's built-in `len()` function to get the length of the input string `word`.
+2. Use the modulo operator (`% 2`) to check if the length is not equal to `0` (i.e., `len(word) % 2 != 1` or `len(word) % 2 != 0`).
+3. Return the resulting boolean value directly.",False,False,True,1,0.67,0,discard,0,ValueError: Function 'word_len' not found in code,ValueError: Function 'word_len' not found in code,Success
+mbpp_079,mbpp,word_len,tier2_mid,gemini-3.5-flash-lite,0.7,"Agent B, here is your task specification:
+
+**Function Purpose:**
+Write a Python function that checks whether the length of a given word (string) is odd or not. It should return `True` if the length is odd, and `False` if the length is even.
+
+**Function Signature:**
+```python
+def is_word_length_odd(word: str) -> bool:
+```
+
+**Key Edge Cases to Handle:**
+- Empty string (`""""`): Length is 0 (even), so it should return `False`.
+- Words with spaces, punctuation, or mixed casing: The length refers strictly to the total number of characters in the input string.
+- Non-string inputs: (Optional, but good practice to handle or assume standard string inputs as per the signature).
+
+**Plan / Approach:**
+1. Use the built-in `len()` function to get the number of characters in the `word` parameter.
+2. Use the modulo operator (`% 2`) to check if the length is not equal to 0 (`len(word) % 2 != 0`).
+3. Return the resulting boolean value.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_079,mbpp,word_len,tier3_stronger,gemini-3.5-flash-lite,0.2,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that checks whether the length of a given word (string) is odd or not. 
+
+**Function Signature:**
+`is_length_odd(word: str) -> bool`
+
+**Requirements:**
+- Return `True` if the length of the string is odd.
+- Return `False` if the length of the string is even.
+
+**Key Edge Cases to Handle:**
+- Empty string `""""`: Length is 0 (even), so it should return `False`.
+- Strings with spaces or special characters: Count their total length normally using `len()`.
+- Non-string inputs: (Optional, but good practice to handle or assume standard string input).
+
+**Plan/Approach:**
+1. Use the built-in `len()` function to get the length of the input `word`.
+2. Use the modulo operator (`% 2`) to check if the length is not equal to 0 (i.e., `len(word) % 2 != 1` or `len(word) % 2 != 0`).
+3. Return the resulting boolean value.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_080,mbpp,tetrahedral_number,tier1_weaker,gemini-3.5-flash-lite,0.95,"Agent B, here is the specification for the function you need to write.
+
+**Function Objective:**
+Write a function that calculates the $n$-th tetrahedral number. A tetrahedral number (or triangular pyramidal number) represents a pyramid with a triangular base. The formula for the $n$-th tetrahedral number is the sum of the first $n$ triangular numbers, which can be expressed mathematically as:
+$T_n = \frac{n(n + 1)(n + 2)}{6}$
+
+**Exact Function Signature:**
+```python
+def tetrahedral_number(n: int) -> int:
+    pass
+```
+
+**Key Edge Cases to Handle:**
+- **$n = 1$**: Should return `1`.
+- **$n \le 0$**: Should raise a `ValueError` (since tetrahedral numbers are defined for positive integers).
+- **Large values of $n$**: Ensure the calculation handles integer types properly (Python handles arbitrarily large integers automatically, but ensure no floating-point inaccuracies by using integer division).
+
+**Plan / Approach:**
+1. Validate the input: Check if $n \le 0$, and if so, raise a `ValueError`.
+2. Compute the result using the direct O(1) mathematical formula: `(n * (n + 1) * (n + 2)) // 6`.
+3. Return the integer result.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+mbpp_080,mbpp,tetrahedral_number,tier2_mid,gemini-3.5-flash-lite,0.7,"Agent B, please implement the function to find the nth tetrahedral number based on the specifications below.
+
+### 1. Function Restatement and Signature
+Write a function that calculates the $n$-th tetrahedral number (also known as the triangular pyramidal number). 
+The signature must be:
+```python
+def tetrahedral_number(n: int) -> int:
+```
+
+### 2. Mathematical Definition & Approach
+- The $n$-th tetrahedral number is the sum of the first $n$ triangular numbers.
+- The direct formula for the $n$-th tetrahedral number is:
+  $$\text{Tet}(n) = \frac{n(n + 1)(n + 2)}{6}$$
+- Approach: Implement the function using this $O(1)$ mathematical formula rather than an iterative or recursive loop to ensure optimal performance.
+
+### 3. Key Edge Cases to Handle
+- **$n = 1$**: Should return `1`.
+- **$n = 0$**: Should return `0` (since no elements/pyramid of size 0).
+- **Negative inputs ($n < 0$)**: Should raise a `ValueError` or return an appropriate error handling since tetrahedral numbers are defined for positive integers and zero.",True,True,True,3,1.0,1,1,1,Success,Success,Success
