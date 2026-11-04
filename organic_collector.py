@@ -270,13 +270,14 @@ def collect_organic_dataset(max_tasks: Optional[int] = None):
                 if (task_id, tier_name) in completed_keys:
                     continue
 
-                print(f"\n[{idx+1}/{len(pool_ids)}] Task: {task_id} ({entry_point}) | Tier: {tier_name} ({a_model}, T={a_temp})")
+                print(f"\n[{idx+1}/{len(pool_ids)}] Task: {task_id} ({entry_point}) | Tier: {tier_name} ({a_model}, T={a_temp})", flush=True)
 
                 # Step 1: Agent A generates natural organic handoff (T > 0)
                 try:
                     handoff = agent_a_plan(problem, model=a_model, temp=a_temp)
+                    print(f"  [Agent A] Generated handoff ({len(handoff)} chars)", flush=True)
                 except Exception as e:
-                    print(f"  [ERROR] Agent A generation failed: {e}")
+                    print(f"  [ERROR] Agent A generation failed: {e}", flush=True)
                     continue
 
                 # Step 2: Agent B triplicate execution (Task A2)
@@ -290,6 +291,7 @@ def collect_organic_dataset(max_tasks: Optional[int] = None):
                         p, err = False, f"CallFailed: {type(e).__name__}"
                     passes.append(p)
                     errors.append(err)
+                    print(f"    [Agent B] Seed {seed_b}: {'PASS' if p else 'FAIL'} ({err})", flush=True)
 
                 pass_count = sum(1 for p in passes if p)
                 # Agreement rate: if 3/3 or 0/3 -> 1.0 (100% agreement); if 2/3 or 1/3 -> 0.67
@@ -328,7 +330,7 @@ def collect_organic_dataset(max_tasks: Optional[int] = None):
                 if label_majority == 0:
                     total_negatives += 1
 
-                print(f"  Passes: {passes} ({pass_count}/3) | Majority: {label_majority} | Discard: {label_discard_policy} | Robust: {label_robust_positive}")
+                print(f"  Summary: Passes {pass_count}/3 | Majority: {label_majority} | Discard: {label_discard_policy} | Robust: {label_robust_positive}", flush=True)
 
     finally:
         f_out.close()
