@@ -625,3 +625,575 @@ def remove_vowels(text: str) -> str:
 
 **Suggested Approach:**
 Use a generator expression or list comprehension combined with `str.join()`. Iterate through each character in the input string and keep only those characters that are *not* present in a set/string of vowels (e.g., `""aeiouAEIOU""`).",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_055,humaneval,fib,tier1_weaker,gemini-3.5-flash-lite,0.9,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that calculates and returns the $n$-th Fibonacci number.
+
+**Function Signature:**
+```python
+def fib(n: int) -> int:
+```
+
+**Examples:**
+- `fib(10)` should return `55`
+- `fib(1)` should return `1`
+- `fib(8)` should return `21`
+
+**Key Edge Cases to Handle:**
+- `n = 0`: Should return `0` (standard base case for Fibonacci sequences).
+- `n = 1` and `n = 2`: Should return `1`.
+- Negative integers (`n < 0`): Decide on behavior (raise a `ValueError` or handle appropriately, though standard inputs will be non-negative integers).
+
+**Plan / Approach:**
+1. Implement an iterative approach (using a loop or rolling variables) to achieve $O(n)$ time complexity and $O(1)$ space complexity, which is efficient and avoids recursion depth limits.
+2. Alternatively, use memoization or dynamic programming if preferred, but iterative is the most straightforward.
+3. Handle the base cases explicitly (`0` and `1`).",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_055,humaneval,fib,tier2_mid,gemini-3.5-flash-lite,0.7,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Implement a Python function that calculates and returns the $n$-th Fibonacci number.
+
+**Function Signature:**
+```python
+def fib(n: int) -> int:
+```
+
+**Examples / Expected Behavior:**
+- `fib(10) -> 55`
+- `fib(1) -> 1`
+- `fib(8) -> 21`
+
+**Key Edge Cases to Handle:**
+- $n = 0$: Should return `0` (standard for the Fibonacci sequence, where $F(0) = 0$).
+- $n = 1$: Should return `1`.
+- Negative integers: Raise a `ValueError` or handle appropriately since the standard sequence is defined for non-negative integers.
+- Large values of $n$: Ensure the approach is efficient enough (avoiding naive exponential recursion) so it doesn't time out.
+
+**Recommended Plan/Approach:**
+Use an iterative approach with $O(n)$ time complexity and $O(1)$ space complexity. Maintain two variables representing the previous two Fibonacci numbers and update them in a loop from $2$ up to $n$.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_059,humaneval,largest_prime_factor,tier1_weaker,gemini-3.5-flash-lite,0.9,"Agent B, your task is to write a Python function that finds and returns the largest prime factor of a given integer $n$. 
+
+Here are the exact specifications:
+
+1. **Function Signature:**
+   ```python
+   def largest_prime_factor(n: int) -> int:
+   ```
+
+2. **Assumptions & Constraints:**
+   - $n > 1$ and $n$ is not a prime number.
+
+3. **Examples:**
+   - `largest_prime_factor(13195)` should return `29`
+   - `largest_prime_factor(2048)` should return `2`
+
+4. **Key Edge Cases to Consider:**
+   - Powers of 2 (e.g., `2048`, where 2 is the only prime factor).
+   - Numbers with large prime factors.
+   - Ensuring efficiency so it doesn't time out on larger composite numbers.
+
+5. **Recommended Approach / Plan:**
+   - Initialize a variable (e.g., `factor = 2`) to start checking potential divisors.
+   - Loop while `factor * factor <= n`:
+     - If `n % factor == 0`, divide `n` by `factor` as many times as possible (i.e., `n //= factor`) to strip out all instances of that prime factor.
+     - Increment `factor` by 1 (or optimize to check 2 and then odd numbers).
+   - After the loop, if `n > 1`, the remaining value of `n` is itself a prime factor (and will be the largest one). Return the last recorded prime factor.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_059,humaneval,largest_prime_factor,tier2_mid,gemini-3.5-flash-lite,0.7,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that finds and returns the largest prime factor of a given integer `n`. 
+
+### Function Signature:
+```python
+def largest_prime_factor(n: int) -> int:
+```
+
+### Constraints & Assumptions:
+- `n > 1`
+- `n` is guaranteed NOT to be a prime number (it will have at least two distinct prime factors, or a prime factor with multiplicity).
+
+### Key Edge Cases to Handle:
+- Small composite numbers (e.g., `n = 4`, where the largest prime factor is `2`).
+- Numbers with large prime factors (e.g., `13195`, which has prime factors 5, 7, 13, and 29).
+- Powers of two (e.g., `2048`, where the only prime factor is `2`).
+
+### Plan / Approach:
+1. Initialize a variable `factor` to 2.
+2. Iterate `factor` upwards while `factor * factor <= n`.
+3. While `n` is divisible by `factor`, divide `n` by `factor` until it is no longer divisible. This effectively strips out all instances of the current prime factor and composite multiples of it.
+4. Increment `factor` by 1 (or optimize to check 2, then odd numbers starting at 3).
+5. After the loop, if `n` is still greater than 1, the remaining value of `n` is itself a prime factor (and will be the largest one). Return the last recorded/remaining factor.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_068,humaneval,pluck,tier1_weaker,gemini-3.5-flash-lite,0.9,"**Handoff Message for Agent B**
+
+Your task is to write a Python function that finds and ""plucks"" a specific node from an array representing a tree branch (where nodes are non-negative integers). 
+
+### Function Signature
+```python
+def pluck(nodes: list[int]) -> list[int]:
+```
+
+### Requirements & Rules
+1. **Target Selection**: Find the node with the **smallest even value**.
+2. **Tie-Breaking**: If there are multiple even nodes with the same smallest value, choose the one with the **smallest index** (first occurrence).
+3. **Return Format**: Return a list containing `[smallest_value, its_index]`.
+4. **Edge Cases**:
+   - If the input array is empty (`[]`), return `[]`.
+   - If there are **no even values** in the array, return `[]`.
+
+### Suggested Approach
+1. Iterate through the `nodes` list using `enumerate()` to keep track of both the value and its index.
+2. Filter or check elements where the value is even (`val % 2 == 0`).
+3. Track the minimum even value and its corresponding index. Since you iterate from left to right, using a strict less-than comparison (`<`) for the value will naturally preserve the smallest index in case of ties.
+4. If a valid even node is found, return `[min_even_value, min_even_index]`. Otherwise, return `[]`.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_068,humaneval,pluck,tier2_mid,gemini-3.5-flash-lite,0.7,"**Handoff Message for Agent B**
+
+Your task is to implement a Python function that finds and ""plucks"" a specific node from an array representing a tree branch (where each element is a non-negative integer node value).
+
+### Function Signature
+```python
+def pluck(arr: list[int]) -> list[int]:
+    """"""
+    Finds the node with the smallest even value in the array.
+    If there's a tie in value, chooses the one with the smallest index.
+    Returns a list containing [smallest_even_value, its_index].
+    Returns [] if no even values exist or if the array is empty.
+    """"""
+```
+
+### Requirements & Edge Cases
+1. **Even values only**: Consider only elements where `val % 2 == 0`.
+2. **Tie-breaking**: If multiple elements share the exact same minimum even value, select the one with the **lowest index**.
+3. **Empty or No Evens**: If the input array `arr` is empty `[]`, or contains no even integers, return `[]`.
+4. **Constraints**: Array length is between 1 and 10,000; node values are non-negative integers ($\ge 0$).
+
+### Approach
+1. Iterate through the array using `enumerate` to keep track of both the value and its index.
+2. Filter or track candidates that are even numbers.
+3. Keep track of the minimum even value and its corresponding index. Since you iterate from left to right, when you encounter an even value that is strictly *less* than the current minimum, update your stored minimum value and index. Do not update on a value that is merely equal to the current minimum, ensuring the earliest index is retained in case of ties.
+4. Return `[min_value, min_index]` if an even value was found, otherwise return `[]`.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_069,humaneval,search,tier1_weaker,gemini-3.5-flash-lite,0.9,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to implement a Python function that finds the greatest integer in a given list of positive integers such that the integer's value is less than or equal to its frequency (i.e., frequency >= value). If no such integer exists, the function should return -1.
+
+### Function Signature:
+```python
+def search(arr: list[int]) -> int:
+```
+
+### Key Requirements & Edge Cases:
+1. **Condition:** For an integer $x$ in the list, its frequency $f(x)$ (count of occurrences) must satisfy $f(x) \ge x$.
+2. **Maximization:** If multiple valid integers satisfy the condition, return the *greatest* integer among them.
+3. **Non-existence:** If no integer in the list satisfies the condition, return `-1`.
+4. **Positive Integers:** The input list contains only positive integers (values > 0).
+5. **Duplicates in Input:** The same integer may appear multiple times; ensure frequency counting is accurate across the entire list.
+
+### Suggested Approach:
+1. Count the frequency of each unique integer in the input list (e.g., using `collections.Counter`).
+2. Iterate through the unique integers (or check all integers from the frequency map).
+3. Filter the integers to keep only those where `frequency >= integer_value`.
+4. If the filtered set is empty, return `-1`. Otherwise, return the maximum integer from this filtered set.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_069,humaneval,search,tier2_mid,gemini-3.5-flash-lite,0.7,"Handoff Message for Agent B:
+
+1. Function Restatement:
+You need to write a Python function that takes a non-empty list of positive integers and finds the greatest integer $x$ in the list such that:
+- $x > 0$ (which is guaranteed since the input contains only positive integers)
+- The frequency of $x$ in the list is $\ge x$ (i.e., the count of occurrences of $x$ is greater than or equal to the numeric value of $x$).
+Return the maximum such integer $x$. If no such integer exists in the list, return `-1`.
+
+2. Function Signature:
+```python
+def search(arr: list[int]) -> int:
+```
+
+3. Key Edge Cases to Handle:
+- No integer satisfies the condition (e.g., `[5, 5, 4, 4, 4]`) -> return `-1`.
+- Duplicate qualifying integers (the function should return the *greatest* one).
+- Single-element lists where the element is `1` and appears once (`[1]`) -> `1` (since frequency 1 >= value 1).
+- Single-element lists where the element is $> 1$ (e.g., `[2]`) -> frequency is 1, but value is 2, so condition ($1 \ge 2$) fails -> return `-1`.
+- Large frequencies or numbers not present in the list (their frequency is 0, so they won't match unless value is 0, but numbers are positive).
+
+4. Brief Plan/Approach:
+- Count the frequency of each unique integer in the input list (e.g., using `collections.Counter`).
+- Iterate through the unique integers (or check all integers from the frequency map).
+- For each integer $x$ and its count $c$, check if $c \ge x$.
+- Collect all such valid integers.
+- If the collection is empty, return `-1`. Otherwise, return the maximum value from the collection.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_071,humaneval,triangle_area,tier1_weaker,gemini-3.5-flash-lite,0.9,"FUNCTION TO BUILD:
+Write a Python function that calculates the area of a triangle given the lengths of its three sides. It must validate if the sides form a valid triangle first. If valid, return the area rounded to 2 decimal places. If invalid, return -1.
+
+EXACT FUNCTION SIGNATURE:
+```python
+def triangle_area(a: float, b: float, c: float) -> float:
+```
+
+TRIANGLE VALIDATION RULE:
+Three sides ($a, b, c$) form a valid triangle if and only if the sum of any two sides is strictly greater than the third side:
+- $a + b > c$
+- $a + c > b$
+- $b + c > a$
+
+APPROACH / ALGORITHM:
+1. Check the triangle validity condition. If any of the three inequalities fail, return `-1`.
+2. If valid, use Heron's formula to calculate the area:
+   - First, find the semi-perimeter $s = \frac{a + b + c}{2}$.
+   - Then, calculate the area: $\text{area} = \sqrt{s(s-a)(s-b)(s-c)}$.
+3. Round the resulting area to 2 decimal places (e.g., using `round(area, 2)`).
+4. Return the rounded float.
+
+KEY EDGE CASES TO HANDLE:
+- Invalid triangles (e.g., `triangle_area(1, 2, 10)` should return `-1`).
+- Degenerate triangles where the sum of two sides equals the third side (e.g., `triangle_area(1, 2, 3)` should return `-1` since the sum is not strictly greater).
+- Zero or negative side lengths (should naturally fail the triangle inequality and return `-1`).",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_071,humaneval,triangle_area,tier2_mid,gemini-3.5-flash-lite,0.7,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Function to Build:**
+Write a Python function that calculates the area of a triangle given the lengths of its three sides. It must validate whether the sides form a valid triangle. If valid, return the area rounded to 2 decimal places. If invalid, return `-1`.
+
+**Exact Function Signature:**
+```python
+def triangle_area(a: float, b: float, c: float) -> float:
+```
+
+**Validity Condition (Triangle Inequality Theorem):**
+Three sides make a valid triangle if and only if the sum of any two sides is strictly greater than the third side:
+- $a + b > c$
+- $a + c > b$
+- $b + c > a$
+
+**Key Edge Cases to Handle:**
+- Invalid triangles (e.g., `triangle_area(1, 2, 10)` should return `-1`).
+- Degenerate triangles where the sum of two sides equals the third side (should be treated as invalid and return `-1`).
+- Non-positive side lengths (lengths $\le 0$) should return `-1`.
+
+**Approach / Plan:**
+1. **Validation Check:** Verify that all three sides are positive numbers and satisfy the triangle inequality theorem ($a + b > c$ and $a + c > b$ and $b + c > a$). If not, return `-1`.
+2. **Area Calculation:** Use **Heron's Formula** to calculate the area:
+   - First, find the semi-perimeter $s = \frac{a + b + c}{2}$.
+   - Then, calculate the area: $\text{area} = \sqrt{s(s - a)(s - b)(s - c)}$.
+3. **Rounding:** Round the resulting area to 2 decimal places using Python's `round(area, 2)` (or format it appropriately so it returns a float).
+4. **Return:** Return the final rounded float value.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_077,humaneval,iscube,tier1_weaker,gemini-3.5-flash-lite,0.9,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that determines whether a given integer is the exact cube of another integer. 
+
+**Function Signature:**
+```python
+def iscube(a: int) -> bool:
+```
+
+**Requirements & Edge Cases:**
+- The input `a` will always be a valid integer.
+- Handle positive integers, negative integers, and zero properly (e.g., `iscube(-1)` should return `True`, `iscube(0)` should return `True`).
+- Non-perfect cubes should return `False` (e.g., `iscube(2)`, `iscube(180)`).
+
+**Suggested Approach:**
+1. Handle negative numbers by taking the absolute value for the cube root calculation, then check if the cubed result matches the original number (or simply use the cube root approach maintaining sign).
+2. Compute the cube root using `round(abs(a) ** (1/3))` or integer-based binary search/pow checks to avoid floating-point precision issues with large numbers.
+3. Specifically, a clean approach is to find the integer cube root $r$ of $|a|$ (e.g., using `round(abs(a) ** (1/3))`), and then check if `r**3 == abs(a)`. If `a` is negative, ensure the sign matches (though any integer cubed that equals a negative absolute value means the original was negative, so checking `r**3 == abs(a)` while preserving the sign check is enough: `return (round(abs(a) ** (1/3))) ** 3 == abs(a)`). Wait, to be completely safe with negative numbers: cube root of a negative number cubed should equal the number itself.
+4. Alternatively:
+```python
+def iscube(a: int) -> bool:
+    if a == 0:
+        return True
+    # Find cube root using round and check
+    root = round(abs(a) ** (1 / 3))
+    if root ** 3 == abs(a):
+        return True
+    return False
+```
+Refine this to handle the sign of `a`:
+```python
+def iscube(a: int) -> bool:
+    root = round(a ** (1/3)) if a >= 0 else -round((-a) ** (1/3))
+    return root ** 3 == a
+```
+Test this logic against edge cases like `a = -1` (`round(-(-1)**(1/3))` -> `-round(1)` -> `-1`, `(-1)**3 == -1` -> True).",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_077,humaneval,iscube,tier2_mid,gemini-3.5-flash-lite,0.7,"Agent B, your task is to write a Python function that determines whether a given integer is the exact cube of another integer. 
+
+Here are the specifications for your implementation:
+
+- **Function Signature:** `def iscube(a: int) -> bool:`
+- **Behavior:** Return `True` if `a` is the cube of an integer (i.e., $x^3 = a$ for some integer $x$), and `False` otherwise.
+- **Key Edge Cases to Handle:**
+  - Positive cubes (e.g., `1`, `64`) -> `True`
+  - Negative cubes (e.g., `-1`) -> `True`
+  - Zero (`0`) -> `True`
+  - Non-cubes (e.g., `2`, `180`) -> `False`
+  - Input type will always be a valid integer.
+- **Recommended Approach:**
+  - Handle negative numbers by taking the cube root of the absolute value, or by using the cube root approach with appropriate sign handling.
+  - A robust way to compute this in Python (handling both positive and negative integers accurately without floating-point precision issues) is:
+    ```python
+    root = round(abs(a) ** (1 / 3))
+    return root ** 3 == abs(a) and (root ** 3) * (1 if a >= 0 else -1) == a # or simply check sign
+    ```
+    Alternatively, since cube roots of integers can be tricky with floats, you can use binary search or cube the integer from `0` upwards until it exceeds `abs(a)`. For negative numbers, check `-abs(a)`.
+    Even simpler:
+    ```python
+    if a < 0:
+        root = round((-a) ** (1 / 3))
+        return -root**3 == a
+    else:
+        root = round(a ** (1 / 3))
+        return root**3 == a
+    ```
+    Double-check the `round()` behavior to ensure precision doesn't fail on large cubes, or use integer cubing/binary search for absolute safety.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_078,humaneval,hex_key,tier1_weaker,gemini-3.5-flash-lite,0.9,"Handoff Message for Agent B:
+
+Please implement a Python function according to the following specifications. Agent B, you will not see the original prompt, so use this message as your sole guide.
+
+### 1. Function Objective
+Write a function that takes a string representing a hexadecimal number and returns the count of hexadecimal digits within the string that are prime numbers. 
+
+The valid hexadecimal digits that are considered prime are:
+- `2`, `3`, `5`, `7` (numeric)
+- `B` (representing decimal 11)
+- `D` (representing decimal 13)
+
+Note that lowercase letters are not a concern as the input symbols `A` through `F` are always uppercase.
+
+### 2. Function Signature
+```python
+def hex_key(num: str) -> int:
+    # Wait, let's use a standard descriptive name since none was strictly mandated, but let's call it `count_prime_hex_digits`.
+```
+Actually, let's specify the exact function signature you should use:
+```python
+def count_prime_hex_digits(num: str) -> int:
+```
+
+### 3. Key Edge Cases to Handle
+- **Empty string (`""""`)**: Should return `0`.
+- **No primes present**: E.g., `""0""`, `""1""`, `""8""`, `""A""`, `""C""`, `""E""`, `""F""` should return `0`.
+- **Mixed case**: Input is guaranteed to have uppercase letters (`A`-`F`), but ensure logic handles them correctly (or check against a set of uppercase prime hex characters).
+
+### 4. Implementation Plan / Approach
+1. Define a set or collection of prime hexadecimal characters: `{'2', '3', '5', '7', 'B', 'D'}`.
+2. Initialize a counter variable to `0`.
+3. Iterate through each character in the input string `num`.
+4. Check if the character is in the set of prime hex characters. If it is, increment the counter.
+5. Return the final counter value.
+
+Examples for verification:
+- `num = ""AB""` -> contains `'B'` (prime), `'A'` (not prime) -> output `1`
+- `num = ""1077E""` -> contains `'7'`, `'7'` (primes) -> output `2`
+- `num = ""ABED1A33""` -> contains `'B'`, `'D'`, `'3'`, `'3'` -> output `4`",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_078,humaneval,hex_key,tier2_mid,gemini-3.5-flash-lite,0.7,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that takes a hexadecimal number represented as a string and counts how many of its digits are prime numbers. 
+
+Here are the details for implementation:
+
+**Function Signature:**
+```python
+def hex_key(num: str) -> int:
+```
+*(Note: Use this exact function name `hex_key`)*
+
+**Requirements & Rules:**
+- Hexadecimal digits include: `0-9` and uppercase `A-F`.
+- The prime hexadecimal digits (and their decimal equivalents) are:
+  - `2` (2)
+  - `3` (3)
+  - `5` (5)
+  - `7` (7)
+  - `B` (11)
+  - `D` (13)
+- Input letters are guaranteed to be uppercase (`A-F`).
+- You may assume the input is always a valid hexadecimal string or an empty string `""""`.
+
+**Examples:**
+- `hex_key(""AB"")` -> `1` (only 'B' is prime)
+- `hex_key(""1077E"")` -> `2` ('7' and '7' are prime)
+- `hex_key(""ABED1A33"")` -> `4` ('B', 'D', '3', '3' are prime)
+- `hex_key(""123456789ABCDEF0"")` -> `6` ('2', '3', '5', '7', 'B', 'D')
+- `hex_key(""2020"")` -> `2` ('2' and '2' are prime)
+- `hex_key("""")` -> `0`
+
+**Approach / Plan:**
+1. Define a set or collection of the prime hexadecimal characters: `{'2', '3', '5', '7', 'B', 'D'}`.
+2. Initialize a counter to 0.
+3. Iterate through each character in the input string `num`.
+4. Check if the character exists in your set of prime digits. If it does, increment the counter.
+5. Return the final counter value. Handle empty string naturally (loop won't execute, returns 0).",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_081,humaneval,numerical_letter_grade,tier1_weaker,gemini-3.5-flash-lite,0.9,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Function Requirement:**
+You need to write a Python function that takes a list of numerical GPAs and converts them into a list of corresponding letter grades based on a specific grading threshold table.
+
+**Exact Function Signature:**
+```python
+def grade_equation(gpas: list) -> list:
+```
+
+**Grading Rules & Threshold Table:**
+Map each GPA value to its letter grade using these exact rules (evaluated from highest to lowest):
+- `4.0` -> `'A+'`
+- `> 3.7` -> `'A'`
+- `> 3.3` -> `'A-'`
+- `> 3.0` -> `'B+'`
+- `> 2.7` -> `'B'`
+- `> 2.3` -> `'B-'`
+- `> 2.0` -> `'C+'`
+- `> 1.7` -> `'C'`
+- `> 1.3` -> `'C-'`
+- `> 1.0` -> `'D+'`
+- `> 0.7` -> `'D'`
+- `> 0.0` -> `'D-'`
+- `0.0` (or anything strictly not meeting above, per the table) -> `'E'`
+
+*Note on example behavior:* 
+`grade_equation([4.0, 3, 1.7, 2, 3.5])` outputs `['A+', 'B', 'C-', 'C', 'A-']`
+- 4.0 -> 'A+'
+- 3 (which is > 2.7 and <= 3.0) -> 'B' (Wait, check the table: >3.0 is B+, >2.7 is B. 3 is not >3.0, so it falls into >2.7, hence 'B')
+- 1.7 -> 'C-' (Not >1.7, falls into >1.3 tier)
+- 2 -> 'C' (Not >2.0, falls into >1.7 tier)
+- 3.5 -> 'A-' (>3.3)
+
+**Key Edge Cases to Handle:**
+- Exact boundary values like `4.0`, `3.0`, `0.0`.
+- Integer inputs mixed in with floats (e.g., `3` instead of `3.0`).
+- Empty list input `[]` should return `[]`.
+
+**Approach / Plan:**
+1. Initialize an empty result list.
+2. Iterate through each `gpa` in the input list.
+3. Use an `if-elif-else` ladder checking the thresholds in descending order (starting from `== 4.0`, then `> 3.7`, down to `> 0.0`, with an `else` returning `'E'`).
+4. Append the resulting letter grade to the result list and return it.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_081,humaneval,numerical_letter_grade,tier2_mid,gemini-3.5-flash-lite,0.7,"**Handoff Message for Agent B:**
+
+Your task is to implement a Python function that converts a list of student GPAs into their corresponding letter grades based on a specific grading threshold table. 
+
+**Function Signature:**
+```python
+def grade_equation(gpas: list[float]) -> list[str]:
+```
+
+**Grading Rules / Threshold Table:**
+Evaluate conditions from highest to lowest GPA:
+- `== 4.0` -> `'A+'`
+- `> 3.7` -> `'A'`
+- `> 3.3` -> `'A-'`
+- `> 3.0` -> `'B+'`
+- `> 2.7` -> `'B'`
+- `> 2.3` -> `'B-'`
+- `> 2.0` -> `'C+'`
+- `> 1.7` -> `'C'`
+- `> 1.3` -> `'C-'`
+- `> 1.0` -> `'D+'`
+- `> 0.7` -> `'D'`
+- `> 0.0` -> `'D-'`
+- `== 0.0` (or anything not meeting higher thresholds, per the table) -> `'E'`
+
+*(Note: Ensure float comparisons are handled properly, as seen in the example where integer inputs like `3` and `2` are also passed).*
+
+**Example Reference:**
+`grade_equation([4.0, 3, 1.7, 2, 3.5])` should output `['A+', 'B', 'C-', 'C', 'A-']`
+
+**Plan / Approach:**
+1. Iterate through the input list of GPAs.
+2. For each GPA, use a series of `if-elif-else` conditional statements matching the thresholds above in descending order to determine the correct letter grade string.
+3. Append each evaluated letter grade to a new result list.
+4. Return the resulting list of strings.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_089,humaneval,encrypt,tier1_weaker,gemini-3.5-flash-lite,0.9,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to implement a string encryption function called `encrypt` in Python. 
+
+### Function Signature
+```python
+def encrypt(text: str) -> str:
+```
+
+### Requirements & Logic
+- The function takes a single string `text` and returns a new encrypted string.
+- The encryption relies on rotating the English alphabet.
+- The shift amount is ""two multiplied to two places"", which means a shift of $2 \times 2 = 4$ positions forward.
+- Each alphabetical character in the input should be shifted forward by 4 positions.
+- **Case Preservation**: Maintain the case of the letters (lowercase remains lowercase, uppercase remains uppercase).
+- **Wrapping**: The alphabet should wrap around (e.g., 'w' shifts to 'a', 'x' to 'b', etc.).
+- **Non-alphabetic Characters**: Any non-alphabetic characters (spaces, punctuation, numbers) should remain unchanged (though the examples only test alphabetical strings, it's good practice to leave them as-is).
+
+### Examples from Problem Statement
+- `encrypt('hi')` -> `'lm'` ('h'+4='l', 'i'+4='m')
+- `encrypt('asdfghjkl')` -> `'ewhjklnop'`
+- `encrypt('gf')` -> `'kj'`
+- `encrypt('et')` -> `'ix'`
+
+### Suggested Plan
+1. Define the lowercase alphabet string: `alphabet = ""abcdefghijklmnopqrstuvwxyz""`.
+2. Create a shifted version of the alphabet by slicing or rotating it by 4 positions: `shifted = alphabet[4:] + alphabet[:4]`.
+3. Handle uppercase letters similarly or convert/map them dynamically (or build a combined translation table using `str.maketrans`).
+4. Iterate through each character of the input string, map it to the corresponding character in the shifted alphabet if it is a letter, and append it to the result.
+5. Return the resulting encrypted string.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_089,humaneval,encrypt,tier2_mid,gemini-3.5-flash-lite,0.7,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that performs a Caesar-style cipher encryption by rotating the alphabet. 
+
+**Function Signature:**
+```python
+def encrypt(text: str) -> str:
+```
+
+**Shift Logic:**
+- The alphabet must be shifted down by ""two multiplied to two places"" ($2 \times 2 = 4$). 
+- Therefore, each letter in the input string should be shifted forward by 4 positions in the alphabet.
+- Examples based on the shift of 4:
+  - 'h' (index 7) + 4 = 11 ('l')
+  - 'i' (index 8) + 4 = 12 ('m')
+  -> `encrypt('hi')` -> `'lm'`
+
+**Key Requirements & Edge Cases:**
+1. **Case Preservation:** Make sure to handle uppercase and lowercase letters appropriately (preserving their case, or wrapping around within their respective alphabet case ranges).
+2. **Alphabet Wrap-around:** The shift must wrap around the alphabet (e.g., 'w' + 4 becomes 'a').
+3. **Non-Alphabetic Characters:** Spaces, punctuation, and numbers should remain unencrypted/unchanged.
+
+**Suggested Approach:**
+1. Iterate through each character of the input string.
+2. Check if the character is a letter (`.isalpha()`).
+3. If it is, determine its ASCII base (e.g., `ord('a')` or `ord('A')`), apply the formula `(ord(char) - base + 4) % 26 + base`, and convert back to a character using `chr()`.
+4. If it is not a letter, keep it as is.
+5. Join the transformed characters into a resulting string and return it.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_090,humaneval,next_smallest,tier1_weaker,gemini-3.5-flash-lite,0.9,"Function to build: Write a function that finds and returns the 2nd smallest distinct (or unique) element from a list of integers. Based on the test cases provided:
+- `next_smallest([1, 2, 3, 4, 5])` -> `2`
+- `next_smallest([5, 1, 4, 3, 2])` -> `2`
+- `next_smallest([])` -> `None`
+- `next_smallest([1, 1])` -> `None` (since there is no strictly 2nd smallest *different* value, or rather, if all elements are identical, return `None`).
+
+Exact function signature:
+```python
+def next_smallest(lst):
+    pass
+```
+
+Key edge cases to handle:
+- Empty list (`[]`) should return `None`.
+- List with fewer than 2 elements (e.g., `[1]`) should return `None`.
+- List with all identical elements (e.g., `[1, 1, 1]`) should return `None` (since there is no distinct second smallest element).
+- Lists with duplicates (e.g., `[1, 1, 2, 3]`) should correctly identify `2` as the 2nd smallest unique element.
+
+Plan/Approach:
+1. Convert the input list to a set to remove duplicates, then convert it back to a list and sort it in ascending order.
+2. Check if the length of the sorted unique list is less than 2. If so, return `None`.
+3. Otherwise, return the element at index 1 of the sorted unique list.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_090,humaneval,next_smallest,tier2_mid,gemini-3.5-flash-lite,0.7,"**Handoff Message for Agent B**
+
+Your task is to implement a Python function that finds the second smallest element in a given list of integers.
+
+**Function Signature:**
+```python
+def next_smallest(lst: list) -> int | None:
+```
+
+**Requirements & Edge Cases to Handle:**
+- Return the 2nd smallest unique/distinct element? Wait, let's look at the example: `next_smallest([1, 1]) == None`. This implies that if all elements are identical, or if there aren't at least two distinct values (or simply fewer than 2 elements total), return `None`. 
+- Specifically, handle empty lists `[]` by returning `None`.
+- Handle lists with fewer than 2 elements (e.g., `[1]`) by returning `None`.
+- Handle lists where all elements are the same (e.g., `[1, 1]`) by returning `None`.
+- The function should work with unsorted lists containing duplicate values (e.g., `[5, 1, 4, 3, 2]` should return `2`).
+
+**Proposed Approach:**
+1. Convert the input list to a set to remove duplicates, then back to a sorted list (or sort a set directly).
+2. Check if the length of this sorted unique list is less than 2. If so, return `None`.
+3. Otherwise, return the element at index `1` of the sorted unique list.
+
+*Self-Correction on duplicate logic:* If input is `[1, 1, 2]`, unique sorted is `[1, 2]`, 2nd smallest is `2`. If input is `[1, 1]`, unique sorted is `[1]`, length is < 2, returns `None`. This matches all specifications.",True,True,True,3,1.0,1,1,1,Success,Success,Success
