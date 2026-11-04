@@ -1197,3 +1197,388 @@ def next_smallest(lst: list) -> int | None:
 3. Otherwise, return the element at index `1` of the sorted unique list.
 
 *Self-Correction on duplicate logic:* If input is `[1, 1, 2]`, unique sorted is `[1, 2]`, 2nd smallest is `2`. If input is `[1, 1]`, unique sorted is `[1]`, length is < 2, returns `None`. This matches all specifications.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_038,humaneval,decode_cyclic,tier3_stronger,gemini-3.5-flash-lite,0.2,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Function to Build:**
+Write a function that encodes an input string by cycling groups of three characters. Specifically, for every group of three characters `[a, b, c]`, they should be reordered (cycled) to `[b, c, a]`. If the length of the string is not a multiple of 3, the remaining characters at the end (fewer than 3) should remain in their original relative order without modification.
+
+**Exact Function Signature:**
+```python
+def cycle_three_chars(s: str) -> str:
+    """"""
+    Encodes an input string by cycling groups of three characters:
+    [a, b, c] -> [b, c, a].
+    """"""
+    pass
+```
+
+**Key Edge Cases to Handle:**
+1. **Empty string (`""""`)**: Should return `""""`.
+2. **Strings shorter than 3 characters** (length 1 or 2, e.g., `""a""`, `""ab""`): Should be returned unchanged.
+3. **Strings with length that is an exact multiple of 3** (e.g., `""abcdef""`): Every group of 3 must be fully cycled (`""bca""`, `""efd""` -> `""bcaefd""`).
+4. **Strings with lengths `3k + 1` or `3k + 2`** (e.g., `""abcd""`): The first group of 3 (`""abc""`) cycles to `""bca""`, and the leftover character (`""d""`) stays at the end, resulting in `""bcad""`.
+
+**Plan / Approach:**
+1. Initialize an empty result list or string.
+2. Iterate through the input string `s` in steps of 3 (i.e., `for i in range(0, len(s), 3):`).
+3. Extract the slice `chunk = s[i:i+3]`.
+4. If `len(chunk) == 3`, append the cycled version `chunk[1] + chunk[2] + chunk[0]` to the result.
+5. If `len(chunk) < 3`, append the `chunk` as-is to the result.
+6. Join and return the final encoded string.",False,False,False,0,1.0,0,0,0,NameError: name 'encode_cyclic' is not defined,NameError: name 'encode_cyclic' is not defined,NameError: name 'encode_cyclic' is not defined
+he_041,humaneval,car_race_collision,tier3_stronger,gemini-3.5-flash-lite,0.2,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that calculates the total number of collisions between two sets of cars on an infinite, straight, one-dimensional road. 
+
+### Function Signature
+```python
+def count_collisions(left_to_right_starts: list[int], right_to_left_starts: list[int]) -> int:
+    """"""
+    Counts the number of collisions between two sets of cars moving towards each other.
+    
+    :param left_to_right_starts: A list of initial positions of cars moving from left to right.
+    :param right_to_left_starts: A list of initial positions of cars moving from right to left.
+    :return: The total number of collisions.
+    """"""
+```
+
+### Problem Details & Physics
+- There are $n$ cars moving left-to-right (increasing position coordinates) and $n$ cars moving right-to-left (decreasing position coordinates).
+- All cars move at the exact same constant speed.
+- The two sets of cars start infinitely far apart, such that all right-to-left cars start *ahead* (at higher position coordinates) of all left-to-right cars initially.
+- Cars pass through each other without slowing down or changing trajectory upon collision (think of them as ghosts that still register impact points).
+- A collision occurs between a specific left-to-right car $A$ and a right-to-left car $B$ if and only if $A$'s initial position is less than $B$'s initial position ($pos_A < pos_B$). Because they move at the same speed towards each other, every single left-to-right car starting to the left of any right-to-left car will eventually meet and pass *every* right-to-left car that started to its right.
+
+### Key Edge Cases to Handle
+- Empty lists ($n = 0$): Should return `0`.
+- Unsorted input arrays: The input position lists might not be sorted; ensure you handle or sort them appropriately.
+- Large values of $n$: Ensure the algorithm is efficient (better than $O(n^2)$ if possible).
+
+### Brief Plan / Approach
+1. **Sort the arrays**: Sort `left_to_right_starts` in ascending order, and sort `right_to_left_starts` in ascending order.
+2. **Efficient Counting (Two Pointers or Binary Search)**: 
+   - For each car in `left_to_right_starts`, count how many cars in `right_to_left_starts` have a starting position greater than this car's position.
+   - Alternatively, since all cars travel at the same speed and pass through each other, this can be framed efficiently using sorting and the `bisect` module, or a linear two-pointer scan running in $O(n \log n)$ time due to sorting.
+3. **Return the sum** of all individual collision counts.",False,False,False,0,1.0,0,0,0,TypeError: car_race_collision() missing 1 required positional argument: 'right_to_left_star,TypeError: car_race_collision() missing 1 required positional argument: 'right_to_left_star,TypeError: car_race_collision() missing 1 required positional argument: 'right_to_left_star
+he_050,humaneval,decode_shift,tier3_stronger,gemini-3.5-flash-lite,0.2,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Build a Python function that encodes a given input string by shifting every alphabetical character forward by 5 positions in the alphabet (Caesar cipher with a shift of +5). 
+
+**Function Signature:**
+```python
+def encode_string(text: str) -> str:
+    """"""
+    Encodes the input string by shifting every character by 5 in the alphabet.
+    """"""
+    pass
+```
+
+**Key Requirements & Edge Cases:**
+1. **Case Preservation:** Uppercase letters must remain uppercase (e.g., 'A' -> 'F', 'Z' -> 'E') and lowercase letters must remain lowercase (e.g., 'a' -> 'f', 'z' -> 'e').
+2. **Alphabet Wrap-around:** The shift must wrap around the alphabet (e.g., 'y' becomes 'd', 'Z' becomes 'E').
+3. **Non-Alphabetic Characters:** Spaces, punctuation, numbers, and any other non-alphabetic characters must remain completely unchanged.
+4. **Empty String:** Passing an empty string `""""` should return `""""`.
+
+**Implementation Plan / Approach:**
+1. Iterate through each character in the input string.
+2. Check if the character is an alphabetic letter (`char.isalpha()`).
+3. If it is a letter:
+   - Determine the base ASCII value (`ord('a')` for lowercase, `ord('A')` for uppercase).
+   - Convert the character to a 0-25 index (`ord(char) - base`).
+   - Apply the shift: `(index + 5) % 26`.
+   - Convert back to a character using `chr(new_index + base)` and append to the result.
+4. If it is not a letter, append the character as-is to the result.
+5. Join all processed characters into the final encoded string and return it.",False,False,False,0,1.0,0,0,0,NameError: name 'encode_shift' is not defined,NameError: name 'encode_shift' is not defined,NameError: name 'encode_shift' is not defined
+he_051,humaneval,remove_vowels,tier3_stronger,gemini-3.5-flash-lite,0.2,"FUNCTION TO BUILD:
+Write a Python function named `remove_vowels` that takes a single string as input and returns a new string with all vowels removed.
+
+EXACT FUNCTION SIGNATURE:
+```python
+def remove_vowels(text: str) -> str:
+```
+
+KEY BEHAVIORS & EDGE CASES:
+- Vowels include both lowercase and uppercase variants: 'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'.
+- Empty string input `""""` should return `""""`.
+- Strings with no vowels (e.g., `""zbcd""`) should remain unchanged.
+- Strings consisting only of vowels (e.g., `""aaaaa""`) should return `""""`.
+- Preserve whitespace, newlines, and non-vowel characters (e.g., `""abcdef\nghijklm""` -> `'bcdf\nghjklm'`).
+- Mixed case handling: `""aaBAA""` should return `'B'` (since 'a', 'A' are removed, and 'B' is kept).
+
+SUGGESTED APPROACH:
+- Iterate through each character of the input string, or use a list comprehension / `str.join()` combined with a generator expression to filter out characters that are members of the vowel set.
+- Define a constant set or string of vowels (`""aeiouAEIOU""`) for quick lookup (`char not in vowels`).",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_055,humaneval,fib,tier3_stronger,gemini-3.5-flash-lite,0.2,"### Handoff Message for Agent B
+
+**Objective:**
+Write a Python function that calculates and returns the $n$-th Fibonacci number.
+
+**Function Signature:**
+```python
+def fib(n: int) -> int:
+```
+
+**Examples:**
+- `fib(10)` -> `55`
+- `fib(1)` -> `1`
+- `fib(8)` -> `21`
+
+**Key Edge Cases to Handle:**
+- $n = 0$: Depending on standard Fibonacci indexing, should return `0` (though the problem highlights $n \ge 1$, handle $0$ gracefully just in case).
+- $n = 1$ and $n = 2$: Should return `1`.
+- Negative integers for $n$: Raise a `ValueError` or handle appropriately (standard Fibonacci assumes $n \ge 0$).
+- Large values of $n$: Ensure the approach is efficient enough (avoid naive exponential recursion) to handle inputs like $n = 50$ or greater without timing out.
+
+**Brief Plan / Approach:**
+1. Use an iterative approach with two variables (`a, b = 0, 1`) running in a loop $n$ times, or dynamic programming with memoization to achieve $O(n)$ time complexity and $O(1)$ space complexity.
+2. Add input validation at the beginning of the function to check for non-integer or negative inputs.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_059,humaneval,largest_prime_factor,tier3_stronger,gemini-3.5-flash-lite,0.2,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function that finds and returns the largest prime factor of a given integer $n$. 
+
+**Function Signature:**
+```python
+def largest_prime_factor(n: int) -> int:
+```
+
+**Assumptions / Constraints:**
+- $n > 1$
+- $n$ is not a prime number (it is composite).
+
+**Key Edge Cases to Handle:**
+- Smallest composite numbers (e.g., $n = 4$).
+- Powers of 2 (e.g., $n = 2048$, where the only prime factor is 2).
+- Large composite numbers and numbers with large prime factors.
+
+**Recommended Approach (Trial Division):**
+1. Initialize a variable `factor` starting at 2.
+2. Loop while `factor * factor <= n`:
+   - If `n % factor == 0`, divide `n` by `factor` as many times as possible (`n //= factor`) to strip out all instances of this prime factor.
+   - Increment `factor` by 1 (or optimize by incrementing by 2 after checking 2).
+3. After the loop, if $n$ is still greater than 1, the remaining value of $n$ is its largest prime factor.
+4. Return the last recorded prime factor.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_068,humaneval,pluck,tier3_stronger,gemini-3.5-flash-lite,0.2,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+You need to write a Python function that takes an array (list) representing a branch of a tree containing non-negative integers, and ""plucks"" the node with the smallest even value. If there is a tie for the smallest even value, choose the one with the smallest index. Return the result as a list containing `[smallest_value, its_index]`. If no even values exist or the input list is empty, return `[]`.
+
+**Function Signature:**
+```python
+def solve(nodes: list[int]) -> list[int]:
+    # or def pluck(nodes: list[int]) -> list[int]: (use standard naming if not specified, but let's stick to `solve` or a general utility name; actually, let's use `pluck` or `solve`. Let's provide `def solve(nodes: list[int]) -> list[int]:`)
+```
+*(Note: Name the function `solve(nodes)` to be safe, or handle typical competitive programming naming. Let's use `def solve(nodes: list[int]) -> list[int]:`)*
+
+**Key Requirements & Edge Cases:**
+1. **Empty Array / No Even Numbers:** If the input list `nodes` is empty `[]`, or contains no even numbers (e.g., `[1, 3, 5]`), return `[]`.
+2. **Tie-breaking:** If multiple elements share the exact same minimum even value, select the one that appears first (i.e., has the smallest index).
+3. **Data Types:** Elements are non-negative integers (`value >= 0`). Input length is between `1` and `10,000` (though empty `[]` is also explicitly tested per examples).
+
+**Suggested Approach:**
+1. Initialize variables to keep track of `min_even` (e.g., `None` or `infinity`) and `min_index` (`-1`).
+2. Iterate through the `nodes` list with its index using `enumerate(nodes)`.
+3. For each number, check if it is even (`num % 2 == 0`).
+4. If it is even, check if it is strictly less than `min_even`. If `min_even` is not set yet, or `num < min_even`, update `min_even = num` and `min_index = index`.
+5. After the loop completes, if an even number was found (i.e., `min_index != -1`), return `[min_even, min_index]`. Otherwise, return `[]`.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_069,humaneval,search,tier3_stronger,gemini-3.5-flash-lite,0.2,"**Handoff Message for Agent B**
+
+You need to write a Python function that finds the greatest integer in a given list of positive integers satisfying a specific condition.
+
+### Function Signature
+```python
+def search(nums: list[int]) -> int:
+```
+
+### Problem Requirements & Rules
+1. An integer $x$ in the list is valid if:
+   - $x > 0$ (though the problem states the input list contains positive integers, ensure we only consider $x > 0$).
+   - Its frequency (number of occurrences in the list) is $\ge x$.
+2. Return the **greatest** such valid integer.
+3. If no integer in the list satisfies this condition, return `-1`.
+
+### Examples
+- `search([4, 1, 2, 2, 3, 1])` $\rightarrow$ `2` (Frequencies: 1:2, 2:2, 3:1, 4:1. Valid numbers where freq $\ge$ value: 1 (freq 2 $\ge$ 1), 2 (freq 2 $\ge$ 2). Greatest is 2).
+- `search([1, 2, 2, 3, 3, 3, 4, 4, 4])` $\rightarrow$ `3` (Valid numbers: 1, 2, 3. Greatest is 3).
+- `search([5, 5, 4, 4, 4])` $\rightarrow$ `-1` (No number has a frequency $\ge$ its own value).
+
+### Key Edge Cases to Handle
+- Numbers in the list that appear 0 times (naturally handled by frequency counts, but good to keep in mind).
+- Duplicate values in the list (handled by counting frequencies).
+- Cases where no integer matches the criteria (must return `-1`).
+- Single-element lists (e.g., `[1]` should return `1`, `[2]` should return `-1`).
+
+### Recommended Approach
+1. Count the frequency of each unique number in the input list (e.g., using `collections.Counter`).
+2. Iterate through the unique numbers (or iterate through the keys of the frequency map).
+3. Filter the numbers to keep only those where `number > 0` and `frequency >= number`.
+4. If any valid numbers remain, return the maximum (`max()`) of them. Otherwise, return `-1`.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_071,humaneval,triangle_area,tier3_stronger,gemini-3.5-flash-lite,0.2,"HANDOFF MESSAGE FOR AGENT B:
+
+Please implement a Python function that calculates the area of a triangle given the lengths of its three sides.
+
+**Function Signature:**
+`def triangle_area(a: float, b: float, c: float) -> float:`
+
+**Requirements:**
+1. **Triangle Validity Check:** The three sides (`a`, `b`, `c`) form a valid triangle if and only if the sum of any two sides is strictly greater than the third side:
+   - $a + b > c$
+   - $a + c > b$
+   - $b + c > a$
+2. **Area Calculation:** If valid, calculate the area using Heron's formula:
+   - Semi-perimeter $s = \frac{a + b + c}{2}$
+   - Area = $\sqrt{s(s-a)(s-b)(s-c)}$
+3. **Rounding and Return:** 
+   - If valid, return the area rounded to 2 decimal places (e.g., `6.00`).
+   - If invalid, return `-1`.
+
+**Key Edge Cases:**
+- Sides with length $\le 0$ (automatically invalid via the triangle inequality, but good to keep in mind).
+- Floating-point precision issues.
+- Non-triangle inputs (e.g., collinear points where $a + b == c$).",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_077,humaneval,iscube,tier3_stronger,gemini-3.5-flash-lite,0.2,"Handoff Message for Agent B:
+
+1. **Function Requirement:**
+Write a Python function that determines whether a given integer is the exact cube of some integer. It must return `True` if it is, and `False` otherwise.
+
+2. **Function Signature:**
+```python
+def iscube(a: int) -> bool:
+```
+
+3. **Key Edge Cases to Handle:**
+- Zero (`0`): `iscube(0)` should return `True` ($0^3 = 0$).
+- Negative numbers: `iscube(-1)` should return `True` (since $(-1)^3 = -1$). Negative integers can have cube roots.
+- Non-cubes: Large integers or numbers close to cubes that are not exact cubes must return `False` (e.g., `180` -> `False`).
+
+4. **Plan / Approach:**
+- Handle negative numbers by taking the absolute value for the calculation, and remember the original sign (a negative number cubed is negative, and a positive number cubed is positive). Alternatively, use cube root logic that naturally handles negatives.
+- Compute the cube root of the absolute value (or the number itself). A reliable way in Python is using `round(abs(a) ** (1/3))` or integer search, but floating-point inaccuracy can happen with large numbers. 
+- A safer approach for exact integer checking:
+  - Find the integer cube root. For negative `a`, you can check `round(a ** (1/3))` or use binary search / integer approximation.
+  - Specifically, compute $r = \text{round}(|a|^{1/3})$. Then verify if $r^3 == |a|$. If it matches, check the sign: if $a < 0$, ensure $r^3 == -a$ (or just cube the signed root $r\_signed = -r$ if original $a < 0$, and check $r\_signed^3 == a$).
+  - Return `True` if the cubed root equals $a$, else `False`.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_078,humaneval,hex_key,tier3_stronger,gemini-3.5-flash-lite,0.2,"Agent B, your task is to write a Python function that counts how many characters in a given hexadecimal string represent prime numbers. 
+
+Here are the specifications and details you need:
+
+### Function Signature
+```python
+def hex_prime_count(num: str) -> int:
+```
+
+### Problem Restatement
+- You will receive a string `num` containing uppercase hexadecimal digits (`0-9`, `A-F`).
+- You need to count how many of these digits are prime numbers when evaluated in base 10.
+- The valid prime hexadecimal digits are:
+  - `2`, `3`, `5`, `7` (decimal 2, 3, 5, 7)
+  - `B` (decimal 11)
+  - `D` (decimal 13)
+- Return the total count of these prime digits as an integer.
+
+### Edge Cases
+- **Empty string:** If `num` is `""""`, the function should return `0`.
+- **Case sensitivity:** Input letters are guaranteed to be uppercase (`A-F`), so you only need to check against uppercase letters.
+- **Non-prime digits:** Digits like `0`, `1`, `4`, `6`, `8`, `9`, `A` (10), `C` (12), `E` (14), and `F` (15) are NOT prime and should be ignored in the count.
+
+### Approach/Plan
+1. Define a set or collection of characters that represent prime hex digits: `{'2', '3', '5', '7', 'B', 'D'}`.
+2. Iterate through each character in the input string `num`.
+3. Check if the character exists in the set of primes.
+4. Keep a running tally of matches and return the final count.",False,False,False,0,1.0,0,0,0,ValueError: Function 'hex_key' not found in code,ValueError: Function 'hex_key' not found in code,ValueError: Function 'hex_key' not found in code
+he_081,humaneval,numerical_letter_grade,tier3_stronger,gemini-3.5-flash-lite,0.2,"Agent B, please implement the grading function based on the specifications below.
+
+### Function Requirements
+Write a Python function named `grade_equation(gpas)` that takes a list of numerical GPAs (floats or ints) and returns a list of corresponding letter grades (strings) based on a specific grading threshold table.
+
+### Function Signature
+```python
+def grade_equation(gpas: list[float]) -> list[str]:
+    pass
+```
+
+### Grading Table (Thresholds)
+Evaluate GPAs from highest to lowest (or handle exact matches first):
+- **4.0** -> `'A+'`
+- **> 3.7** -> `'A'`
+- **> 3.3** -> `'A-'`
+- **> 3.0** -> `'B+'`
+- **> 2.7** -> `'B'`
+- **> 2.3** -> `'B-'`
+- **> 2.0** -> `'C+'`
+- **> 1.7** -> `'C'`
+- **> 1.3** -> `'C-'`
+- **> 1.0** -> `'D+'`
+- **> 0.7** -> `'D'`
+- **> 0.0** -> `'D-'`
+- **0.0** -> `'E'`
+
+*Note on example behavior check:*
+In the prompt's example: `[4.0, 3, 1.7, 2, 3.5]` maps to `['A+', 'B', 'C-', 'C', 'A-]`.
+- `4.0` matches `A+`
+- `3` (which is `> 2.7` and `<= 3.0`) maps to `B`
+- `1.7` (which is not `> 1.7`, but rather falls into the next bracket `> 1.3`) maps to `C-`
+- `2` (which is `> 1.7` and `<= 2.0`) maps to `C`
+- `3.5` (which is `> 3.3` and `<= 3.7`) maps to `A-`
+
+### Key Edge Cases to Handle
+1. **Exact 4.0**: Must return `'A+'`.
+2. **Exact 0.0**: Must return `'E'`.
+3. **Integer inputs**: GPAs might be passed as integers (e.g., `3`, `2`), so ensure comparisons work seamlessly with both floats and ints.
+4. **Empty list**: Passing `[]` should return `[]`.
+
+### Approach / Plan
+1. Iterate through each GPA in the input list `gpas`.
+2. For each GPA, use a series of conditional (`if-elif-else`) checks starting from the highest threshold (`== 4.0`) down to the lowest (`== 0.0`), matching the table strictly.
+3. Append the resulting letter grade to a new output list.
+4. Return the output list.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_089,humaneval,encrypt,tier3_stronger,gemini-3.5-flash-lite,0.2,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Objective:**
+Write a Python function named `encrypt` that takes a single string argument and returns the encrypted version of the string using a Caesar-style substitution cipher with a specific fixed shift.
+
+**Exact Function Signature:**
+```python
+def encrypt(text: str) -> str:
+```
+
+**Cipher / Shift Details:**
+- The shift amount is calculated as ""two multiplied to two places"", which means a **shift of 4** (i.e., $2 \times 2 = 4$). 
+- Each letter in the input string should be shifted down the alphabet by 4 positions (e.g., 'a' becomes 'e', 'h' becomes 'l').
+- Case sensitivity: Maintain the case of the letters (lowercase stays lowercase, uppercase stays uppercase).
+- Non-alphabetic characters (spaces, punctuation, numbers, etc.) should remain unchanged.
+- Wrapping around the alphabet: The shift must wrap around correctly (e.g., 'z' shifts to 'd').
+
+**Key Edge Cases to Handle:**
+- Empty strings (`""""`).
+- Strings containing mixed cases, numbers, and special characters.
+- Characters near the end of the alphabet ('w', 'x', 'y', 'z') that require wrap-around.
+
+**Implementation Plan / Approach:**
+1. Determine the shift value: `shift = 4`.
+2. Iterate through each character in the input string.
+3. Check if the character is an alphabet letter. If it is:
+   - Determine if it's uppercase or lowercase to preserve its case.
+   - Convert the character to a 0-25 index (e.g., 'a' = 0, 'z' = 25).
+   - Apply the shift using modulo arithmetic: `(index + shift) % 26`.
+   - Convert the new index back to the corresponding ASCII character.
+4. If the character is not a letter, leave it as is.
+5. Join all processed characters into a resulting string and return it.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_090,humaneval,next_smallest,tier3_stronger,gemini-3.5-flash-lite,0.2,"FUNCTION TO BUILD:
+Write a function that finds and returns the second smallest element from a given list of integers. If the second smallest element does not exist (such as when the list has fewer than 2 elements, or when all elements are duplicates like `[1, 1]`), the function must return `None`.
+
+SIGNATURE:
+`def next_smallest(lst: list) -> int | None:`
+
+KEY EDGE CASES TO HANDLE:
+1. Empty lists `[]` -> return `None`.
+2. Lists with a single element `[1]` -> return `None`.
+3. Lists where all elements are identical `[1, 1, 1]` -> return `None`.
+4. Lists with negative numbers or mixed integers.
+5. Lists with duplicate values where the second smallest is distinct (e.g., `[1, 1, 2, 3]` -> `2`).
+
+RECOMMENDED APPROACH:
+1. Convert the input list to a set to remove duplicate values, ensuring we can find a strictly greater element than the minimum.
+2. Check if the length of the set is less than 2. If so, return `None`.
+3. Convert the set back to a list (or sort it) and return the element at index 1 (the second smallest). 
+Alternatively, sort the unique elements: `unique_sorted = sorted(set(lst))`, then check if `len(unique_sorted) >= 2` and return `unique_sorted[1]` else `None`.",True,True,True,3,1.0,1,1,1,Success,Success,Success
