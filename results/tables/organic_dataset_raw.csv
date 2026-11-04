@@ -1,0 +1,162 @@
+task_id,source,entry_point,tier_name,agent_a_model,agent_a_temp,handoff_text,pass_run1,pass_run2,pass_run3,pass_count_of_3,agreement_rate,label_majority,label_discard_policy,label_robust_positive,err_run1,err_run2,err_run3
+he_006,humaneval,parse_nested_parens,tier1_weaker,gemini-3.5-flash-lite,0.9,"HANDOFF MESSAGE FOR AGENT B:
+
+You need to write a Python function that calculates the maximum nesting depth of parentheses for each space-separated group in a given string.
+
+### Function Signature
+```python
+def parse_nested_parens(paren_string: str) -> list[int]:
+```
+
+### Requirements & Behavior
+- The input is a single string containing multiple groups of nested parentheses, separated by spaces.
+- For each space-separated group, determine the maximum depth of nesting.
+- Return a list of integers where each integer corresponds to the maximum nesting depth of the respective group in the input string.
+- Example: 
+  `parse_nested_parens('(()()) ((())) () ((())()())')` 
+  should return `[2, 3, 1, 3]`.
+
+### Edge Cases to Handle
+- Empty string or string with only spaces (should handle gracefully, e.g., return an empty list or appropriate values depending on split behavior).
+- Groups with varying whitespace or single parentheses like `()` (depth 1).
+- Deeply nested structures.
+
+### Implementation Plan
+1. Split the input string by spaces to isolate each parenthesis group. (Make sure to handle potential empty strings if multiple spaces exist).
+2. For each group, iterate through its characters to calculate the current depth and track the maximum depth encountered:
+   - Keep a counter for current depth (increment on `(`, decrement on `)`).
+   - Keep a tracker for the maximum depth reached during the traversal of that specific group.
+3. Collect the maximum depth for each group into a list and return it.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_006,humaneval,parse_nested_parens,tier2_mid,gemini-3.5-flash-lite,0.7,"**HANDOFF MESSAGE FOR AGENT B**
+
+**Function to Build:**
+Write a Python function that takes a single string containing multiple space-separated groups of nested parentheses. For each group, calculate the maximum (deepest) nesting level of parentheses, and return these maximum depths as a list of integers.
+
+**Function Signature:**
+```python
+def parse_nested_parens(paren_string: str) -> list[int]:
+```
+
+**Key Examples:**
+- Input: `'(()()) ((())) () ((())()())'`
+- Output: `[2, 3, 1, 3]`
+  - `(()())` -> max depth 2
+  - `((()))` -> max depth 3
+  - `()` -> max depth 1
+  - `((())()())` -> max depth 3
+
+**Edge Cases to Handle:**
+- Empty string input or string with only spaces (should ideally return an empty list or handle gracefully).
+- Groups with a single pair of parentheses `()` (depth 1).
+- Deeply nested structures.
+- Extra whitespace between groups.
+
+**Plan / Approach:**
+1. Split the input string by spaces to isolate each individual parenthesis group.
+2. For each group, iterate through the characters to track the current depth:
+   - Increment the current depth counter when encountering an opening parenthesis `(`.
+   - Keep track of the maximum depth reached during the traversal of that specific group.
+   - Decrement the current depth counter when encountering a closing parenthesis `)`.
+3. Store the maximum depth for each group in a list.
+4. Return the resulting list of integers.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_006,humaneval,parse_nested_parens,tier3_stronger,gemini-3.5-flash,0.7,"**Agent Handoff Message**
+
+---
+
+### 1. Function Overview
+Write a function `parse_nested_parens` that takes a single string containing multiple groups of nested parentheses separated by spaces. The function should calculate the maximum level of nesting (depth) of parentheses for each group and return a list of integers representing these maximum depths.
+
+### 2. Exact Function Signature
+```python
+from typing import List
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+```
+
+### 3. Example
+- **Input:** `'(()()) ((())) () ((())()())'`
+- **Output:** `[2, 3, 1, 3]`
+
+### 4. Step-by-Step Approach / Implementation Plan
+1. **Handle Empty Input:** Check if `paren_string` is empty or consists only of whitespace. If so, return `[]`.
+2. **Split the String:** Split `paren_string` by spaces (using `.split()` without arguments to handle multiple consecutive spaces properly).
+3. **Calculate Depth per Group:**
+   - Iterate through each individual parenthesis group string.
+   - For each group, maintain two integer counters: `current_depth = 0` and `max_depth = 0`.
+   - Iterate through each character in the group string:
+     - If the character is `'('`, increment `current_depth` by 1. Update `max_depth = max(max_depth, current_depth)`.
+     - If the character is `')'`, decrement `current_depth` by 1.
+   - Append `max_depth` to a results list after processing all characters in the group.
+4. **Return Result:** Return the list of integers.
+
+### 5. Edge Cases to Handle
+- **Empty or Whitespace-Only String:** Input like `""""` or `""   ""` should return `[]`.
+- **Multiple Consecutive Spaces:** Input like `'(()())   ((()))'` should correctly parse into two groups `[2, 3]` without treating empty spaces between groups as separate entities.
+- **Single Level / Unnested Group:** Input like `'()'` should return `[1]`.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_008,humaneval,sum_product,tier1_weaker,gemini-3.5-flash-lite,0.9,"Handoff Message for Agent B:
+
+Please implement a Python function that calculates both the sum and the product of all integers in a given list, returning them as a tuple `(sum, product)`.
+
+**Function Signature:**
+```python
+def sum_product(numbers: list[int]) -> tuple[int, int]:
+```
+
+**Key Edge Cases to Handle:**
+- **Empty List (`[]`):** Must return `(0, 1)`, since the empty sum is `0` and the empty product is `1`.
+
+**Plan / Approach:**
+1. Initialize a variable for the sum to `0` and a variable for the product to `1`.
+2. Iterate through the elements of the input list.
+3. For each element, add it to the running sum and multiply the running product by it.
+4. Return a tuple containing the final sum and product `(total_sum, total_product)`. (Alternatively, you can use built-in reduction logic or loops).",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_008,humaneval,sum_product,tier2_mid,gemini-3.5-flash-lite,0.7,"Handoff Message for Agent B:
+
+Please implement a Python function that calculates both the sum and the product of all integers in a given list.
+
+**Function Signature:**
+```python
+def sum_product(numbers: list[int]) -> tuple[int, int]:
+```
+
+**Requirements & Edge Cases:**
+- The function must return a tuple of two integers: `(total_sum, total_product)`.
+- For an empty list `[]`, the sum must be `0` and the product must be `1` (as specified in the examples).
+- Handle standard integer lists correctly (e.g., `[1, 2, 3, 4]` should return `(10, 24)`).
+
+**Approach:**
+1. Initialize `total_sum = 0` and `total_product = 1`.
+2. Iterate through each integer in the input list.
+3. Add each integer to `total_sum`.
+4. Multiply each integer into `total_product`.
+5. Return the result as a tuple: `(total_sum, total_product)`.",True,True,True,3,1.0,1,1,1,Success,Success,Success
+he_008,humaneval,sum_product,tier3_stronger,gemini-3.5-flash,0.7,"**HANDOFF MESSAGE FOR AGENT B**
+
+### Task Overview
+Create a Python function named `sum_product` that takes a list of integers as input and returns a tuple containing two elements: `(sum, product)`, where `sum` is the sum of all integers in the list, and `product` is the product of all integers in the list.
+
+### Function Signature
+```python
+from typing import List, Tuple
+
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+```
+
+### Plan / Approach
+1. Initialize `total_sum = 0` and `total_product = 1`.
+2. Iterate through each integer in `numbers`:
+   - Add the integer to `total_sum`.
+   - Multiply `total_product` by the integer.
+3. Return the tuple `(total_sum, total_product)`.
+
+*(Alternative: You may use Python's standard library functions like `sum()` and `math.prod(numbers, start=1)` or handle the empty list check explicitly).*
+
+### Key Edge Cases & Behavior
+- **Empty List (`[]`)**: Must return `(0, 1)` because the empty sum is defined as `0` and the empty product is defined as `1`.
+- **Single Element (`[x]`)**: Should return `(x, x)`.
+- **List with Zero (`[0, 2, 3]`)**: Calculate sum normally, but product should properly evaluate to `0`.
+- **Negative Numbers (`[-1, -2, 3]`)**: Ensure sign rules apply correctly for both addition and multiplication.
+
+### Examples for Validation
+- `sum_product([])` ➔ `(0, 1)`
+- `sum_product([1, 2, 3, 4])` ➔ `(10, 24)`",True,True,True,3,1.0,1,1,1,Success,Success,Success
