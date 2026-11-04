@@ -40,14 +40,14 @@ OUTPUT_ORGANIC_ROBUST = "results/tables/dataset_v2_robust_positive.csv"
 
 os.makedirs("results/tables", exist_ok=True)
 
-# ── 3 Agent A Model Tiers (Task A1) ──────────────────────────────────────────
-# Tier 1 (Weaker / Higher Error Rate): gemma-4-26b-a4b-it or higher-temp flash-lite
-# Tier 2 (Mid-Tier / Standard Planner): gemini-3.5-flash-lite
-# Tier 3 (Stronger / High-Capability): gemini-3.5-flash
+# ── 3 Agent A Tiers (Task A1: Stochasticity & Planning Ablation) ─────────────
+# Tier 1 (Stochastic / Higher Error Rate): gemini-3.5-flash-lite, T=0.95
+# Tier 2 (Balanced / Standard Planner):   gemini-3.5-flash-lite, T=0.70
+# Tier 3 (Deterministic / Precise Plan):  gemini-3.5-flash-lite, T=0.20
 AGENT_A_TIERS = [
-    {"tier": "tier1_weaker",   "model": "gemini-3.5-flash-lite", "temp": 0.9},
-    {"tier": "tier2_mid",      "model": "gemini-3.5-flash-lite", "temp": 0.7},
-    {"tier": "tier3_stronger", "model": "gemini-3.5-flash",      "temp": 0.7},
+    {"tier": "tier1_weaker",   "model": "gemini-3.5-flash-lite", "temp": 0.95},
+    {"tier": "tier2_mid",      "model": "gemini-3.5-flash-lite", "temp": 0.70},
+    {"tier": "tier3_stronger", "model": "gemini-3.5-flash-lite", "temp": 0.20},
 ]
 
 # Agent B Coder Model (Consistent downstream executor)
