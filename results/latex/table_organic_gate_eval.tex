@@ -1,0 +1,15 @@
+% Table: PRM Gate Performance on Organic Communication Failures
+\begin{table}[htbp]
+\centering
+\caption{Offline PRM Gate Performance on Organic Multi-Agent Handoffs ($\tau^* = 0.330$)}
+\label{tab:organic_gate_performance}
+\begin{tabular}{lcccccccc}
+\toprule
+Policy & $N$ & Pos & Neg & AUROC & AUPRC & Accuracy & F1 & Specificity \\
+\midrule
+Majority-Vote Policy (v0) & 122 & 95 & 27 & 0.545 & 0.810 & 0.221 & 0.000 & 1.000 \\
+Discard Policy (v1) & 119 & 94 & 25 & 0.555 & 0.821 & 0.210 & 0.000 & 1.000 \\
+Robust-Positive Policy (v2) & 122 & 94 & 28 & 0.547 & 0.806 & 0.230 & 0.000 & 1.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
