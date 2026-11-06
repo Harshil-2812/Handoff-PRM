@@ -97,8 +97,10 @@ class LLMAgentClient:
         self.cache[cache_key] = data
         try:
             self.cache_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.cache_path, "w", encoding="utf-8") as f:
+            tmp_path = self.cache_path.with_name(f"{self.cache_path.name}.tmp")
+            with open(tmp_path, "w", encoding="utf-8") as f:
                 json.dump(self.cache, f, indent=1)
+            tmp_path.replace(self.cache_path)
         except Exception as e:
             logger.warning(f"Failed to save cache entry: {e}")
 

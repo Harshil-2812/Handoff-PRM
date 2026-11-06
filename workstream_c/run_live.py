@@ -54,7 +54,7 @@ from workstream_c.harness.config import (
     RESULTS_DIR,
 )
 from workstream_c.harness.feature_pipeline import Stage1Classifier
-from workstream_c.harness.key_manager import KeyPool
+from workstream_c.harness.key_manager import KeyPool, get_key_slice
 from workstream_c.harness.logger import ResultsLogger
 from workstream_c.harness.task_loader import load_live_test_tasks
 
@@ -91,6 +91,8 @@ def run_experiment(
     limit: Optional[int] = None,
     source_filter: Optional[str] = None,
     output_csv: Optional[Path] = None,
+    cache_path: Optional[Path] = None,
+    key_slice: Optional[str] = None,
     dry_run: bool = False,
     model_a: str = DEFAULT_MODEL_A,
     model_b: str = DEFAULT_MODEL_B,
@@ -110,8 +112,9 @@ def run_experiment(
     logger.info(f"Loaded {len(tasks)} verified held-out tasks for evaluation.")
 
     # 2. Initialize classifier, key pool, and client
-    key_pool = KeyPool()
-    client = LLMAgentClient(key_pool=key_pool, dry_run=dry_run)
+    keys = get_key_slice(key_slice)
+    key_pool = KeyPool(keys=keys)
+    client = LLMAgentClient(key_pool=key_pool, cache_path=cache_path, dry_run=dry_run)
     classifier = Stage1Classifier()
     executor = ArmExecutor(classifier=classifier, client=client, threshold=threshold)
 
@@ -203,6 +206,8 @@ def main():
     parser.add_argument("--limit", type=int, default=None, help="Limit number of tasks")
     parser.add_argument("--source", type=str, default=None, help="Filter by task source")
     parser.add_argument("--output", type=str, default=None, help="Custom output CSV path")
+    parser.add_argument("--cache", type=str, default=None, help="Custom cache JSON path")
+    parser.add_argument("--key-slice", type=str, default=None, help="Slice of keys to use (e.g. '0:5')")
     parser.add_argument("--dry-run", action="store_true", help="Run without spending API quota")
     parser.add_argument("--model-a", default=DEFAULT_MODEL_A, help="Agent A model ID")
     parser.add_argument("--model-b", default=DEFAULT_MODEL_B, help="Agent B model ID")
@@ -215,7 +220,20 @@ def main():
     args = parser.parse_args()
 
     arms_to_run = ALL_ARMS if args.arm == "all" else [args.arm]
-    output_csv = Path(args.output) if args.output else None
+    
+    if args.output:
+        output_csv = Path(args.output)
+    elif len(args.seeds) == 1:
+        output_csv = RESULTS_DIR / f"live_results_main_s{args.seeds[0]}.csv"
+    else:
+        output_csv = None
+
+    if args.cache:
+        cache_path = Path(args.cache)
+    elif len(args.seeds) == 1:
+        cache_path = REPO_ROOT / "cache" / f"llm_cache_s{args.seeds[0]}.json"
+    else:
+        cache_path = None
 
     run_experiment(
         arms=arms_to_run,
@@ -223,6 +241,8 @@ def main():
         limit=args.limit,
         source_filter=args.source,
         output_csv=output_csv,
+        cache_path=cache_path,
+        key_slice=args.key_slice,
         dry_run=args.dry_run,
         model_a=args.model_a,
         model_b=args.model_b,

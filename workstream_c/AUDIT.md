@@ -125,3 +125,20 @@ This architecture ensures:
 3. Native support for multi-key Gemini rotation with rate-limit and daily-quota handling.
 4. Resumable execution: results are written incrementally and can be safely interrupted and resumed.
 
+---
+
+## 7. Deliberate Protocol Choices & Experimental Settings
+
+1. **Sampling Temperatures & Seed Variation**:
+   - **Agent A (Planner)**: Set to `temperature = 0.7` across seeds 42, 43, and 44. This introduces natural semantic variation and diverse architectural plans across seeds while preserving high-quality task restatements.
+   - **Agent B (Coder)**: Set to `temperature = 0.0` (greedy decoding) to isolate the causal effect of handoff quality on code generation and minimize downstream random execution noise.
+   - **LLM Judge**: Set to `temperature = 0.0` (greedy decoding) for deterministic, calibrated scoring.
+   - **Cache Invalidation**: The SHA-256 cache key in `agents_interface.py` hashes `model`, `temperature`, `seed`, and `prompt` (`f"{model}_{temperature}_{seed}_{prompt}"`). Therefore, pilot results generated at `temperature = 0.0` are never conflated with or reused for live production runs at `temperature = 0.7`.
+2. **Task Evaluation Manifest & Composition**:
+   - All 300 held-out tasks from `manifest_live_test.json` are evaluated (84 HumanEval, 210 MBPP, 6 hand-crafted), with 0 task overlap against the 248 train/dev tasks.
+   - The ~70% MBPP task composition is documented as an experimental limitation in `RESULTS_SUMMARY.md`, with results reported both in aggregate and broken down by source.
+3. **Partitioned API Key Pools & Concurrency**:
+   - All 15 verified working keys in `.env` are partitioned into disjoint pools of 5 keys per seed (Process 1: Keys 1–5 for Seed 42; Process 2: Keys 6–10 for Seed 43; Process 3: Keys 11–15 for Seed 44).
+   - Each process writes to an independent results CSV (`live_results_main_s42.csv`, `_s43.csv`, `_s44.csv`) and dedicated cache (`llm_cache_s42.json`, etc.) to eliminate concurrent rate-limit collisions and avoid file-write contention.
+
+

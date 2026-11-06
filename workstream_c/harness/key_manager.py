@@ -22,57 +22,58 @@ class QuotaExhaustedError(RuntimeError):
     """Raised when all available API keys have exhausted their daily quota."""
 
 def find_api_keys() -> List[str]:
-    """Scans environment variables, results/.env, and root .env for Gemini API keys."""
-    keys: List[str] = []
-    
-    # 1. Check environment variables
-    raw_keys = os.getenv("GEMINI_KEYS", "").strip()
-    if raw_keys:
-        try:
-            parsed = ast.literal_eval(raw_keys)
-            if isinstance(parsed, (list, tuple)):
-                keys.extend([str(k).strip() for k in parsed if str(k).strip()])
-        except Exception:
-            pass
-            
-    single_key = os.getenv("GEMINI_API_KEY", "").strip()
-    if single_key and single_key not in keys:
-        keys.append(single_key)
-        
-    for k, v in os.environ.items():
-        if k.startswith("GEMINI_API_KEY_") and v.strip() and v.strip() not in keys:
-            keys.append(v.strip())
-            
-    # 2. Check local env files if keys not found
+    """Reads Gemini API keys strictly from the root .env file (GEMINI_API_KEY_1 .. GEMINI_API_KEY_N)."""
     repo_root = Path(__file__).resolve().parent.parent.parent
-    env_paths = [repo_root / "results" / ".env", repo_root / ".env"]
+    root_env = repo_root / ".env"
     
-    for env_path in env_paths:
-        if env_path.exists():
-            with open(env_path, encoding="utf-8") as f:
-                for line in f:
-                    line = line.strip()
-                    if not line or line.startswith("#"):
-                        continue
-                    if "=" in line:
-                        k, v = line.split("=", 1)
-                        k = k.strip()
-                        v = v.strip().strip("'\"")
-                        if (k == "GEMINI_API_KEY" or k.startswith("GEMINI_API_KEY_")) and v:
-                            if v not in keys:
-                                keys.append(v)
-                        elif k == "GEMINI_KEYS" and v:
-                            try:
-                                parsed = ast.literal_eval(v)
-                                if isinstance(parsed, (list, tuple)):
-                                    for item in parsed:
-                                        s_item = str(item).strip()
-                                        if s_item and s_item not in keys:
-                                            keys.append(s_item)
-                            except Exception:
-                                pass
-                                
-    return keys
+    if not root_env.exists():
+        logger.warning(f"Root .env file not found at {root_env}")
+        return []
+        
+    key_dict: dict[int, str] = {}
+    extra_keys: List[str] = []
+
+    with open(root_env, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" in line:
+                k, v = line.split("=", 1)
+                k = k.strip()
+                v = v.strip().strip("'\"")
+                if not v:
+                    continue
+                if k.startswith("GEMINI_API_KEY_"):
+                    num_part = k[len("GEMINI_API_KEY_"):]
+                    if num_part.isdigit():
+                        key_dict[int(num_part)] = v
+                    else:
+                        extra_keys.append(v)
+                elif k == "GEMINI_API_KEY":
+                    extra_keys.append(v)
+
+    # Sort numerically by index (1, 2, ... 15)
+    ordered_keys = [key_dict[idx] for idx in sorted(key_dict.keys())]
+    ordered_keys.extend(extra_keys)
+    return ordered_keys
+
+
+def get_key_slice(slice_str: Optional[str] = None) -> List[str]:
+    """Returns a subset of keys based on a 'start:end' string (e.g. '0:5')."""
+    all_keys = find_api_keys()
+    if not slice_str:
+        return all_keys
+    try:
+        parts = slice_str.split(":")
+        start = int(parts[0]) if parts[0] else 0
+        end = int(parts[1]) if len(parts) > 1 and parts[1] else len(all_keys)
+        sliced = all_keys[start:end]
+        logger.info(f"Using key slice '{slice_str}': {len(sliced)} keys (indices {start} to {end - 1}).")
+        return sliced
+    except Exception as e:
+        logger.warning(f"Failed to parse key slice '{slice_str}': {e}. Using all keys.")
+        return all_keys
 
 
 class KeyPool:
