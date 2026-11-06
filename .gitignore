@@ -2,6 +2,8 @@
 .env
 .env.*
 !.env.example
+*.key
+*.pem
 
 # ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
@@ -15,6 +17,11 @@ build/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+*.cache
+cache/
+.cache/
+data_cache/
+raw_cache/
 
 # ── Virtual environment ───────────────────────────────────────────────────────
 venv/
