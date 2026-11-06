@@ -124,3 +124,4 @@ This architecture ensures:
 2. Full Windows compatibility (`pathlib`, no shell-specific constructs).
 3. Native support for multi-key Gemini rotation with rate-limit and daily-quota handling.
 4. Resumable execution: results are written incrementally and can be safely interrupted and resumed.
+
