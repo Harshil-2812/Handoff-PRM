@@ -45,13 +45,19 @@ Because the harness implements persistent, prompt-level disk caching on `hash(mo
   - Fallback Agent B calls triggered only on blocked handoffs (~20% block rate): $127 \times 3 \times 0.20 \approx \mathbf{76\text{ calls}}$.
 - **C4 Total Calls**: **~76 calls** (or 0 additional calls if evaluating offline labels).
 
-### C5: Hidden-Problem Setting
-- **Matrix**: 100 held-out tasks $\times$ 3 seeds across 3 conditions (`no_gate`, `blind_retry`, `shap_hinted_retry`).
-- *Calls Required*:
-  - `no_gate`: 300 Agent A + 300 Agent B (cached from C2) = **0 new calls**.
-  - `blind_retry`: ~30% blocked $\to$ ~90 retries from Agent A + 90 Agent B calls = **180 calls**.
-  - `shap_hinted_retry`: ~30% blocked $\to$ ~90 retries from Agent A + 90 Agent B calls = **180 calls**.
-- **C5 Total Calls**: **360 new calls**.
+### C5: Hidden-Problem Setting (Self-Repair with up to 2 Retries)
+- **Matrix**: 100 held-out tasks $\times$ 3 seeds across 3 conditions (`no_gate`, `blind_retry`, `shap_hinted_retry`), with up to **2 repair attempts** upon PRM rejection.
+- *Call Breakdown*:
+  - **Cold-Cache / Stand-alone Execution**:
+    - `no_gate` baseline: 300 Agent A handoff calls + 300 Agent B coding calls = **600 calls**.
+    - `blind_retry` condition: 300 initial Agent A + ~90 1st retries + ~40 2nd retries + 300 Agent B coding calls = **730 calls**.
+    - `shap_hinted_retry` condition: 300 initial Agent A (or cached) + ~75 1st retries + ~25 2nd retries + 300 Agent B coding calls = **700 calls**.
+    - *Cold-Cache Total*: **~1,450 to 1,650 calls**.
+  - **Warm-Cache Execution (Following C2)**:
+    - Initial Agent A handoffs hit local disk cache (300 calls saved per condition).
+    - Repair retries (~130 calls for blind, ~100 calls for SHAP-hinted) + Agent B executions on repaired handoffs (~300 calls each).
+    - *Warm-Cache Total*: **~750 to 900 calls**.
+- **Quota Impact**: Even under the conservative cold-cache scenario (~1,650 calls), C5 consumes only ~7.3% of the 22,500 daily requests available across our 15 active keys.
 
 ### C6: Live Prevalence Sweep
 - **Matrix**: 3 prevalences (5%, 20%, 50%) across stream of clean and corrupted handoffs.

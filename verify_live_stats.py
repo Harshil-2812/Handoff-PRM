@@ -75,30 +75,29 @@ def exact_mcnemar_test(b: int, c: int) -> float:
 
 
 def task_level_bootstrap_ci(
-    df: pd.DataFrame,
-    metric_fn,
+    task_values: Dict[str, Tuple[float, int]],
     n_resamples: int = 10000,
     seed: int = 42,
 ) -> Tuple[float, float, float]:
-    """Task-level bootstrap CI: resamples tasks (with all their associated trials), not rows."""
-    tasks = np.array(sorted(list(df["task_id"].unique())))
+    """Task-level bootstrap CI: resamples tasks (with all their associated trials), not rows.
+    
+    task_values maps task_id -> (sum_of_metric_values, count_of_trials).
+    """
+    tasks = list(task_values.keys())
+    sums = np.array([task_values[t][0] for t in tasks], dtype=np.float64)
+    counts = np.array([task_values[t][1] for t in tasks], dtype=np.float64)
     n_tasks = len(tasks)
+    
+    total_sum = sums.sum()
+    total_count = counts.sum()
+    point_est = float(total_sum / total_count) if total_count > 0 else 0.0
+    
     rng = np.random.RandomState(seed)
+    sample_indices = rng.choice(n_tasks, size=(n_resamples, n_tasks), replace=True)
+    boot_sums = sums[sample_indices].sum(axis=1)
+    boot_counts = counts[sample_indices].sum(axis=1)
+    boot_estimates = boot_sums / np.maximum(boot_counts, 1e-9)
     
-    # Pre-index DataFrame by task_id for rapid retrieval
-    grouped = {tid: g for tid, g in df.groupby("task_id")}
-    
-    # Point estimate
-    point_est = float(metric_fn(df))
-    
-    boot_estimates = []
-    for _ in range(n_resamples):
-        sampled_task_indices = rng.choice(n_tasks, size=n_tasks, replace=True)
-        sampled_tasks = tasks[sampled_task_indices]
-        # Concatenate rows of sampled tasks
-        sampled_df = pd.concat([grouped[t] for t in sampled_tasks], ignore_index=True)
-        boot_estimates.append(float(metric_fn(sampled_df)))
-        
     ci_low = float(np.percentile(boot_estimates, 2.5))
     ci_high = float(np.percentile(boot_estimates, 97.5))
     return point_est, ci_low, ci_high
@@ -126,7 +125,8 @@ def analyze_live_results(csv_path: Path):
     
     for arm in arms:
         arm_df = df[df["arm"] == arm]
-        pt, lo, hi = task_level_bootstrap_ci(arm_df, compute_pass1)
+        task_vals = {tid: (float(g["outcome"].sum()), len(g)) for tid, g in arm_df.groupby("task_id")}
+        pt, lo, hi = task_level_bootstrap_ci(task_vals)
         arm_metrics[arm] = (pt, lo, hi)
         print(f"    {arm:<18}: {pt*100:6.2f}%  [95% CI: {lo*100:5.2f}%, {hi*100:5.2f}%]  (n={len(arm_df)})")
         
@@ -152,15 +152,18 @@ def analyze_live_results(csv_path: Path):
         
         p_val = exact_mcnemar_test(b, c)
         
-        # Paired delta function for bootstrap
-        def paired_delta_fn(sampled_df, arm_name=arm):
-            u_s = sampled_df[sampled_df["arm"] == "ungated"].set_index(["task_id", "seed", "handoff_type"])["outcome"]
-            g_s = sampled_df[sampled_df["arm"] == arm_name].set_index(["task_id", "seed", "handoff_type"])["outcome"]
-            idx = u_s.index.intersection(g_s.index)
-            return float(g_s.loc[idx].mean() - u_s.loc[idx].mean())
-            
-        sub_df = df[df["arm"].isin(["ungated", arm])]
-        d_pt, d_lo, d_hi = task_level_bootstrap_ci(sub_df, paired_delta_fn)
+        # Paired delta for task-level bootstrap
+        paired_records = []
+        for (t_id, s_val, h_type), u_val in ungated_df.loc[common_idx].items():
+            g_val = gated_df.loc[(t_id, s_val, h_type)]
+            paired_records.append({"task_id": t_id, "delta": float(g_val - u_val)})
+        paired_frame = pd.DataFrame(paired_records)
+        
+        task_paired_vals = {
+            tid: (float(g["delta"].sum()), len(g))
+            for tid, g in paired_frame.groupby("task_id")
+        }
+        d_pt, d_lo, d_hi = task_level_bootstrap_ci(task_paired_vals)
         
         print(f"    {arm:<16} vs ungated: Delta = {d_pt*100:+5.2f} pp [CI: {d_lo*100:+5.2f}, {d_hi*100:+5.2f}] | "
               f"b={b:3d}, c={c:3d} (Net catches: {c-b:+d}) | McNemar exact p = {p_val:.4f}")
