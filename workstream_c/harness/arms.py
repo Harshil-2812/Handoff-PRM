@@ -67,13 +67,16 @@ class ArmExecutor:
         test_code = task["test_code"]
         handoff_id = f"{task_id}_{handoff_type}_s{seed}"
 
-        # 1. Base Stage-1 scoring (computed for all arms for feature & score logging)
+        # 1. Base Stage-1 scoring (measures end-to-end embedding, NER, feature extraction, and RF inference)
+        import time as _t
+        t0_s1 = _t.perf_counter()
         stage1_res = self.classifier.score(
             handoff=candidate_handoff,
             problem=problem,
             entry_point=entry_point,
             threshold=self.threshold,
         )
+        stage1_latency_ms = (_t.perf_counter() - t0_s1) * 1e3
         stage1_score = stage1_res["score"]
         features = stage1_res["features"]
 
@@ -86,12 +89,14 @@ class ArmExecutor:
         final_handoff_for_b = candidate_handoff
         is_raw_fallback = False
 
-        # 2. Arm-specific gating decision
+        # 2. Arm-specific gating decision and latency attribution
         if arm == "ungated":
             decision = "PASS"
             action = "handoff"
+            # Ungated arm incurs zero gating latency
 
         elif arm == "stage1_only":
+            total_latency_ms += stage1_latency_ms  # includes embedding, NER, all features, and RF scoring
             if stage1_score >= self.threshold:
                 decision = "PASS"
                 action = "handoff"
@@ -101,6 +106,7 @@ class ArmExecutor:
                 is_raw_fallback = True
 
         elif arm == "cascade":
+            total_latency_ms += stage1_latency_ms
             if stage1_score < self.threshold:
                 # Confident block by Stage 1
                 decision = "BLOCK"

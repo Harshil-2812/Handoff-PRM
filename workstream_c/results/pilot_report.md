@@ -21,7 +21,7 @@ The pilot ran **280 live trials** (20 tasks $\times$ 1 seed (42) $\times$ 7 arms
 |---|---|---|---|
 | **Frozen Schema Compliance** | All 17 frozen columns present and non-null | **PASS (100%)** | Programmatic assertion verified zero nulls in `task_id, source, handoff_id, handoff_type, label, label_policy, seed, features, stage1_score, decision, outcome, model_agent_a, model_agent_b, model_judge, temp_agent_a, temp_agent_b, temp_judge`. |
 | **Disjoint Task Pools** | Zero overlap with train/dev pool (`features_v2.csv`) | **PASS (0 overlap)** | Programmatic set intersection between 20 pilot tasks and 248 train/dev tasks returned exactly 0 tasks. |
-| **Task Balance** | Include multiple sources (not mostly MBPP) | **PASS** | 20 HumanEval tasks evaluated (`he_010` to `he_099`). Full live test manifest incorporates 84 HumanEval, 7 hand-crafted, and 209 MBPP tasks. |
+| **Task Balance** | Include multiple sources (not mostly MBPP) | **FAIL / UNBALANCED** | The 20-task pilot was 100% HumanEval only (`he_010` to `he_099`), omitting MBPP and hand-crafted sets entirely. Furthermore, the 300-task live manifest is ~70% MBPP (209/300) and contains no LiveCodeBench tasks. |
 | **Paired Design** | Every task evaluated under both clean and corrupted conditions | **PASS** | Exactly 140 clean rows and 140 corrupted rows across 10 corruption types (`inject_false_constraint`, `truncation`, `signature_rename`, `wrong_algorithm_name`, etc.). |
 | **Reproducibility** | Fixed seed produces identical outcomes | **PASS** | Seed 42 produces deterministic prompt inputs, feature extractions, and cached model queries. |
 | **Token & Latency Logging** | Token counts and execution latency logged per trial | **PASS** | All trials logged prompt tokens, completion tokens, and end-to-end millisecond latency. |
@@ -43,7 +43,7 @@ The pilot ran **280 live trials** (20 tasks $\times$ 1 seed (42) $\times$ 7 arms
 | **agent_ask** | 40 | 75.0% | 70.0% | **72.5%** | **+2.5 pp** |
 | **always_fallback** | 40 | 80.0% | 80.0% | **80.0%** | **+10.0 pp** |
 
-*Key finding*: On this 20-task slice, the Stage-1 PRM gate successfully detected and blocked damaging corruptions without penalizing clean handoffs (clean false block was 0%), raising Pass@1 from 70.0% to 75.0%. `always_fallback` scored 80.0%, confirming that providing the uncompressed raw problem directly to Agent B removes the inter-agent handoff communication bottleneck.
+*Pilot Observation (Sanity Check Only)*: With only $n=20$ tasks and a single seed (42), these preliminary numbers serve strictly to verify end-to-end pipeline wiring, code grading, and logging. They are not statistically significant and cannot support generalizable conclusions. In this small sample, Stage-1 gating blocked some corrupted handoffs without false-blocking clean ones, and `always_fallback` showed that providing the full raw problem directly to Agent B achieves the highest raw pass rate.
 
 ---
 
@@ -59,7 +59,8 @@ The pilot ran **280 live trials** (20 tasks $\times$ 1 seed (42) $\times$ 7 arms
 | **agent_ask** | 6,643.1 ms | 1,452.0 | 307.9 | 1,759.9 |
 | **always_fallback**| 2,951.6 ms | 159.0 | 133.6 | 292.6 |
 
-*Key finding*:
-- **Stage-1 PRM Overhead**: Stage-1 Random Forest inference adds only **10.1 ms** of latency over ungated execution, providing essentially free real-time gating.
-- **LLM Judge Overhead**: Standalone LLM judge adds **+2,105 ms** (+74%) and more than doubles token consumption.
-- **AgentAsk Overhead**: Prompted multi-step clarification incurs **+3,806 ms** (+134%) latency and consumes 3$\times$ more tokens due to the interactive dialogue.
+*Pilot Profiling Notes*:
+- **Stage-1 PRM Execution**: In this initial pilot run, Stage-1 Random Forest inference was measured; the harness has now been updated so that Stage-1 latency strictly includes end-to-end MiniLM embedding, spaCy NER parsing, feature computation, and RF scoring.
+- **LLM Judge Overhead**: LLM judge evaluation introduces additional API roundtrip latency (~2.1s) and approximately doubles prompt token consumption.
+- **AgentAsk Overhead**: Multi-turn prompted clarification incurs the highest token consumption (~1,760 tokens/trial) and latency (~6.6s) due to the two-step interactive prompt.
+
