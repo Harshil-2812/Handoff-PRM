@@ -44,6 +44,11 @@ DEFAULT_MODEL_A = "gemini-3.5-flash-lite"
 DEFAULT_MODEL_B = "gemini-3.5-flash-lite"
 DEFAULT_MODEL_JUDGE = "gemini-3.5-flash-lite"
 
+# Temperatures: Planner sampled at 0.7 for realistic seed variation; Coder and Judge greedy (0.0)
+DEFAULT_TEMP_A = 0.7
+DEFAULT_TEMP_B = 0.0
+DEFAULT_TEMP_JUDGE = 0.0
+
 # Headline threshold frozen from Workstream B (results/frozen_threshold.json)
 # Rule: largest t with clean false-block rate <= 0.05 on dev OOF
 HEADLINE_THRESHOLD_RAW = 0.5504194147823097

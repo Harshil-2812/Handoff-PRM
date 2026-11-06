@@ -46,6 +46,9 @@ from workstream_c.harness.config import (
     DEFAULT_MODEL_A,
     DEFAULT_MODEL_B,
     DEFAULT_MODEL_JUDGE,
+    DEFAULT_TEMP_A,
+    DEFAULT_TEMP_B,
+    DEFAULT_TEMP_JUDGE,
     HEADLINE_THRESHOLD_RAW,
     LIVE_SEEDS,
     RESULTS_DIR,
@@ -92,9 +95,9 @@ def run_experiment(
     model_a: str = DEFAULT_MODEL_A,
     model_b: str = DEFAULT_MODEL_B,
     model_judge: str = DEFAULT_MODEL_JUDGE,
-    temp_a: float = 0.0,
-    temp_b: float = 0.0,
-    temp_judge: float = 0.0,
+    temp_a: float = DEFAULT_TEMP_A,
+    temp_b: float = DEFAULT_TEMP_B,
+    temp_judge: float = DEFAULT_TEMP_JUDGE,
     threshold: float = HEADLINE_THRESHOLD_RAW,
 ):
     """Executes the paired live evaluation across tasks, seeds, conditions, and arms."""
@@ -204,9 +207,9 @@ def main():
     parser.add_argument("--model-a", default=DEFAULT_MODEL_A, help="Agent A model ID")
     parser.add_argument("--model-b", default=DEFAULT_MODEL_B, help="Agent B model ID")
     parser.add_argument("--model-judge", default=DEFAULT_MODEL_JUDGE, help="LLM judge model ID")
-    parser.add_argument("--temp-a", type=float, default=0.0, help="Agent A temperature")
-    parser.add_argument("--temp-b", type=float, default=0.0, help="Agent B temperature")
-    parser.add_argument("--temp-judge", type=float, default=0.0, help="Judge temperature")
+    parser.add_argument("--temp-a", type=float, default=DEFAULT_TEMP_A, help="Agent A temperature")
+    parser.add_argument("--temp-b", type=float, default=DEFAULT_TEMP_B, help="Agent B temperature")
+    parser.add_argument("--temp-judge", type=float, default=DEFAULT_TEMP_JUDGE, help="Judge temperature")
     parser.add_argument("--threshold", type=float, default=HEADLINE_THRESHOLD_RAW, help="Stage 1 threshold")
 
     args = parser.parse_args()
