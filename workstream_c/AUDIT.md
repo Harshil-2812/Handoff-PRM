@@ -141,4 +141,36 @@ This architecture ensures:
    - All 15 verified working keys in `.env` are partitioned into disjoint pools of 5 keys per seed (Process 1: Keys 1–5 for Seed 42; Process 2: Keys 6–10 for Seed 43; Process 3: Keys 11–15 for Seed 44).
    - Each process writes to an independent results CSV (`live_results_main_s42.csv`, `_s43.csv`, `_s44.csv`) and dedicated cache (`llm_cache_s42.json`, etc.) to eliminate concurrent rate-limit collisions and avoid file-write contention.
 
+---
+
+## 8. Bug Post-Mortem & Fix: Process-Level Hash Randomization in Corruption Selection
+
+1. **Root Cause**: `workstream_c/run_live.py` initially used `hash(f"{task_id}_{seed}") % len(CORRUPTION_CHOICES)` to select a corruption function for each held-out task. Because Python randomizes string hash seeds per process invocation via `PYTHONHASHSEED`, restarting the runner in a new process selected a different corruption type for tasks than in the initial run. While clean handoffs were correctly recognized as completed and skipped, the newly selected corruption appeared uncompleted, causing the harness to evaluate a second corruption type and inflate row counts before reaching the un-evaluated tail tasks.
+2. **Cache Integrity**: Cache keys in `agents_interface.py` used cryptographic `hashlib.sha256(f"{model}_{temperature}_{seed}_{prompt}")`. Cache hits for identical prompts were therefore 100% preserved and never invalidated.
+3. **Fix Implemented**:
+   - `pick_corruption` now first inspects the seed's CSV file and locks onto the earliest non-clean `handoff_type` recorded for that `(task_id, seed)`.
+   - For un-evaluated tasks, corruption selection strictly uses cryptographic `hashlib.sha256`, completely independent of Python process hash seeds.
+   - All string `hash()` calls in `corruption.py` were replaced with deterministic `hashlib.md5`.
+   - A multi-process unit test (`tests/test_pick_corruption.py`) verifies identical corruption selections across different `PYTHONHASHSEED` values.
+   - The deterministic deduplication script `workstream_c/dedup_main_results.py` purges secondary corruption rows, restoring each seed CSV to its exact clean state prior to resuming tail execution.
+
+---
+
+## 9. Experimental Limitations & System Events
+
+1. **Corrupted Text Storage & Hash Regeneration**:
+   - The frozen results schema does not record candidate handoff text; clean Agent A handoffs are released separately in `workstream_c/results/clean_agent_a_handoffs.csv`.
+   - For three length-preserving corruption functions (`omit_entity`, `inject_false_constraint`, `fake_completion`), the fallback RNG seed used Python's built-in `hash()` prior to the md5 fix. Because `PYTHONHASHSEED` was randomized across processes, the exact corrupted text for rows generated before the fix cannot be regenerated:
+     - **Seed 42**: 434 rows (62 tasks) generated before fix; tail rows (35 rows, 5 tasks) used deterministic `hashlib.md5`.
+     - **Seed 43**: 455 rows (65 tasks) generated before fix.
+     - **Seed 44**: 462 rows (66 tasks) generated before fix.
+2. **Laptop Interruption & Recovery on Seed 42**:
+   - At row 4,050 during the Seed 42 run, a sudden laptop restart interrupted execution.
+   - Upon reboot, `live_results_main_s42.csv` was verified to have zero truncated rows, all 22 columns valid, and `llm_cache_s42.json` was verified as intact JSON.
+   - Seed 42 was resumed using fresh keys (Keys 1–5), completing the remaining 150 trials to reach exactly 4,200 rows with zero duplicate keys.
+3. **Partition Discrepancy with Workstream A**:
+   - Workstream A's partition files (`manifest_train_dev.txt` for 300 tasks, `manifest_live_test.txt` for 200 tasks, `manifest_organic_pool.txt` for 175 tasks) were not committed to the repository. Workstream C evaluated the 300 held-out tasks in `manifest_live_test.json`, which had strictly zero task overlap with the 248 dev tasks in `features_v2.csv`.
+
+
+
 

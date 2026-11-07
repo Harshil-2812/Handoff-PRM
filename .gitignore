@@ -47,3 +47,7 @@ desktop.ini
 .vscode/
 *.swp
 *~
+
+# ── Temporary evaluation backups ──────────────────────────────────────────────
+workstream_c/results/backup_before_dedup/
+

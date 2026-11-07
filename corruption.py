@@ -17,6 +17,7 @@ Category 4 — Completeness (length-preserving):
   inject_false_constraint, fake_completion
 """
 
+import hashlib
 import random
 import re
 
@@ -65,7 +66,7 @@ def omit_entity(handoff: str, fraction_to_remove: float = 0.5, seed: int = None)
     if not entity_bearing_idx:
         return handoff
 
-    rng = random.Random(seed if seed is not None else hash(handoff) % (2**32))
+    rng = random.Random(seed if seed is not None else int(hashlib.md5(handoff.encode("utf-8")).hexdigest(), 16) % (2**32))
     n_to_remove = max(1, int(len(entity_bearing_idx) * fraction_to_remove))
     remove_idx = set(rng.sample(entity_bearing_idx, min(n_to_remove, len(entity_bearing_idx))))
     kept = [sent.text for i, sent in enumerate(sentences) if i not in remove_idx]
@@ -298,7 +299,7 @@ def inject_false_constraint(handoff: str, seed: int = None) -> str:
     """Appends a false constraint and removes an equal number of words
     from the end of the handoff to preserve length.
     The false constraint contradicts typical test-harness edge cases."""
-    rng = random.Random(seed if seed is not None else hash(handoff) % (2**32))
+    rng = random.Random(seed if seed is not None else int(hashlib.md5(handoff.encode("utf-8")).hexdigest(), 16) % (2**32))
     constraint = rng.choice(_FALSE_CONSTRAINTS)
     constraint_words = constraint.split()
     handoff_words = handoff.split()
@@ -335,7 +336,7 @@ def fake_completion(handoff: str, seed: int = None) -> str:
     kept_words = words[:cut]
     n_to_fill = len(words) - cut
 
-    rng = random.Random(seed if seed is not None else hash(handoff) % (2**32))
+    rng = random.Random(seed if seed is not None else int(hashlib.md5(handoff.encode("utf-8")).hexdigest(), 16) % (2**32))
     filler_words = []
     while len(filler_words) < n_to_fill:
         sentence = rng.choice(_FILLER_SENTENCES)

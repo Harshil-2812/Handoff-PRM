@@ -10,6 +10,8 @@ Supports:
 """
 
 import argparse
+import csv
+import hashlib
 import logging
 import os
 import random
@@ -53,7 +55,6 @@ from workstream_c.harness.config import (
     LIVE_SEEDS,
     RESULTS_DIR,
 )
-from workstream_c.harness.feature_pipeline import Stage1Classifier
 from workstream_c.harness.key_manager import KeyPool, get_key_slice
 from workstream_c.harness.logger import ResultsLogger
 from workstream_c.harness.task_loader import load_live_test_tasks
@@ -79,9 +80,55 @@ CORRUPTION_CHOICES = [
 ]
 
 
-def pick_corruption(task_id: str, seed: int):
-    """Deterministically picks a corruption function based on task_id and seed."""
-    idx = (hash(f"{task_id}_{seed}") % len(CORRUPTION_CHOICES))
+_RECORDED_CORRUPTIONS_CACHE: dict = {}
+
+
+def load_recorded_corruptions(csv_path: Path) -> dict:
+    """Caches and returns the earliest non-clean handoff_type recorded per (task_id, seed)."""
+    csv_path = Path(csv_path).resolve()
+    if csv_path in _RECORDED_CORRUPTIONS_CACHE:
+        return _RECORDED_CORRUPTIONS_CACHE[csv_path]
+
+    recorded = {}
+    if csv_path.exists():
+        try:
+            with open(csv_path, "r", newline="", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    tid = row.get("task_id", "")
+                    s_str = row.get("seed", "")
+                    htype = row.get("handoff_type", "")
+                    if tid and s_str and htype and htype != "clean":
+                        try:
+                            s = int(s_str)
+                            if (tid, s) not in recorded:
+                                recorded[(tid, s)] = htype
+                        except ValueError:
+                            pass
+        except Exception as e:
+            logger.warning(f"Error loading recorded corruptions from {csv_path}: {e}")
+
+    _RECORDED_CORRUPTIONS_CACHE[csv_path] = recorded
+    return recorded
+
+
+def pick_corruption(task_id: str, seed: int, csv_path: Optional[Path] = None):
+    """Deterministically picks a corruption function based on task_id and seed.
+
+    1. First looks up whether (task_id, seed) already has rows recorded in csv_path (the earliest recorded corruption).
+    2. Otherwise uses a stable hashlib.sha256 calculation (independent of Python hash seed).
+    """
+    if csv_path:
+        recorded = load_recorded_corruptions(Path(csv_path))
+        if (task_id, seed) in recorded:
+            target_name = recorded[(task_id, seed)]
+            for name, fn in CORRUPTION_CHOICES:
+                if name == target_name:
+                    return name, fn
+
+    # Stable hashlib fallback (never use built-in hash() which varies with PYTHONHASHSEED)
+    digest = hashlib.sha256(f"{task_id}_{seed}".encode("utf-8")).hexdigest()
+    idx = int(digest, 16) % len(CORRUPTION_CHOICES)
     return CORRUPTION_CHOICES[idx]
 
 
@@ -112,6 +159,7 @@ def run_experiment(
     logger.info(f"Loaded {len(tasks)} verified held-out tasks for evaluation.")
 
     # 2. Initialize classifier, key pool, and client
+    from workstream_c.harness.feature_pipeline import Stage1Classifier
     keys = get_key_slice(key_slice)
     key_pool = KeyPool(keys=keys)
     client = LLMAgentClient(key_pool=key_pool, cache_path=cache_path, dry_run=dry_run)
@@ -136,6 +184,22 @@ def run_experiment(
         logger.info(f"[{t_idx}/{len(tasks)}] Task {task_id} ({task.get('source')}, {entry_point})")
 
         for seed in seeds:
+            corr_name, corr_fn = pick_corruption(task_id, seed, csv_path=output_path)
+
+            # Fast skip if both clean and corrupted conditions are already fully completed for all arms
+            all_done = True
+            for htype in ["clean", corr_name]:
+                for arm in arms:
+                    if not results_logger.is_completed(task_id, arm, seed, htype):
+                        all_done = False
+                        break
+                if not all_done:
+                    break
+
+            if all_done:
+                skipped_count += 2 * len(arms)
+                continue
+
             # Step A: Generate or fetch Agent A's baseline clean handoff
             a_res = client.plan_agent_a(
                 problem=problem,
@@ -146,7 +210,6 @@ def run_experiment(
             clean_handoff = a_res.get("text", "")
 
             # Step B: Generate paired corrupted handoff
-            corr_name, corr_fn = pick_corruption(task_id, seed)
             try:
                 corrupted_handoff = corr_fn(clean_handoff, entry_point)
             except Exception as e:
