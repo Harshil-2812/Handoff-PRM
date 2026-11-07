@@ -422,3 +422,4 @@ for src in ["humaneval", "mbpp", "hand_easy", "hand_hard"]:
     src_cat_counts = src_fails["category"].value_counts()
     for cat, count in src_cat_counts.items():
         print(f"    {cat:<48}: {count:3d} ({count/n_src_fail*100:5.2f}% of fails)")
+
