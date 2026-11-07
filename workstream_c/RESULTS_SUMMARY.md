@@ -37,17 +37,21 @@ The evaluation adheres strictly to the frozen protocol:
 
 Results across all 12,600 live trials (300 tasks $\times$ 3 seeds $\times$ 7 arms $\times$ 2 conditions). `always_fallback` serves as a reference baseline (bypassing handoffs to evaluate raw problem execution directly).
 
-| Arm | Description | Clean Pass@1 (%) | Corrupted Pass@1 (%) | Overall Pass@1 (%) | 95% Task-Level Bootstrap CI | $\Delta$ vs. Ungated (pp) | Paired $b / c$ (pooled trials) | Pooled McNemar $p$* | Mean Latency (ms) | Median Latency (ms) | Mean Tokens / Trial |
+| Arm | Description | Clean Pass@1 (%) | Corrupted Pass@1 (%) | Overall Pass@1 (%) | 95% Task-Level Bootstrap CI | $\Delta$ vs. Ungated (pp) | Paired $b / c$* | Pooled McNemar $p$* | Mean Latency (ms) | Median Latency (ms) | Mean Tokens / Trial |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | **ungated** | No verification (control) | 58.44% | 58.22% | **58.33%** | [53.72%, 62.94%] | Baseline | — | — | 1,889.1 ms | 1,605.1 ms | 642.7 |
-| **stage1_only** | PRM classifier ($t = 0.5504$) | 59.11% | 65.22% | **62.17%** | [57.44%, 66.83%] | **+3.83 pp** | $b=77, c=8$ | **$p = 0.0000$** | 2,612.9 ms | 2,146.3 ms | 603.4 |
-| **cascade** | Stage 1 + Stage 2 Judge | 59.22% | 65.44% | **62.33%** | [57.61%, 67.00%] | **+4.00 pp** | $b=82, c=10$ | **$p = 0.0000$** | 3,479.5 ms | 2,981.9 ms | 1,033.5 |
-| **llm_judge** | Standalone Gemini Judge | 58.56% | 61.78% | **60.17%** | [55.50%, 64.83%] | **+1.83 pp** | $b=35, c=2$ | **$p = 0.0000$** | 2,906.3 ms | 2,527.3 ms | 1,144.1 |
-| **agent_ask** | Clarifier agent on block | 58.22% | 60.11% | **59.17%** | [54.50%, 63.89%] | **+0.83 pp** | $b=65, c=50$ | $p = 0.1915$ | 3,507.9 ms | 2,867.6 ms | 1,610.7 |
-| **deterministic** | Heuristic syntax/regex | 70.67% | 69.78% | **70.22%** | [65.33%, 75.06%] | **+11.89 pp** | $b=256, c=42$ | **$p = 0.0000$** | 1,734.3 ms | 1,482.3 ms | 334.6 |
-| **always_fallback**| Reference baseline (raw problem) | 71.11% | 71.22% | **71.17%** | [66.22%, 76.11%] | **+12.83 pp** | $b=285, c=54$ | **$p = 0.0000$** | 1,750.6 ms | 1,467.4 ms | 218.5 |
+| **stage1_only** | PRM classifier ($t = 0.5504$) | 59.11% | 65.22% | **62.17%** | [57.44%, 66.83%] | **+3.83 pp** | $b=8, c=77$ | **$p = 0.0000$** | 2,612.9 ms | 2,146.3 ms | 603.4 |
+| **cascade** | Stage 1 + Stage 2 Judge | 59.22% | 65.44% | **62.33%** | [57.61%, 67.00%] | **+4.00 pp** | $b=10, c=82$ | **$p = 0.0000$** | 3,479.5 ms | 2,981.9 ms | 1,033.5 |
+| **llm_judge** | Standalone Gemini Judge | 58.56% | 61.78% | **60.17%** | [55.50%, 64.83%] | **+1.83 pp** | $b=2, c=35$ | **$p = 0.0000$** | 2,906.3 ms | 2,527.3 ms | 1,144.1 |
+| **agent_ask** | Clarifier agent on block | 58.22% | 60.11% | **59.17%** | [54.50%, 63.89%] | **+0.83 pp** | $b=50, c=65$ | $p = 0.1915$ | 3,507.9 ms | 2,867.6 ms | 1,610.7 |
+| **deterministic** | Heuristic syntax/regex | 70.67% | 69.78% | **70.22%** | [65.33%, 75.06%] | **+11.89 pp** | $b=42, c=256$ | **$p = 0.0000$** | 1,734.3 ms | 1,482.3 ms | 334.6 |
+| **always_fallback**| Reference baseline (raw problem) | 71.11% | 71.22% | **71.17%** | [66.22%, 76.11%] | **+12.83 pp** | $b=54, c=285$ | **$p = 0.0000$** | 1,750.6 ms | 1,467.4 ms | 218.5 |
 
-*\*Note on Statistical Testing*: The $p$-values in this table are computed via exact two-sided McNemar test on the pooled $N=1,800$ paired trials (which assumes trial-level independence across seeds). For rigorous task-level inference accounting for clustering within tasks across seeds, paired permutation tests on task-average Pass@1 yield: `stage1_only` $p = 0.0000$, `cascade` $p = 0.0000$, `llm_judge` $p = 0.0000$, `agent_ask` $p = 0.2073$, `deterministic` $p = 0.0000$, `always_fallback` $p = 0.0000$.
+*\*Definition of Discordant Counts ($b$ and $c$)*:
+- $b$: count of trials where `ungated` passed ($1$) and `arm` failed ($0$) [arm loss / regression].
+- $c$: count of trials where `ungated` failed ($0$) and `arm` passed ($1$) [arm win / catch].
+- Net improvement $= c - b$. Exact two-sided binomial test $p$-value tested against null $H_0: p = 0.5$ on $b + c$.
+- Tested on the pooled $N=1,800$ paired trials (treating trials across seeds as independent). For task-clustered inference accounting for repeated measures across seeds, paired permutation tests on task-average Pass@1 yield: `stage1_only` $p = 0.0000$, `cascade` $p = 0.0000$, `llm_judge` $p = 0.0000$, `agent_ask` $p = 0.2073$, `deterministic` $p = 0.0000$, `always_fallback` $p = 0.0000$.
 
 *Note on Latency Reporting*: Mean latencies include transient exponential backoff retry waits from API spikes and network disconnects. Exactly 8 rows out of 12,600 exceeded 30 seconds (maximum 132.3s during a laptop network disconnect on `mbpp_803`). Median latencies reflect genuine API response time without backoff distortion.
 
@@ -60,12 +64,12 @@ Results across all 12,600 live trials (300 tasks $\times$ 3 seeds $\times$ 7 arm
 | Source | Tasks ($n$) | ungated | stage1_only | cascade | llm_judge | agent_ask | deterministic | always_fallback |
 |---|---|---|---|---|---|---|---|---|
 | **HumanEval** | 84 (504 trials) | 75.60% | **86.71%** (+11.11 pp) | **86.71%** (+11.11 pp) | 79.56% | 82.34% | 87.10% | 89.09% |
-| **MBPP** | 209 (1,254 trials) | 50.96% | **51.83%** (+0.88 pp) | **52.07%** (+1.12 pp) | 52.07% | 49.52% | 63.16% | 63.64% |
+| **MBPP** | 209 (1,254 trials) | 51.20% | **52.15%** (+0.96 pp) | **52.39%** (+1.20 pp) | 52.15% | 49.76% | 63.16% | 63.80% |
 | **Hand-Crafted Easy** | 4 (24 trials) | 83.33% | **83.33%** (+0.00 pp) | **83.33%** (+0.00 pp) | 83.33% | 75.00% | 100.00% | 100.00% |
 | **Hand-Crafted Hard** | 3 (18 trials) | 38.89% | **44.44%** (+5.56 pp) | **44.44%** (+5.56 pp) | 44.44% | 44.44% | 44.44% | 44.44% |
 | **Hand-Crafted (All)**| 7 (42 trials) | 64.29% | **66.67%** (+2.38 pp) | **66.67%** (+2.38 pp) | 66.67% | 61.90% | 76.19% | 76.19% |
 
-*Benchmark Observation*: On algorithmic challenges (HumanEval), Stage-1 PRM gating and Cascade gating provide substantial improvements (**+11.11 pp**, 86.71% vs 75.60%), catching corruptions like tool result drops and truncations and restoring performance. On MBPP, PRM gating yields modest gains (+0.88 to +1.12 pp) due to short task descriptions and Agent A function-name mismatches.
+*Benchmark Observation*: On algorithmic challenges (HumanEval), Stage-1 PRM gating and Cascade gating provide substantial improvements (**+11.11 pp**, 86.71% vs 75.60%), catching corruptions like tool result drops and truncations and restoring performance. On MBPP, PRM gating yields modest gains (+0.96 to +1.20 pp) due to short task descriptions and Agent A function-name mismatches.
 
 ### B. Seed Consistency (42, 43, 44)
 

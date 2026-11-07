@@ -187,6 +187,32 @@ This architecture ensures:
    - Clean ungated Pass@1 is 58.44% (374 failures across 900 trials).
    - The primary failure mode is **Function Name Mismatch / Missing Entry Point** (157 / 374 failures, 41.98%), driven by MBPP problem prompts which omit function signatures, causing Agent A to invent function names that disagree with the test harness.
 
+---
+
+## 11. Follow-up Diagnostic & Extended Evaluations
+
+1. **Prompt Template Alignment & Entry Point Audit**:
+   - In both `workstream_c/harness/agents_interface.py` and the root `agents.py`, Agent A is asked for "the exact function signature / entry point name" but receives only `Problem: {problem}` without the `entry_point` argument.
+   - In `tasks/all_tasks.py`, only 15 of 427 MBPP tasks (3.51%) name the required function in the problem text (and only 5 of 209 held-out live MBPP tasks, 2.39%). In contrast, HumanEval prompts include function signatures.
+   - When Agent B receives Agent A's handoff with an invented function name, Agent B often uses Agent A's name rather than `{entry_point}`, causing an execution lookup failure.
+2. **Offline Re-Grading with Function Name Aliasing**:
+   - Aliasing the defined function in generated code to `{entry_point}` increases clean ungated Pass@1 from **58.44%** to **69.56%** (+11.11 pp).
+   - On MBPP, aliasing increases clean ungated Pass@1 from **48.80%** to **62.68%** (+13.88 pp).
+   - `stage1_only` increases from **59.11%** to **69.67%** (+10.56 pp).
+   - `deterministic` and `always_fallback` remain virtually unchanged (70.78% and 71.11%), as both already avoided name mismatches by supplying `{entry_point}` directly via raw problem fallback.
+3. **Random-Block Control Comparison**:
+   - Simulating a random gate blocking the identical fraction of handoffs per stratum yields an expected Pass@1 of **60.99%**.
+   - Real `stage1_only` achieves **62.17%**, outperforming the random gate by **+1.18 pp** (95% task-level paired bootstrap CI: [+0.39 pp, +2.00 pp], paired permutation $p = 0.0045$).
+4. **C4: Organic Evaluation on Clean Handoffs ($N = 900$)**:
+   - On the 900 clean handoffs with single-run execution outcomes (526 positives, 374 negatives):
+   - AUROC: **0.5489** (95% task-level bootstrap CI: [0.4945, 0.5974]); AUPRC: **0.6600** (95% CI: [0.5912, 0.7278]).
+   - Confusion matrix at frozen threshold ($0.550419$): TP=480, TN=13, FP=361, FN=46. Precision = 0.5707, Recall = 0.9125, Clean false-block rate = 8.75%.
+   - After dropping function-name-mismatch failures from negatives (leaving 751 trials, 225 negatives), AUROC is **0.5197** and AUPRC is **0.7304**.
+5. **C6: Prevalence Sweep (5%, 20%, 50% Corrupted)**:
+   - At 5% corruption: `stage1_only` +0.78 pp, `cascade` +0.89 pp vs `ungated` (58.56%).
+   - At 20% corruption: `stage1_only` +1.33 pp, `cascade` +1.33 pp vs `ungated` (58.89%).
+   - At 50% corruption: `stage1_only` +3.67 pp, `cascade` +4.00 pp vs `ungated` (58.33%).
+
 
 
 
