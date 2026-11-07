@@ -210,9 +210,45 @@ def plot_cost_latency_tradeoff(df: pd.DataFrame, output_dir: Path):
     print(f"Saved: {output_dir / 'figure_cost_latency_tradeoff.png'}")
 
 
+def plot_source_breakdown(df: pd.DataFrame, output_dir: Path):
+    """Figure 4: Pass@1 by Source (HumanEval vs MBPP) across evaluation arms."""
+    arms = [a for a in ["ungated", "deterministic", "stage1_only", "cascade", "llm_judge", "agent_ask", "always_fallback"] if a in df["arm"].unique()]
+    
+    he_means = []
+    mbpp_means = []
+    labels = []
+
+    for arm in arms:
+        he_df = df[(df["arm"] == arm) & (df["source"] == "humaneval")]
+        mbpp_df = df[(df["arm"] == arm) & (df["source"] == "mbpp")]
+        he_means.append(he_df["outcome"].mean() * 100 if len(he_df) > 0 else 0.0)
+        mbpp_means.append(mbpp_df["outcome"].mean() * 100 if len(mbpp_df) > 0 else 0.0)
+        labels.append(ARM_DISPLAY_NAMES.get(arm, arm))
+
+    fig, ax = plt.subplots(figsize=(9, 4.5))
+    x = np.arange(len(arms))
+    width = 0.35
+
+    bars1 = ax.bar(x - width/2, he_means, width, label="HumanEval (84 tasks, n=504)", color="#2ca02c", alpha=0.85, edgecolor="black")
+    bars2 = ax.bar(x + width/2, mbpp_means, width, label="MBPP (209 tasks, n=1254)", color="#1f77b4", alpha=0.85, edgecolor="black")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, rotation=20, ha="right")
+    ax.set_ylabel("Pass@1 (%)")
+    ax.set_ylim(0, 100)
+    ax.set_title("Downstream Pass@1 by Benchmark Source (HumanEval vs. MBPP)")
+    ax.legend(loc="upper left")
+    plt.tight_layout()
+
+    fig.savefig(output_dir / "figure_source_breakdown.png", dpi=300)
+    fig.savefig(output_dir / "figure_source_breakdown.pdf")
+    plt.close(fig)
+    print(f"Saved: {output_dir / 'figure_source_breakdown.png'}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate Figures for Workstream C")
-    parser.add_argument("--csv", default=str(REPO_ROOT / "workstream_c" / "results" / "live_results_pilot.csv"), help="Results CSV")
+    parser.add_argument("--csv", default=str(REPO_ROOT / "workstream_c" / "results" / "live_results_main.csv"), help="Results CSV")
     parser.add_argument("--output-dir", default=str(FIGURES_DIR), help="Output directory for plots")
     args = parser.parse_args()
 
@@ -230,6 +266,7 @@ def main():
     plot_pass1_by_arm(df, output_dir)
     plot_clean_vs_corrupted(df, output_dir)
     plot_cost_latency_tradeoff(df, output_dir)
+    plot_source_breakdown(df, output_dir)
     print("All figures successfully generated.")
 
 
