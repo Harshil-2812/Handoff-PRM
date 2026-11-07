@@ -114,7 +114,7 @@ workstream_c/
 │   ├── arms.py                       # Implementation of all 7 experimental arms
 │   ├── execution_sandbox.py          # Secure subprocess/timeout Python test grader
 │   └── logger.py                     # Incremental CSV writer adhering to frozen schema
-├── run_live.py                       # Unified CLI runner for C2, C3, C4, C5, C6
+├── run_live.py                       # Unified CLI runner for C2/C3 (held-out live eval), C4 (organic), C5 (hidden-problem), C6 (prevalence)
 ├── results/                          # Pilot report, cost estimate, and experiment CSVs
 └── figures/                          # Figure generation scripts and output plots
 ```
@@ -135,7 +135,7 @@ This architecture ensures:
    - **LLM Judge**: Set to `temperature = 0.0` (greedy decoding) for deterministic, calibrated scoring.
    - **Cache Invalidation**: The SHA-256 cache key in `agents_interface.py` hashes `model`, `temperature`, `seed`, and `prompt` (`f"{model}_{temperature}_{seed}_{prompt}"`). Therefore, pilot results generated at `temperature = 0.0` are never conflated with or reused for live production runs at `temperature = 0.7`.
 2. **Task Evaluation Manifest & Composition**:
-   - All 300 held-out tasks from `manifest_live_test.json` are evaluated (84 HumanEval, 210 MBPP, 6 hand-crafted), with 0 task overlap against the 248 train/dev tasks.
+   - All 300 held-out tasks from `manifest_live_test.json` are evaluated (84 HumanEval, 209 MBPP, 7 hand-crafted: 4 easy, 3 hard), with 0 task overlap against the 248 train/dev tasks.
    - The ~70% MBPP task composition is documented as an experimental limitation in `RESULTS_SUMMARY.md`, with results reported both in aggregate and broken down by source.
 3. **Partitioned API Key Pools & Concurrency**:
    - All 15 verified working keys in `.env` are partitioned into disjoint pools of 5 keys per seed (Process 1: Keys 1–5 for Seed 42; Process 2: Keys 6–10 for Seed 43; Process 3: Keys 11–15 for Seed 44).
@@ -170,6 +170,23 @@ This architecture ensures:
    - Seed 42 was resumed using fresh keys (Keys 1–5), completing the remaining 150 trials to reach exactly 4,200 rows with zero duplicate keys.
 3. **Partition Discrepancy with Workstream A**:
    - Workstream A's partition files (`manifest_train_dev.txt` for 300 tasks, `manifest_live_test.txt` for 200 tasks, `manifest_organic_pool.txt` for 175 tasks) were not committed to the repository. Workstream C evaluated the 300 held-out tasks in `manifest_live_test.json`, which had strictly zero task overlap with the 248 dev tasks in `features_v2.csv`.
+
+---
+
+## 10. Post-Run Statistical & Failure Analysis
+
+1. **Task-Level Inference**:
+   - Averaging task outcomes across seeds yields $N=300$ independent task observations per condition.
+   - Paired permutation tests on the 300 task averages confirm significant downstream gains for `stage1_only` (+3.83 pp, $p = 0.0000$) and `cascade` (+4.00 pp, $p = 0.0000$) over `ungated` (58.33%).
+2. **Clean False-Block Rate Exceeds Dev Target**:
+   - On clean handoffs, `stage1_only` blocked 59 / 900 handoffs (**6.56%**), exceeding the $\le 5.0\%$ target calibrated on dev out-of-fold data.
+   - On corrupted handoffs, `stage1_only` blocked 291 / 900 handoffs (32.33%), heavily skewed towards structural defects (`over_summarization` at 98.9%, `tool_result_drop` at 87.2%) while missing subtle semantic changes (`fake_completion` at 3.7%, `inject_false_constraint` at 3.3%).
+3. **Heuristic & Raw Problem Outperformance**:
+   - The simple syntax/regex `deterministic` arm (70.22%, +11.89 pp) and the `always_fallback` reference baseline (71.17%, +12.83 pp) outperform `stage1_only` (62.17%) and `cascade` (62.33%).
+4. **Clean Baseline Failure Mechanisms**:
+   - Clean ungated Pass@1 is 58.44% (374 failures across 900 trials).
+   - The primary failure mode is **Function Name Mismatch / Missing Entry Point** (157 / 374 failures, 41.98%), driven by MBPP problem prompts which omit function signatures, causing Agent A to invent function names that disagree with the test harness.
+
 
 
 
