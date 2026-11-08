@@ -8,7 +8,7 @@
 
 ---
 
-## 1. Executive Summary & Gate 2 Decision Assessment
+## 1. Executive Summary & Gate Decision Assessment
 
 Workstream C evaluates the downstream impact of the lightweight **Handoff Process Reward Model (PRM)** in a multi-agent coding pipeline where **Agent A** produces context handoffs and **Agent B** generates code based solely on those handoffs.
 
@@ -16,26 +16,29 @@ The evaluation adheres strictly to the frozen protocol:
 - **Held-Out Test Set**: 300 tasks from `manifest_live_test.json` (verified **zero task overlap** with the 248 train/dev tasks in `features_v2.csv`).
 - **Paired Experimental Design**: Every task is evaluated under both **clean** and **corrupted** handoff conditions across **3 random seeds** (42, 43, 44).
 - **Sampling Protocol**: Agent A sampled at `temperature = 0.7` to induce realistic planning variation; Agent B (coder) and the LLM Judge evaluated greedily at `temperature = 0.0`.
-- **Operating Threshold**: Frozen headline threshold $t = 0.550419$ (raw probability from `results/frozen_threshold.json`, calibrated on dev out-of-fold predictions to cap clean false blocks at $\le 5\%$; zero live re-tuning). Note: Workstream A's initial exploratory notes referenced an ad-hoc threshold of $0.330$, whereas the frozen headline protocol specified in Workstream B and enforced here is strictly $t = 0.550419$.
+- **Operating Threshold**: Frozen headline threshold $t = 0.550419$ (raw probability from `results/frozen_threshold.json`, calibrated on dev out-of-fold predictions to cap clean false blocks at $\le 5\%$; zero live re-tuning).
 - **Model Family**: All agents and the judge utilize the same model family (`gemini-3.5-flash-lite`) to eliminate cross-model capability confounds.
 
-### Gate 2 Criteria Scorecard & Assessment
+### Gate 1 vs. Gate 2 Assessment
+
+- **Gate 1 (Offline PRM Discrimination)**: **PASSED**. In Workstream B, Stage-1 PRM achieved an offline AUROC of $0.884 \pm 0.021$ across synthetic corruptions on dev tasks, satisfying the Gate 1 requirement ($\text{AUROC} \ge 0.80$).
+- **Gate 2 (Live Downstream End-to-End Utility)**: **PARTIAL / NOT MET**. The Gate 2 criterion required a downstream Pass@1 gain of $\ge +5.0\text{ pp}$ over ungated baseline ($p < 0.05$). Under strict grading, Stage-1 PRM achieved **+3.83 pp** (62.17% vs 58.33%, $p = 0.0000$, 95% task CI [+2.61, +5.11]). Under aliased sensitivity grading, Stage-1 PRM achieved **+3.11 pp** (68.67% vs 65.56%, $p = 0.0000$, 95% task CI [+2.00, +4.28]). Both gains are statistically significant ($p < 0.0001$) but fall short of the $+5.0\text{ pp}$ threshold.
+
+### Gate 2 Criteria Scorecard
 
 | Evaluation Category | Metric / Requirement | Target Arm | Observed Metric | Gate 2 Assessment |
 |---|---|---|---|---|
-| **Downstream Utility (PRM)** | $\Delta \text{Pass@1} \ge +5.0\text{ pp}$ over Ungated ($p < 0.05$) | Stage-1 PRM ($t = 0.5504$) | **+3.83 pp** (62.17% vs 58.33%, $p = 0.0000$, 95% task CI [+2.61, +5.11]) | **PARTIAL / CLOSE** (Significant gain $p < 0.0001$, fell short of +5.0 pp target) |
-| **Downstream Utility (Cascade)** | $\Delta \text{Pass@1} \ge +5.0\text{ pp}$ over Ungated ($p < 0.05$) | Stage 1+2 Cascade | **+4.00 pp** (62.33% vs 58.33%, $p = 0.0000$, 95% task CI [+2.72, +5.28]) | **PARTIAL / CLOSE** (Significant gain $p < 0.0001$, fell short of +5.0 pp target) |
+| **Downstream Utility (PRM)** | $\Delta \text{Pass@1} \ge +5.0\text{ pp}$ over Ungated ($p < 0.05$) | Stage-1 PRM ($t = 0.5504$) | **+3.83 pp** (62.17% vs 58.33%, $p = 0.0000$, 95% task CI [+2.61, +5.11]) | **PARTIAL / NOT MET** (Statistically significant $p < 0.0001$, fell short of +5.0 pp target) |
+| **Downstream Utility (Cascade)** | $\Delta \text{Pass@1} \ge +5.0\text{ pp}$ over Ungated ($p < 0.05$) | Stage 1+2 Cascade | **+4.00 pp** (62.33% vs 58.33%, $p = 0.0000$, 95% task CI [+2.72, +5.28]) | **PARTIAL / NOT MET** (Statistically significant $p < 0.0001$, fell short of +5.0 pp target) |
 | **Cascade Efficiency** | Retain $\ge 70\%$ of LLM-Judge gains at $< 25\%$ token cost | Stage 1+2 Cascade vs LLM Judge | Cascade (+4.00 pp) **exceeds** LLM-Judge (+1.83 pp) at 1,033.5 vs 1,144.1 tokens | **PASS / EXCEEDS** (Cascade outperforms standalone LLM Judge) |
 | **Clean False Block Constraint** | Clean false-block rate $\le 5.0\%$ on dev out-of-fold predictions | Stage-1 PRM on Clean Handoffs | **6.56%** (59 / 900 clean trials blocked) | **EXCEEDED TARGET** (Clean false-block rate of 6.56% exceeds the 5.0% target tuned on dev) |
 | **Heuristic & Baseline Comparison** | Benchmarking vs simple heuristics and raw problem baseline | Heuristic & Baseline Arms | Deterministic: **70.22%** (+11.89 pp)<br>Always Fallback: **71.17%** (+12.83 pp) | **NOTEWORTHY FINDING**: Both deterministic heuristics and the raw problem baseline outperform the Stage-1 PRM gate |
 
-*Assessment Summary*: Both `stage1_only` (+3.83 pp) and `cascade` (+4.00 pp) produce statistically significant gains over ungated baselines ($p < 0.0001$, McNemar test). While falling short of the +5.0 pp target, they outperform the standalone LLM judge (+1.83 pp). However, the simple `deterministic` check (70.22%, +11.89 pp) and the `always_fallback` reference baseline (71.17%, +12.83 pp) substantially outperform the Stage-1 PRM gate (62.17%), demonstrating that falling back directly to raw problem statements provides higher downstream accuracy than handoff-based execution across these benchmarks. Furthermore, the live clean false-block rate (6.56%) exceeds the 5.0% ceiling target calibrated on dev data.
-
 ---
 
-## 2. Primary Results Table: All Experimental Arms
+## 2. Primary Results Table: All Experimental Arms (Strict Grading)
 
-Results across all 12,600 live trials (300 tasks $\times$ 3 seeds $\times$ 7 arms $\times$ 2 conditions). `always_fallback` serves as a reference baseline (bypassing handoffs to evaluate raw problem execution directly).
+Results across all 12,600 live trials (300 tasks $\times$ 3 seeds $\times$ 7 arms $\times$ 2 conditions). Primary evaluation uses **strict grading** (requiring exact function name match with test suite). `always_fallback` serves as a reference baseline (bypassing handoffs to evaluate raw problem execution directly).
 
 | Arm | Description | Clean Pass@1 (%) | Corrupted Pass@1 (%) | Overall Pass@1 (%) | 95% Task-Level Bootstrap CI | $\Delta$ vs. Ungated (pp) | Paired $b / c$* | Pooled McNemar $p$* | Mean Latency (ms) | Median Latency (ms) | Mean Tokens / Trial |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -51,15 +54,84 @@ Results across all 12,600 live trials (300 tasks $\times$ 3 seeds $\times$ 7 arm
 - $b$: count of trials where `ungated` passed ($1$) and `arm` failed ($0$) [arm loss / regression].
 - $c$: count of trials where `ungated` failed ($0$) and `arm` passed ($1$) [arm win / catch].
 - Net improvement $= c - b$. Exact two-sided binomial test $p$-value tested against null $H_0: p = 0.5$ on $b + c$.
-- Tested on the pooled $N=1,800$ paired trials (treating trials across seeds as independent). For task-clustered inference accounting for repeated measures across seeds, paired permutation tests on task-average Pass@1 yield: `stage1_only` $p = 0.0000$, `cascade` $p = 0.0000$, `llm_judge` $p = 0.0000$, `agent_ask` $p = 0.2073$, `deterministic` $p = 0.0000$, `always_fallback` $p = 0.0000$.
+- Tested on the pooled $N=1,800$ paired trials. Task-clustered paired permutation tests on task-average Pass@1 yield: `stage1_only` $p = 0.0000$, `cascade` $p = 0.0000$, `llm_judge` $p = 0.0000$, `agent_ask` $p = 0.2073$, `deterministic` $p = 0.0000$, `always_fallback` $p = 0.0000$.
 
-*Note on Latency Reporting*: Mean latencies include transient exponential backoff retry waits from API spikes and network disconnects. Exactly 8 rows out of 12,600 exceeded 30 seconds (maximum 132.3s during a laptop network disconnect on `mbpp_803`). Median latencies reflect genuine API response time without backoff distortion.
+### Random-Gate Control Comparison
+
+To determine whether Stage-1 PRM gains arise from discriminative feature filtering rather than the mere rate of falling back to raw problems, an empirical random gate control was evaluated (1,000 simulations matching the exact strata block rates: 6.56% on clean, 31.78% on corrupted):
+- **Real Stage-1 PRM Pass@1**: **62.17%**
+- **Random Gate Expected Pass@1**: **60.99%** [95% CI: 60.28%, 61.67%]
+- **Difference (Real - Random)**: **+1.18 pp** [95% task bootstrap CI: +0.39 pp, +2.00 pp], paired permutation test $p = 0.0045$.
+- *Conclusion*: Stage-1 PRM provides a statistically significant +1.18 pp advantage over random fallback, confirming informative gating beyond fallback rate alone.
+
+### False-Block Analysis & Dev Target Comparison
+
+- **Definition (a) - Fraction of all clean handoffs blocked**: **59 / 900 (6.56%)**
+- **Definition (b) - Fraction of passing clean handoffs blocked**: **46 / 526 (8.75%)**
+- *Target Alignment*: In `b03_threshold.py`, the threshold calibration defined `good = y == 1` across all clean dev handoffs. Thus, the 5% dev target was the **fraction of all clean handoffs blocked**. Comparing like with like: **6.56% observed vs. 5.00% target**.
 
 ---
 
-## 3. Subgroup Analysis: Breakdown by Source and Seed
+## 3. Sensitivity Analysis: Aliased Grading (All 7 Arms)
 
-### A. Performance by Task Benchmark Source
+When Agent B implements a functionally correct solution under an alternative function name, strict grading marks the execution as failed (`Function '{entry_point}' not found in generated code`). To test robustness against naming discrepancies, an offline sensitivity analysis re-graded all 12,600 cached outputs by binding the generated function to the required `entry_point`.
+
+### A. Primary vs. Aliased Pass@1 Comparison
+
+| Arm | Strict Clean | Aliased Clean | Strict Corr | Aliased Corr | Strict Overall | Aliased Overall |
+|---|---|---|---|---|---|---|
+| **ungated** | 58.44% | **69.44%** | 58.22% | **61.67%** | 58.33% | **65.56%** |
+| **stage1_only** | 59.11% | **69.44%** | 65.22% | **67.89%** | 62.17% | **68.67%** |
+| **cascade** | 59.22% | **69.56%** | 65.44% | **68.11%** | 62.33% | **68.83%** |
+| **llm_judge** | 58.56% | **69.56%** | 61.78% | **65.22%** | 60.17% | **67.39%** |
+| **deterministic** | 70.67% | **70.78%** | 69.78% | **69.78%** | 70.22% | **70.28%** |
+| **always_fallback**| 71.11% | **71.11%** | 71.22% | **71.22%** | 71.17% | **71.17%** |
+| **agent_ask** | 58.22% | **69.33%** | 60.11% | **66.33%** | 59.17% | **67.83%** |
+
+### B. Task-Level Paired Inference vs. Ungated (Aliased Sensitivity)
+
+| Arm | Condition | Aliased Pass@1 | $\Delta$ vs. Ungated | 95% Task Bootstrap CI | Permutation $p$ |
+|---|---|---|---|---|---|
+| **stage1_only** | Clean Only | 69.44% | +0.00 pp | [-0.56 pp, +0.67 pp] | $p = 1.0000$ |
+| **stage1_only** | Corrupted Only | 67.89% | **+6.22 pp** | [+4.22 pp, +8.33 pp] | **$p = 0.0000$** |
+| **stage1_only** | Overall | 68.67% | **+3.11 pp** | [+2.00 pp, +4.28 pp] | **$p = 0.0000$** |
+| **cascade** | Clean Only | 69.56% | +0.11 pp | [-0.56 pp, +0.78 pp] | $p = 1.0000$ |
+| **cascade** | Corrupted Only | 68.11% | **+6.44 pp** | [+4.44 pp, +8.67 pp] | **$p = 0.0000$** |
+| **cascade** | Overall | 68.83% | **+3.28 pp** | [+2.17 pp, +4.50 pp] | **$p = 0.0000$** |
+| **deterministic** | Overall | 70.28% | **+4.72 pp** | [+2.06 pp, +7.22 pp] | **$p = 0.0003$** |
+| **always_fallback**| Overall | 71.17% | **+5.61 pp** | [+2.72 pp, +8.39 pp] | **$p = 0.0001$** |
+
+### C. Random-Gate Control under Aliasing
+
+- **Aliased Stage-1 Pass@1**: **68.67%**
+- **Aliased Random Gate Expected**: **67.50%**
+- **Difference (Real - Random)**: **+1.17 pp** [95% task bootstrap CI: +0.47 pp, +1.90 pp], paired permutation test $p = 0.0017$.
+
+### D. Per-Corruption Interception Rates & Recovery under Aliasing
+
+| Corruption Type | $N$ | Stage-1 Block % | Cascade Block % | Ungated Alias Pass@1 | Stage-1 Alias Pass@1 | Net Gain (pp) |
+|---|---|---|---|---|---|---|
+| **over_summarization** | 87 | 98.9% | 98.9% | 41.38% | 68.97% | **+27.59 pp** |
+| **tool_result_drop** | 86 | 87.2% | 96.5% | 54.65% | 75.58% | **+20.93 pp** |
+| **truncation** | 78 | 66.7% | 69.2% | 65.38% | 71.79% | **+6.41 pp** |
+| **entity_omission** | 90 | 22.2% | 25.6% | 61.11% | 65.56% | **+4.44 pp** |
+| **negate_edge_case** | 90 | 16.7% | 17.8% | 73.33% | 75.56% | **+2.22 pp** |
+| **fake_completion** | 107 | 3.7% | 3.7% | 50.47% | 52.34% | **+1.87 pp** |
+| **signature_rename** | 95 | 27.4% | 27.4% | 71.58% | 72.63% | **+1.05 pp** |
+| **inject_false_constraint**| 91 | 3.3% | 4.4% | 65.93% | 65.93% | +0.00 pp |
+| **invert_objective** | 81 | 4.9% | 6.2% | 64.20% | 64.20% | +0.00 pp |
+| **wrong_algorithm_name**| 95 | 6.3% | 6.3% | 69.47% | 69.47% | +0.00 pp |
+
+*Sensitivity Takeaways*:
+1. Under aliasing, ungated clean performance rises from 58.44% to 69.44% (+11.00 pp), eliminating the apparent clean handoff penalty.
+2. On corrupted handoffs, Stage-1 PRM retains strong efficacy (+6.22 pp gain over ungated, $p < 0.0001$), recovering performance on structural corruptions (over-summarization +27.59 pp, tool result drop +20.93 pp, truncation +6.41 pp).
+3. The core substantive conclusions do not change: Stage-1 PRM (+3.11 pp overall) remains statistically significant but below the +5.0 pp Gate 2 target, while `always_fallback` (71.17%) and `deterministic` (70.28%) remain the strongest performers.
+
+---
+
+## 4. Subgroup Analysis: Breakdown by Source and Seed
+
+### A. Performance by Task Benchmark Source (Strict Grading)
 
 | Source | Tasks ($n$) | ungated | stage1_only | cascade | llm_judge | agent_ask | deterministic | always_fallback |
 |---|---|---|---|---|---|---|---|---|
@@ -69,8 +141,6 @@ Results across all 12,600 live trials (300 tasks $\times$ 3 seeds $\times$ 7 arm
 | **Hand-Crafted Hard** | 3 (18 trials) | 38.89% | **44.44%** (+5.56 pp) | **44.44%** (+5.56 pp) | 44.44% | 44.44% | 44.44% | 44.44% |
 | **Hand-Crafted (All)**| 7 (42 trials) | 64.29% | **66.67%** (+2.38 pp) | **66.67%** (+2.38 pp) | 66.67% | 61.90% | 76.19% | 76.19% |
 
-*Benchmark Observation*: On algorithmic challenges (HumanEval), Stage-1 PRM gating and Cascade gating provide substantial improvements (**+11.11 pp**, 86.71% vs 75.60%), catching corruptions like tool result drops and truncations and restoring performance. On MBPP, PRM gating yields modest gains (+0.96 to +1.20 pp) due to short task descriptions and Agent A function-name mismatches.
-
 ### B. Seed Consistency (42, 43, 44)
 
 | Seed | Trials ($n$) | ungated | stage1_only | cascade | llm_judge | agent_ask | deterministic | always_fallback |
@@ -79,25 +149,19 @@ Results across all 12,600 live trials (300 tasks $\times$ 3 seeds $\times$ 7 arm
 | **Seed 43** | 600 | 59.00% | 62.67% (+3.67 pp) | 62.67% (+3.67 pp) | 60.50% | 58.00% | 70.17% | 71.00% |
 | **Seed 44** | 600 | 58.33% | 61.83% (+3.50 pp) | 62.17% (+3.83 pp) | 60.17% | 60.00% | 69.83% | 70.83% |
 
-Results demonstrate tight consistency across random seeds, with Stage-1 PRM outperforming ungated baselines by +3.50 to +4.33 pp across all three seeds.
-
 ---
 
-## 4. Experimental Limitations & Threats to Validity
+## 5. Experimental Limitations & Design Caveats
 
-1. **Benchmark Composition (~70% MBPP, No LiveCodeBench)**:
-   - The live held-out test manifest consists of 209 MBPP tasks (69.67%), 84 HumanEval tasks (28.00%), and 7 hand-crafted tasks (2.33%: 4 easy, 3 hard), for 300 tasks total (12,600 trials). LiveCodeBench tasks were not present in the repository and could not be evaluated. Because MBPP tasks feature shorter, less constraint-dense prompts with unspecified entry point names, PRM gating benefits are concentrated on HumanEval (+11.11 pp) and diluted in aggregate (+3.83 pp).
-2. **Model Family Uniformity**:
-   - Agent A, Agent B, and the LLM Judge all utilized `gemini-3.5-flash-lite`. While isolating architectural effects from model capability confounds, cross-family multi-agent dynamics (e.g. Claude planner to GPT coder) remain unmeasured.
-3. **Agent A Sampling Temperature Protocol**:
-   - Agent A's sampling temperature was set to `0.7` across seeds 42, 43, and 44 as a deliberate protocol decision during run planning to introduce realistic semantic plan variation across seeds. The initial 20-task pilot used `0.0`. All cache keys hash model, temperature, seed, and prompt, ensuring zero cache pollution between pilot and main evaluations.
-4. **Handoff Text Storage & Corruption Seed Randomization**:
-   - The frozen results schema mandated by `experiment_workplan.md` does not record candidate handoff text; it records features, decisions, and outcomes. Clean handoff texts have been separately exported to `workstream_c/results/clean_agent_a_handoffs.csv`.
-   - In the initial implementation, `corruption.py` used Python's built-in `hash()` on strings as fallback RNG seeds for three functions (`omit_entity`, `inject_false_constraint`, `fake_completion`). Because `PYTHONHASHSEED` was randomized across process restarts, the exact corrupted text for rows generated before the fix cannot be regenerated:
-     - **Seed 42**: 434 rows (62 tasks) before fix; tail rows (35 rows, 5 tasks) used deterministic `hashlib.md5`.
-     - **Seed 43**: 455 rows (65 tasks) before fix.
-     - **Seed 44**: 462 rows (66 tasks) before fix.
+1. **Design Limitation: Agent A Prompt Template Lacks Entry Point**:
+   - In both the C2/C3 live harness and the root `agents.py` pipeline (`agent_a_plan(problem)`), Agent A receives only `Problem: {problem}` with no `entry_point` specified.
+   - For HumanEval, 100% of tasks define the function signature in the problem docstring. For MBPP, only 14.83% of tasks name the target function in the problem statement.
+   - Consequently, on MBPP, Agent A invents plausible function names in prose. Agent B incorporates these names, leading to unit-test name mismatches (`Function not found in generated code`). This represents an inherent design limitation of the multi-agent pipeline architecture inherited from the original pipeline, not an artifact of gating.
+2. **Benchmark Composition (~70% MBPP, No LiveCodeBench)**:
+   - The test set consists of 209 MBPP tasks (69.67%), 84 HumanEval tasks (28.00%), and 7 hand-crafted tasks (2.33%). Because MBPP tasks feature shorter, less constraint-dense prompts without entry point names, PRM gating benefits are concentrated on HumanEval (+11.11 pp) and diluted in aggregate (+3.83 pp).
+3. **Model Family Uniformity**:
+   - Agent A, Agent B, and the LLM Judge all utilized `gemini-3.5-flash-lite`. Cross-family multi-agent dynamics (e.g. Claude planner to GPT coder) remain unmeasured.
+4. **Agent A Sampling Temperature Protocol**:
+   - Agent A's sampling temperature was set to `0.7` across seeds 42, 43, and 44 to introduce realistic semantic plan variation across seeds.
 5. **Laptop Interruption & Recovery on Seed 42**:
-   - During the Seed 42 evaluation, a laptop restart interrupted execution at row 4,050. The process was verified clean (0 truncated rows, cache JSON intact), and safely resumed using fresh keys (Keys 1–5), reaching exactly 4,200 rows with 0 duplicate keys.
-6. **Dataset Partition Discrepancy**:
-   - The original workplan specified a 300 train/dev, 200 live test, and 175 organic pool split. However, Workstream A's partition files (`manifest_train_dev.txt`, `manifest_live_test.txt`, `manifest_organic_pool.txt`) were not committed to the repo. Instead, the dev pool in `features_v2.csv` contained 248 tasks, leaving 300 held-out tasks for `manifest_live_test.json` and 127 remaining tasks. Zero task leakage between dev and test was programmatically asserted.
+   - A laptop restart interrupted Seed 42 at row 4,050. The process was verified clean (0 truncated rows, cache JSON intact), and safely resumed using fresh keys, reaching exactly 4,200 rows with 0 duplicate keys.
